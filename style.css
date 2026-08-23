@@ -1284,283 +1284,459 @@ order: 0 !important;
     background: var(--gray-100);
 }
 
-[data-theme="dark"] .pos-product-card {
-    background: var(--bg-card);
-    border-color: var(--border);
-}
+/* ==================== POS - MODE SOMBRE COMPLET ==================== */
 
-[data-theme="dark"] .pos-product-card:hover {
-    border-color: var(--accent);
-    background: var(--gray-100);
-}
-
-[data-theme="dark"] .pos-product-name {
-    color: var(--text-primary);
-}
-
-[data-theme="dark"] .pos-product-price {
-    color: var(--text-primary);
-}
-
-[data-theme="dark"] .pos-product-placeholder {
-    background: var(--gray-800);
-}
-
-[data-theme="dark"] .pos-product-placeholder i {
-    color: var(--text-muted);
+[data-theme="dark"] .pos-container {
+    background: var(--bg-page);
 }
 
 [data-theme="dark"] .pos-products-panel {
-    background: var(--bg-card);
-    border-color: var(--border);
+    background: #161B22 !important;
+    border-color: #30363D !important;
 }
+
+[data-theme="dark"] .pos-products-grid {
+    background: #161B22 !important;
+}
+
+[data-theme="dark"] .pos-product-card {
+    background: #0D1117 !important;
+    border-color: #30363D !important;
+}
+
+[data-theme="dark"] .pos-product-card:hover {
+    border-color: #14B8A6 !important;
+    background: #1C2333 !important;
+}
+
+[data-theme="dark"] .pos-product-name {
+    color: #F0F6FC !important;
+}
+
+[data-theme="dark"] .pos-product-price {
+    color: #F0F6FC !important;
+}
+
+[data-theme="dark"] .pos-old-price {
+    color: #8B949E !important;
+}
+
+[data-theme="dark"] .pos-promo-price {
+    color: #F87171 !important;
+}
+
+[data-theme="dark"] .pos-product-placeholder {
+    background: #1C2333 !important;
+}
+
+[data-theme="dark"] .pos-product-placeholder i {
+    color: #8B949E !important;
+}
+
+[data-theme="dark"] .pos-product-img {
+    background: #1C2333 !important;
+}
+
+/* ==================== POS CART - MODE SOMBRE ==================== */
 
 [data-theme="dark"] .pos-cart-panel {
-    background: var(--bg-card);
-    border-color: var(--border);
-}
-
-[data-theme="dark"] .pos-cart-item {
-    border-bottom-color: var(--border);
-}
-
-[data-theme="dark"] .pos-cart-item-name {
-    color: var(--text-primary);
-}
-
-[data-theme="dark"] .pos-cart-item-price {
-    color: var(--text-secondary);
-}
-
-[data-theme="dark"] .pos-cart-item-total {
-    color: var(--text-primary);
-}
-
-[data-theme="dark"] .pos-cart-total-row {
-    color: var(--text-primary);
+    background: #161B22 !important;
+    border-color: #30363D !important;
 }
 
 [data-theme="dark"] .pos-cart-header {
-    border-bottom-color: var(--border);
+    border-bottom-color: #30363D !important;
 }
 
 [data-theme="dark"] .pos-cart-header h3 {
-    color: var(--text-primary);
+    color: #F0F6FC !important;
 }
 
 [data-theme="dark"] .pos-cart-badge {
-    background: var(--accent);
-    color: #FFFFFF;
+    background: #14B8A6 !important;
+    color: #FFFFFF !important;
 }
 
-[data-theme="dark"] .pos-qty-btn {
-    background: var(--bg-page);
-    border-color: var(--border);
-    color: var(--text-primary);
+[data-theme="dark"] .pos-cart-items {
+    background: #161B22 !important;
 }
 
-[data-theme="dark"] .pos-qty-btn:hover {
-    background: var(--gray-100);
+[data-theme="dark"] .pos-cart-item {
+    border-bottom-color: #30363D !important;
 }
 
-[data-theme="dark"] .pos-qty-value {
-    color: var(--text-primary);
+[data-theme="dark"] .pos-cart-item-name {
+    color: #F0F6FC !important;
 }
 
-[data-theme="dark"] .pos-clear-btn {
-    background: var(--danger);
-    color: #FFFFFF;
+[data-theme="dark"] .pos-cart-item-price {
+    color: #8B949E !important;
 }
 
-[data-theme="dark"] .pos-clear-btn:hover {
-    background: #dc2626;
+[data-theme="dark"] .pos-cart-item-total {
+    color: #F0F6FC !important;
 }
 
-[data-theme="dark"] .pos-validate-btn {
-    background: var(--accent);
-    color: #FFFFFF;
+[data-theme="dark"] .pos-cart-total-row {
+    color: #F0F6FC !important;
 }
 
-[data-theme="dark"] .pos-validate-btn:disabled {
-    opacity: 0.4;
+[data-theme="dark"] .pos-cart-total-row span {
+    color: #F0F6FC !important;
 }
 
-[data-theme="dark"] .pos-validate-btn:hover:not(:disabled) {
-    background: #0D9488;
+[data-theme="dark"] .pos-cart-footer {
+    border-top-color: #30363D !important;
 }
 
 [data-theme="dark"] .pos-cart-empty {
-    color: var(--text-secondary);
+    color: #8B949E !important;
 }
 
 [data-theme="dark"] .pos-cart-empty i {
-    color: var(--text-muted);
+    color: #6B7280 !important;
+}
+
+/* ==================== POS QTY BUTTONS - MODE SOMBRE ==================== */
+
+[data-theme="dark"] .pos-qty-btn {
+    background: #0D1117 !important;
+    border-color: #30363D !important;
+    color: #F0F6FC !important;
+}
+
+[data-theme="dark"] .pos-qty-btn:hover {
+    background: #1C2333 !important;
+}
+
+[data-theme="dark"] .pos-qty-value {
+    color: #F0F6FC !important;
+}
+
+[data-theme="dark"] .pos-remove-btn {
+    color: #F87171 !important;
+}
+
+[data-theme="dark"] .pos-remove-btn:hover {
+    color: #EF4444 !important;
+}
+
+/* ==================== POS CLEAR & VALIDATE - MODE SOMBRE ==================== */
+
+[data-theme="dark"] .pos-clear-btn {
+    background: #DC2626 !important;
+    color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .pos-clear-btn:hover {
+    background: #EF4444 !important;
+}
+
+[data-theme="dark"] .pos-validate-btn {
+    background: #14B8A6 !important;
+    color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .pos-validate-btn:disabled {
+    opacity: 0.4 !important;
+}
+
+[data-theme="dark"] .pos-validate-btn:hover:not(:disabled) {
+    background: #0D9488 !important;
+}
+
+/* ==================== POS CATEGORIES BAR - MODE SOMBRE ==================== */
+
+[data-theme="dark"] .pos-categories-bar {
+    background: #161B22 !important;
 }
 
 [data-theme="dark"] .pos-cat-btn {
-    background: var(--bg-page);
-    border-color: var(--border);
-    color: var(--text-primary);
+    background: #0D1117 !important;
+    border-color: #30363D !important;
+    color: #F0F6FC !important;
 }
 
 [data-theme="dark"] .pos-cat-btn:hover {
-    background: var(--gray-100);
+    background: #1C2333 !important;
 }
 
 [data-theme="dark"] .pos-cat-btn.active {
-    background: var(--accent);
-    color: #FFFFFF;
-    border-color: var(--accent);
+    background: #14B8A6 !important;
+    color: #FFFFFF !important;
+    border-color: #14B8A6 !important;
 }
 
+[data-theme="dark"] .pos-cat-btn img {
+    filter: brightness(0.9);
+}
+
+/* ==================== POS SEARCH BAR - MODE SOMBRE ==================== */
+
 [data-theme="dark"] .search-bar-pro {
-    background: var(--bg-page);
-    border-color: var(--border);
+    background: #0D1117 !important;
+    border-color: #30363D !important;
 }
 
 [data-theme="dark"] .search-bar-pro input {
-    background: transparent;
-    color: var(--text-primary);
+    background: transparent !important;
+    color: #F0F6FC !important;
 }
 
 [data-theme="dark"] .search-bar-pro input::placeholder {
-    color: var(--text-secondary);
+    color: #8B949E !important;
 }
 
 [data-theme="dark"] .search-bar-pro i.fa-search {
-    color: var(--text-muted);
+    color: #8B949E !important;
 }
 
 [data-theme="dark"] .search-bar-pro:focus-within {
-    border-color: var(--accent);
+    border-color: #14B8A6 !important;
 }
 
 [data-theme="dark"] .search-clear-btn {
-    background: var(--gray-700) !important;
-    color: var(--text-secondary) !important;
+    background: #30363D !important;
+    color: #8B949E !important;
 }
 
 [data-theme="dark"] .search-clear-btn:hover {
-    background: var(--gray-600) !important;
-    color: var(--text-primary) !important;
+    background: #4A5568 !important;
+    color: #F0F6FC !important;
+}
+
+/* ==================== POS PAYMENT - MODE SOMBRE ==================== */
+
+[data-theme="dark"] .pos-payment-form {
+    background: #161B22 !important;
 }
 
 [data-theme="dark"] .pos-payment-form label {
-    color: var(--text-secondary);
+    color: #8B949E !important;
 }
 
 [data-theme="dark"] .pos-payment-form input,
 [data-theme="dark"] .pos-payment-form select {
-    background: var(--bg-page);
-    border-color: var(--border);
-    color: var(--text-primary);
+    background: #0D1117 !important;
+    border-color: #30363D !important;
+    color: #F0F6FC !important;
 }
 
 [data-theme="dark"] .pos-payment-form input:focus,
 [data-theme="dark"] .pos-payment-form select:focus {
-    border-color: var(--accent);
+    border-color: #14B8A6 !important;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2) !important;
+}
+
+[data-theme="dark"] .pos-payment-form input::placeholder {
+    color: #8B949E !important;
 }
 
 [data-theme="dark"] .pos-payment-btn {
-    background: var(--bg-page);
-    border-color: var(--border);
-    color: var(--text-primary);
+    background: #0D1117 !important;
+    border-color: #30363D !important;
+    color: #F0F6FC !important;
 }
 
 [data-theme="dark"] .pos-payment-btn:hover {
-    background: var(--gray-100);
+    background: #1C2333 !important;
 }
 
 [data-theme="dark"] .pos-payment-btn.active {
-    background: var(--accent);
-    color: #FFFFFF;
-    border-color: var(--accent);
+    background: #14B8A6 !important;
+    color: #FFFFFF !important;
+    border-color: #14B8A6 !important;
 }
 
 [data-theme="dark"] .pos-finalize-btn {
-    background: var(--accent);
-    color: #FFFFFF;
+    background: #14B8A6 !important;
+    color: #FFFFFF !important;
 }
 
 [data-theme="dark"] .pos-finalize-btn:hover {
-    background: #0D9488;
+    background: #0D9488 !important;
 }
 
+/* ==================== POS STEPS - MODE SOMBRE ==================== */
+
 [data-theme="dark"] .pos-steps-nav {
-    background: var(--bg-page);
+    background: #161B22 !important;
 }
 
 [data-theme="dark"] .pos-step {
-    color: var(--text-secondary);
+    color: #8B949E !important;
 }
 
 [data-theme="dark"] .pos-step.active {
-    color: var(--text-primary);
+    color: #F0F6FC !important;
 }
 
 [data-theme="dark"] .pos-step .step-number {
-    background: var(--bg-page);
-    color: var(--text-secondary);
+    background: #0D1117 !important;
+    color: #8B949E !important;
 }
 
 [data-theme="dark"] .pos-step.active .step-number {
-    background: var(--accent);
-    color: #FFFFFF;
+    background: #14B8A6 !important;
+    color: #FFFFFF !important;
 }
 
-[data-theme="dark"] .total-row-pro {
-    background: var(--bg-page);
-    border-color: var(--border);
+/* ==================== POS DISCOUNT INPUT - MODE SOMBRE ==================== */
+
+[data-theme="dark"] #posDiscountMAD {
+    background: #0D1117 !important;
+    border-color: #30363D !important;
+    color: #F0F6FC !important;
 }
 
-[data-theme="dark"] .total-row-pro .total-label {
-    color: var(--text-secondary);
+[data-theme="dark"] #posDiscountMAD:focus {
+    border-color: #14B8A6 !important;
 }
 
-[data-theme="dark"] .total-row-pro .total-amount {
-    color: var(--text-primary);
+/* ==================== POS CLIENT SEARCH - MODE SOMBRE ==================== */
+
+[data-theme="dark"] #posClientSearchInput {
+    background: #0D1117 !important;
+    color: #F0F6FC !important;
 }
 
-[data-theme="dark"] .amount-total {
-    color: var(--text-primary) !important;
+[data-theme="dark"] #posClientDropdown {
+    background: #161B22 !important;
+    border-color: #30363D !important;
 }
 
-[data-theme="dark"] .amount-remaining {
-    color: var(--danger) !important;
+[data-theme="dark"] #posClientDropdown div {
+    color: #F0F6FC !important;
+    border-bottom-color: #30363D !important;
 }
 
-[data-theme="dark"] .facture-cell {
-    background: var(--bg-page);
-    border-left-color: var(--accent);
+[data-theme="dark"] #posClientDropdown div:hover {
+    background: #1C2333 !important;
 }
 
-[data-theme="dark"] .facture-cell .facture-number {
-    background: var(--bg-card);
-    color: var(--text-primary);
+/* ==================== POS AMOUNT GIVEN - MODE SOMBRE ==================== */
+
+[data-theme="dark"] #posAmountGiven {
+    background: #0D1117 !important;
+    border-color: #30363D !important;
+    color: #F0F6FC !important;
 }
 
-[data-theme="dark"] .date-cell .date-line,
-[data-theme="dark"] .date-cell .time-line {
-    color: var(--text-secondary);
+[data-theme="dark"] #posAmountGiven:focus {
+    border-color: #14B8A6 !important;
 }
 
-[data-theme="dark"] .client-cell {
-    background: rgba(20, 184, 166, 0.08);
+[data-theme="dark"] #posChangeDisplay {
+    color: #F0F6FC !important;
 }
 
-[data-theme="dark"] .client-cell i {
-    color: var(--accent);
+[data-theme="dark"] #posChangeDisplay .pos-change-positive {
+    color: #4ADE80 !important;
 }
 
-[data-theme="dark"] .client-cell span {
-    color: var(--text-primary);
+[data-theme="dark"] #posChangeDisplay .pos-change-negative {
+    color: #F87171 !important;
 }
 
-[data-theme="dark"] .voice-display-field {
-    background: var(--bg-page) !important;
-    color: var(--text-primary) !important;
-    border-color: var(--accent) !important;
+/* ==================== POS VENDEUR INPUT - MODE SOMBRE ==================== */
+
+[data-theme="dark"] #posVendeur {
+    background: #0D1117 !important;
+    border-color: #30363D !important;
+    color: #F0F6FC !important;
 }
+
+/* ==================== POS TABLE INPUT - MODE SOMBRE ==================== */
+
+[data-theme="dark"] #posTableNum {
+    background: #0D1117 !important;
+    border-color: #30363D !important;
+    color: #F0F6FC !important;
+}
+
+/* ==================== POS CLIENT CREDIT DISPLAY - MODE SOMBRE ==================== */
+
+[data-theme="dark"] #clientCreditDisplay {
+    color: #F0F6FC !important;
+}
+
+/* ==================== POS REMISE LABEL - MODE SOMBRE ==================== */
+
+[data-theme="dark"] .pos-cart-footer label {
+    color: #F0F6FC !important;
+}
+
+[data-theme="dark"] .pos-cart-footer .pos-cart-total-row span {
+    color: #F0F6FC !important;
+}
+
+/* ==================== POS MIC BUTTON - MODE SOMBRE ==================== */
+
+[data-theme="dark"] #posMicBtn {
+    background: #0D1117 !important;
+    border-color: #30363D !important;
+    color: #F0F6FC !important;
+}
+
+[data-theme="dark"] #posMicBtn:hover {
+    background: #1C2333 !important;
+}
+
+/* ==================== POS TOTAL ROW - MODE SOMBRE ==================== */
+
+[data-theme="dark"] .pos-cart-total-row {
+    border-top-color: #30363D !important;
+}
+
+[data-theme="dark"] .pos-cart-total-row span:last-child {
+    color: #F0F6FC !important;
+}
+
+/* ==================== POS SOUS-TOTAL - MODE SOMBRE ==================== */
+
+[data-theme="dark"] .pos-cart-footer div span {
+    color: #F0F6FC !important;
+}
+
+[data-theme="dark"] .pos-cart-footer div span:last-child {
+    color: #F0F6FC !important;
+}
+
+/* ==================== POS REMISE TEXT - MODE SOMBRE ==================== */
+
+[data-theme="dark"] .pos-cart-footer div[style*="color:#ef4444"] {
+    color: #F87171 !important;
+}
+
+[data-theme="dark"] .pos-cart-footer div[style*="color:#ef4444"] span {
+    color: #F87171 !important;
+}
+
+/* ==================== POS DISCOUNT INPUT LABEL - MODE SOMBRE ==================== */
+
+[data-theme="dark"] .pos-cart-footer label[style*="font-size"] {
+    color: #F0F6FC !important;
+}
+
+/* ==================== POS VENDEUR LABEL - MODE SOMBRE ==================== */
+
+[data-theme="dark"] .pos-payment-form label[style*="font-size:20px"] {
+    color: #F0F6FC !important;
+}
+
+/* ==================== POS TABLE LABEL - MODE SOMBRE ==================== */
+
+[data-theme="dark"] .pos-payment-form label[for="posTableNum"] {
+    color: #F0F6FC !important;
+}
+
+/* ==================== POS CLIENT LABEL - MODE SOMBRE ==================== */
+
+[data-theme="dark"] .pos-payment-form label[for="posClientSearchInput"] {
+    color: #F0F6FC !important;
+}
+
+/* ==================== GENERAL DARK MODE - AJOUTS ==================== */
 
 [data-theme="dark"] .modal-content {
     background: var(--bg-card);
@@ -1661,6 +1837,60 @@ order: 0 !important;
 [data-theme="dark"] .status-danger {
     background: #2D0A0A;
     color: #F87171;
+}
+
+[data-theme="dark"] .total-row-pro {
+    background: var(--bg-page);
+    border-color: var(--border);
+}
+
+[data-theme="dark"] .total-row-pro .total-label {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .total-row-pro .total-amount {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .amount-total {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .amount-remaining {
+    color: #F87171 !important;
+}
+
+[data-theme="dark"] .facture-cell {
+    background: var(--bg-page);
+    border-left-color: var(--accent);
+}
+
+[data-theme="dark"] .facture-cell .facture-number {
+    background: var(--bg-card);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .date-cell .date-line,
+[data-theme="dark"] .date-cell .time-line {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .client-cell {
+    background: rgba(20, 184, 166, 0.08);
+}
+
+[data-theme="dark"] .client-cell i {
+    color: var(--accent);
+}
+
+[data-theme="dark"] .client-cell span {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .voice-display-field {
+    background: var(--bg-page) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--accent) !important;
 }
 
 /* ==================== BOUTONS THEME ==================== */
