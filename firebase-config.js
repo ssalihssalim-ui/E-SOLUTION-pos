@@ -2,15 +2,15 @@
 // 🔥 PROJET : E-SOLUTION-pos
 
 const firebaseConfig = {
-    apiKey: "VOTRE_API_KEY",
-    authDomain: "VOTRE_PROJECT_ID.firebaseapp.com",
-    projectId: "VOTRE_PROJECT_ID",
-    storageBucket: "VOTRE_PROJECT_ID.firebasestorage.app",
-    messagingSenderId: "VOTRE_SENDER_ID",
-    appId: "VOTRE_APP_ID"
+    apiKey: "AIzaSyVOTRE_CLE_API",
+    authDomain: "e-solution-pos.firebaseapp.com",
+    projectId: "e-solution-pos",
+    storageBucket: "e-solution-pos.firebasestorage.app",
+    messagingSenderId: "123456789012",
+    appId: "1:123456789012:web:abcdef123456"
 };
 
-// Initialisation Firebase (version compat)
+// Initialisation Firebase
 if (typeof firebase !== 'undefined' && !firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
     console.log('✅ Firebase initialisé avec le projet:', firebaseConfig.projectId);
