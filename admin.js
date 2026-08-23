@@ -522,7 +522,6 @@ function loadOptionsPage(c) {
         return;
     }
 
-    // ✅ Récupérer le thème actuel
     var currentTheme = localStorage.getItem('e-solution-theme') || 'light';
     var isDark = currentTheme === 'dark';
 
@@ -533,7 +532,6 @@ function loadOptionsPage(c) {
             <div class="stat-card"><div class="stat-icon" style="background:#e0e7ff;"><i class="fas fa-users" style="color:#4f46e5;"></i></div><div class="stat-info"><span>Total</span><span class="stat-value" id="totalUsers">0</span></div></div>
         </div>
 
-        <!-- ✅ SECTION AFFICHAGE - MODE SOMBRE / CLAIR -->
         <div class="content-card">
             <div class="card-header">
                 <h3><i class="fas fa-palette"></i> Affichage</h3>
