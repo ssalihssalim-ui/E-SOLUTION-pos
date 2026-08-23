@@ -569,4 +569,43 @@ document.addEventListener('click', function(e) { var o = document.getElementById
 window.addEventListener('online', function() { console.log('✅ En ligne'); if (typeof CacheDB !== 'undefined' && CacheDB.sync) CacheDB.sync().catch(function(e) { console.warn(e); }); });
 window.addEventListener('offline', function() { console.warn('⚠️ Mode hors ligne'); });
 
+// ==================== MODE SOMBRE / CLAIR ====================
+function setTheme(theme) {
+    if (theme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('e-solution-theme', 'dark');
+    } else {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('e-solution-theme', 'light');
+    }
+    
+    // ✅ Mettre à jour l'interface des boutons
+    document.querySelectorAll('.theme-toggle-btn').forEach(function(btn) {
+        btn.classList.remove('theme-active');
+    });
+    document.querySelectorAll('.theme-toggle-btn.' + theme).forEach(function(btn) {
+        btn.classList.add('theme-active');
+    });
+    
+    // ✅ Mettre à jour le texte d'état
+    var statusText = document.querySelector('.theme-toggle-container + div');
+    if (statusText) {
+        statusText.textContent = theme === 'dark' ? '🌙 Mode Sombre actif' : '☀️ Mode Clair actif';
+    }
+    
+    console.log('🎨 Thème changé:', theme);
+}
+
+// ✅ Charger le thème sauvegardé au démarrage
+(function loadSavedTheme() {
+    var savedTheme = localStorage.getItem('e-solution-theme') || 'light';
+    if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    console.log('🎨 Thème chargé:', savedTheme);
+})();
+
+// ✅ Exporter la fonction
+window.setTheme = setTheme;
+
 console.log('🚀 E-SOLUTION - Script principal OK');
