@@ -579,7 +579,6 @@ function setTheme(theme) {
         localStorage.setItem('e-solution-theme', 'light');
     }
     
-    // ✅ Mettre à jour l'interface des boutons
     document.querySelectorAll('.theme-toggle-btn').forEach(function(btn) {
         btn.classList.remove('theme-active');
     });
@@ -587,7 +586,6 @@ function setTheme(theme) {
         btn.classList.add('theme-active');
     });
     
-    // ✅ Mettre à jour le texte d'état
     var statusText = document.querySelector('.theme-toggle-container + div');
     if (statusText) {
         statusText.textContent = theme === 'dark' ? '🌙 Mode Sombre actif' : '☀️ Mode Clair actif';
@@ -596,7 +594,6 @@ function setTheme(theme) {
     console.log('🎨 Thème changé:', theme);
 }
 
-// ✅ Charger le thème sauvegardé au démarrage
 (function loadSavedTheme() {
     var savedTheme = localStorage.getItem('e-solution-theme') || 'light';
     if (savedTheme === 'dark') {
@@ -605,7 +602,6 @@ function setTheme(theme) {
     console.log('🎨 Thème chargé:', savedTheme);
 })();
 
-// ✅ Exporter la fonction
 window.setTheme = setTheme;
 
 console.log('🚀 E-SOLUTION - Script principal OK');
