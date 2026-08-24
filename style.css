@@ -255,7 +255,7 @@ transition: var(--transition);
 /* ==================== DASHBOARD LAYOUT ==================== */
 .dashboard { display: flex; height: 100vh; height: 100dvh; background: var(--bg-page); overflow: hidden; position: relative; }
 
-/* ==================== SIDEBAR ==================== */
+/* ==================== SIDEBAR - CACHÉ SUR TOUS LES ÉCRANS ==================== */
 .sidebar {
 width: 300px;
 background: var(--bg-dark);
@@ -266,10 +266,15 @@ height: 100vh;
 height: 100dvh;
 left: 0;
 top: 0;
-z-index: 100;
+z-index: 150;
 overflow-y: auto;
 transition: transform 0.3s ease;
 box-shadow: var(--shadow-md);
+transform: translateX(-100%);
+}
+
+.sidebar.open {
+transform: translateX(0);
 }
 
 .sidebar-header { padding: 28px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.04); }
@@ -282,7 +287,6 @@ box-shadow: var(--shadow-md);
 .sidebar-nav { flex: 1; padding: 14px 12px; }
 .sidebar-nav ul { list-style: none; display: flex; flex-direction: column; gap: 2px; }
 
-/* ✅ TAILLE DE POLICE SIDEBAR - NORMALE SUR ORDINATEUR ET TABLETTE */
 .nav-item {
 display: flex;
 align-items: center;
@@ -291,66 +295,46 @@ padding: 13px 16px;
 border-radius: var(--radius);
 cursor: pointer;
 color: rgba(255,255,255,0.45);
-font-size: 0.9rem !important;
+font-size: 0.9rem;
 font-weight: 500;
 transition: var(--transition);
 }
 
-.nav-item i { width: 24px; text-align: center; font-size: 1rem !important; }
+.nav-item i { width: 24px; text-align: center; font-size: 1rem; }
 .nav-item:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
 .nav-item.active { background: rgba(255,255,255,0.06); color: var(--white); font-weight: 600; }
 .nav-item.active::before { content: ''; position: absolute; left: 0; top: 20%; height: 60%; width: 3px; background: var(--accent); border-radius: 0 var(--radius-full) var(--radius-full) 0; }
 
-.logout-item { margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 12px; color: rgba(239,68,68,0.6) !important; font-size: 0.9rem !important; }
+.logout-item { margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 12px; color: rgba(239,68,68,0.6) !important; }
 .logout-item:hover { background: rgba(239,68,68,0.08) !important; }
 
 .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.04); }
 .user-info { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 0.85rem; font-weight: 500; }
 .user-info i { font-size: 1.4rem; color: var(--accent); }
 
-.sidebar-header h2 { font-size: 1.15rem !important; }
-.sidebar-subtitle { font-size: 0.65rem !important; }
-
-/* ✅ SIDEBAR - VERSION MOBILE (AGRANDIE) */
+/* ✅ MOBILE - TEXTE AGRANDI (inchangé) */
 @media(max-width:768px) {
 .nav-item {
 font-size: 22px !important;
 padding: 12px 14px !important;
 gap: 12px !important;
 }
-
 .nav-item i {
 font-size: 22px !important;
 width: 28px !important;
 }
-
-.sidebar-header h2 {
-font-size: 24px !important;
+.sidebar-header h2 { font-size: 24px !important; }
+.sidebar-subtitle { font-size: 16px !important; }
+.user-info { font-size: 20px !important; }
+.user-info i { font-size: 22px !important; }
+.logout-item { font-size: 22px !important; }
+.logout-item i { font-size: 22px !important; }
+.sidebar { width: 320px !important; }
 }
 
-.sidebar-subtitle {
-font-size: 16px !important;
-}
-
-.user-info {
-font-size: 20px !important;
-}
-
-.user-info i {
-font-size: 22px !important;
-}
-
-.logout-item {
-font-size: 22px !important;
-}
-
-.logout-item i {
-font-size: 22px !important;
-}
-}
-
+/* ✅ BOUTON MENU - TOUJOURS VISIBLE */
 .mobile-menu-btn {
-display: none;
+display: flex !important;
 background: var(--black);
 border: none;
 color: var(--white);
@@ -368,59 +352,25 @@ align-items: center;
 justify-content: center;
 }
 
-.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 99; }
-.sidebar-overlay.active { display: block !important; }
-
-/* ✅ ORDINATEUR > 1024px - SIDEBAR TOUJOURS VISIBLE */
-@media(min-width:1025px) {
-.sidebar {
-transform: translateX(0) !important;
-}
-.sidebar-overlay {
-display: none !important;
-}
-}
-
-/* ✅ TABLETTE ET MOBILE < 1024px - SIDEBAR CACHÉ PAR DÉFAUT */
-@media(max-width:1024px) {
-.sidebar {
-transform: translateX(-100%);
-z-index: 150;
-}
-.sidebar.open {
-transform: translateX(0);
-}
+/* ✅ OVERLAY - FERME LE MENU EN CLIQUANT DEHORS */
 .sidebar-overlay {
 display: none;
+position: fixed;
+inset: 0;
+background: rgba(0,0,0,0.4);
+z-index: 99;
 }
+
 .sidebar-overlay.active {
 display: block !important;
-}
-.main-content {
-margin-left: 0 !important;
-padding: 16px 12px;
-}
-.mobile-menu-btn {
-display: flex !important;
-}
-
-/* ✅ SUR TABLETTE ET MOBILE, LE MENU S'AFFICHE QUAND ON CLIQUE SUR LE BOUTON */
-.sidebar {
-transition: transform 0.3s ease;
-}
-}
-
-@media(max-width:768px) {
-.sidebar {
-width: 320px !important;
-}
 }
 
 /* ==================== MAIN CONTENT ==================== */
 .main-content {
 flex: 1;
-margin-left: 300px;
+margin-left: 0 !important;
 padding: 22px;
+padding-top: 70px !important;
 background: var(--bg-page);
 height: 100vh;
 height: 100dvh;
@@ -441,7 +391,7 @@ flex-wrap: wrap;
 }
 
 .page-header .header-title {
-margin-left: 0px !important;
+margin-left: 50px !important;
 display: flex !important;
 align-items: center !important;
 gap: 8px !important;
@@ -462,25 +412,13 @@ font-weight: 700;
 margin: 0 !important;
 }
 
-.main-content {
-padding-top: 8px !important;
-}
-
+/* ✅ MOBILE - inchangé */
 @media(max-width:768px) {
-.page-header {
-padding: 2px 6px !important;
-min-height: 28px !important;
-margin-bottom: 2px !important;
-}
-
-.page-header .header-title i {
-font-size: 1rem !important;
-padding: 4px !important;
-}
-
-.page-header .header-title h2 {
-font-size: 1rem !important;
-}
+.main-content { padding: 12px 8px; padding-top: 60px !important; }
+.page-header { padding: 2px 6px !important; min-height: 28px !important; margin-bottom: 2px !important; }
+.page-header .header-title { margin-left: 40px !important; }
+.page-header .header-title i { font-size: 1rem !important; padding: 4px !important; }
+.page-header .header-title h2 { font-size: 1rem !important; }
 }
 
 /* ==================== CARDS ==================== */
@@ -613,11 +551,10 @@ flex-direction: row !important;
 width: 100% !important;
 }
 
-/* ✅ PRODUITS - largeur ajustée pour laisser place au panier */
+/* ✅ PRODUITS - prend tout l'espace restant */
 .pos-products-panel {
 flex: 1 !important;
 min-width: 0 !important;
-max-width: 68% !important;
 background: var(--bg-card);
 border-radius: var(--radius-xl);
 padding: 12px;
@@ -766,10 +703,10 @@ font-size: 0.8rem !important;
 color: var(--danger) !important;
 }
 
-/* ✅ PANIER - 30% sur ordinateur et tablette */
+/* ✅ PANIER - À DROITE SUR ORDINATEUR ET TABLETTE */
 .pos-cart-panel {
 width: 30% !important;
-min-width: 250px !important;
+min-width: 280px !important;
 max-width: 30% !important;
 background: var(--bg-card);
 border-radius: var(--radius-xl);
@@ -782,6 +719,60 @@ height: 100%;
 overflow: hidden;
 transition: background 0.3s ease, border-color 0.3s ease;
 flex-shrink: 0;
+}
+
+/* ✅ SUR MOBILE ET TABLETTE (< 1024px) - PANIER EN BAS */
+@media(max-width:1024px) {
+.pos-container { flex-direction: column; height: auto; min-height: calc(100vh - 160px); }
+.pos-cart-panel { width: 100% !important; min-width: 100% !important; max-width: 100% !important; max-height: 45vh; margin-top: 10px; }
+.pos-products-panel { max-width: 100% !important; height: auto; max-height: 50vh; }
+
+.pos-cat-btn {
+padding: 4px 8px !important;
+font-size: 20px !important;
+gap: 4px !important;
+}
+.pos-cat-btn img {
+max-width: 50px !important;
+max-height: 50px !important;
+}
+
+.pos-cart-item-name {
+font-size: 20px !important;
+font-weight: 700 !important;
+}
+.pos-cart-item-price {
+font-size: 20px !important;
+}
+.pos-cart-item-total {
+font-size: 1rem !important;
+font-weight: 700 !important;
+}
+.pos-qty-btn {
+width: 34px !important;
+height: 34px !important;
+font-size: 0.85rem !important;
+}
+.pos-qty-value {
+font-size: 20px !important;
+}
+.pos-cart-total-row {
+font-size: 25px !important;
+}
+.pos-validate-btn,
+.pos-finalize-btn {
+padding: 14px 18px !important;
+font-size: 1.1rem !important;
+}
+.pos-payment-btn {
+padding: 12px 14px !important;
+font-size: 1rem !important;
+}
+.pos-payment-form input,
+.pos-payment-section input {
+padding: 12px !important;
+font-size: 1rem !important;
+}
 }
 
 .pos-cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -945,61 +936,7 @@ padding-bottom: env(safe-area-inset-bottom, 0px) !important;
 padding-top: calc(10px + env(safe-area-inset-top, 0px)) !important;
 }
 
-/* ==================== RESPONSIVE ==================== */
-@media(max-width:1024px) {
-/* ✅ POS en colonne sur tablette et mobile */
-.pos-container { flex-direction: column; height: auto; min-height: calc(100vh - 160px); }
-.pos-cart-panel { width: 100% !important; min-width: 100% !important; max-width: 100% !important; max-height: 45vh; }
-.pos-products-panel { max-width: 100% !important; height: auto; max-height: 50vh; }
-
-.pos-cat-btn {
-padding: 4px 8px !important;
-font-size: 20px !important;
-gap: 4px !important;
-}
-.pos-cat-btn img {
-max-width: 50px !important;
-max-height: 50px !important;
-}
-
-.pos-cart-item-name {
-font-size: 20px !important;
-font-weight: 700 !important;
-}
-.pos-cart-item-price {
-font-size: 20px !important;
-}
-.pos-cart-item-total {
-font-size: 1rem !important;
-font-weight: 700 !important;
-}
-.pos-qty-btn {
-width: 34px !important;
-height: 34px !important;
-font-size: 0.85rem !important;
-}
-.pos-qty-value {
-font-size: 20px !important;
-}
-.pos-cart-total-row {
-font-size: 25px !important;
-}
-.pos-validate-btn,
-.pos-finalize-btn {
-padding: 14px 18px !important;
-font-size: 1.1rem !important;
-}
-.pos-payment-btn {
-padding: 12px 14px !important;
-font-size: 1rem !important;
-}
-.pos-payment-form input,
-.pos-payment-section input {
-padding: 12px !important;
-font-size: 1rem !important;
-}
-}
-
+/* ==================== RESPONSIVE MOBILE (INCHANGÉ) ==================== */
 @media(max-width:768px) {
 .login-container, .register-container { flex-direction: column; width: 100%; max-width: 420px; }
 .login-brand, .register-brand { padding: 24px 16px 16px; }
@@ -1204,7 +1141,7 @@ display: flex !important;
 flex-direction: column !important;
 }
 
-/* ==================== ORDINATEUR (> 1024px) ==================== */
+/* ==================== ORDINATEUR > 1024px ==================== */
 @media(min-width: 1025px) {
 .pos-container {
 flex-direction: column !important;
@@ -1222,7 +1159,6 @@ gap: 20px !important;
 
 .pos-products-panel {
 flex: 1 !important;
-max-width: 68% !important;
 min-width: 300px !important;
 max-height: 100% !important;
 min-height: 500px !important;
