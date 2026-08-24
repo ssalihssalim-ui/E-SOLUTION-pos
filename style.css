@@ -1913,3 +1913,32 @@ padding: 20px 0;
 border-color: var(--accent) !important;
 box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.3);
 }
+
+
+/* ==================== CATÉGORIES CARDS - POS ==================== */
+
+.pos-category-card {
+    transition: all 0.2s ease;
+}
+
+.pos-category-card:hover {
+    border-color: var(--accent) !important;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    background: var(--bg-card) !important;
+}
+
+.pos-category-card:active {
+    transform: scale(0.95);
+}
+
+/* ✅ Mode sombre pour les catégories */
+[data-theme="dark"] .pos-category-card {
+    background: #0D1117 !important;
+    border-color: #30363D !important;
+}
+
+[data-theme="dark"] .pos-category-card:hover {
+    background: #161B22 !important;
+    border-color: #14B8A6 !important;
+}
