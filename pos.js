@@ -268,12 +268,12 @@ function filterProductGrid(){
 
     var html = '';
 
-    // ✅ BOUTON RETOUR + NOM CATÉGORIE + NOMBRE DE PRODUITS (CORRIGÉ)
-    html += '<div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin-bottom:8px;background:var(--bg-card);border-radius:10px;border:1px solid var(--border);flex-wrap:wrap;gap:8px;">';
+    // ✅ BOUTON RETOUR + NOM CATÉGORIE + NOMBRE DE PRODUITS (AVEC CLASSES CSS)
+    html += '<div class="pos-category-header">';
     
     // Groupe gauche : Bouton retour
-    html += '<div style="display:flex;align-items:center;gap:8px;">';
-    html += '<button onclick="retournerCategories()" style="display:flex;align-items:center;gap:6px;background:var(--black);color:var(--white);border:none;border-radius:8px;padding:8px 16px;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;">';
+    html += '<div class="header-left">';
+    html += '<button class="btn-back" onclick="retournerCategories()">';
     html += '<i class="fas fa-arrow-left"></i> Retour aux catégories';
     html += '</button>';
     html += '</div>';
@@ -288,14 +288,14 @@ function filterProductGrid(){
             return p.categorie === posSelectedCategoryForView;
         }).length;
         
-        html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">';
-        html += '<span style="font-weight:700;font-size:1.1rem;color:var(--text-primary);">📂 ' + escapeHtml(posSelectedCategoryForView) + '</span>';
-        html += '<span style="font-size:0.85rem;color:var(--text-muted);background:var(--gray-100);padding:4px 16px;border-radius:20px;font-weight:600;">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>';
+        html += '<div class="header-center">';
+        html += '<span class="category-name">📂 ' + escapeHtml(posSelectedCategoryForView) + '</span>';
+        html += '<span class="category-count">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>';
         html += '</div>';
     }
 
     // Groupe droit : espace vide (pour alignement)
-    html += '<div style="min-width:20px;"></div>';
+    html += '<div class="header-right"></div>';
 
     html += '</div>';
 
