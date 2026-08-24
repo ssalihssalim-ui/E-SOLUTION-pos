@@ -540,7 +540,7 @@ margin-bottom: 4px !important;
 order: -1 !important;
 }
 
-/* ✅ ROW CONTENT - PRODUITS + PANIER en ligne */
+/* ✅ ROW CONTENT - PRODUITS + PANIER en ligne (flex row) */
 .pos-row {
 display: flex !important;
 flex: 1 !important;
@@ -705,7 +705,7 @@ color: var(--danger) !important;
 
 /* ✅ PANIER - 32% sur ordinateur/tablette */
 .pos-cart-panel {
-width: 32% !important;
+flex: 0 0 32% !important;
 min-width: 250px !important;
 max-width: 32% !important;
 background: var(--bg-card);
@@ -718,7 +718,6 @@ flex-direction: column;
 height: 100%;
 overflow: hidden;
 transition: background 0.3s ease, border-color 0.3s ease;
-flex-shrink: 0;
 }
 
 .pos-cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -887,8 +886,9 @@ padding-top: calc(10px + env(safe-area-inset-top, 0px)) !important;
 /* ✅ SUR MOBILE ET TABLETTE (< 1024px) - PANIER EN BAS */
 @media(max-width:1024px) {
 .pos-container { flex-direction: column; height: auto; min-height: calc(100vh - 160px); }
-.pos-cart-panel { width: 100% !important; min-width: 100% !important; max-width: 100% !important; max-height: 45vh; margin-top: 10px; }
-.pos-products-panel { flex: 1 !important; max-width: 100% !important; height: auto; max-height: 50vh; }
+.pos-row { flex-direction: column !important; gap: 10px !important; }
+.pos-cart-panel { flex: none !important; width: 100% !important; min-width: 100% !important; max-width: 100% !important; max-height: 45vh; margin-top: 10px; }
+.pos-products-panel { flex: none !important; max-width: 100% !important; width: 100% !important; height: auto; max-height: 50vh; }
 
 .pos-cat-btn {
 padding: 4px 8px !important;
@@ -1169,14 +1169,13 @@ padding: 16px !important;
 }
 
 .pos-cart-panel {
-width: 32% !important;
+flex: 0 0 32% !important;
 min-width: 280px !important;
 max-width: 32% !important;
 height: 100% !important;
 max-height: 100% !important;
 border-radius: var(--radius-xl) !important;
 padding: 20px !important;
-flex-shrink: 0 !important;
 }
 
 .pos-products-grid {
