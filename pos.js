@@ -220,7 +220,7 @@ if (clearBtn) clearBtn.style.display = 'none';
 
 function loadMoreProducts(){ posProductOffset+=posProductBatchSize; filterProductGrid(); }
 
-// ==================== FILTER PRODUCT GRID AVEC MODE CATÉGORIES ====================
+// ==================== FILTER PRODUCT GRID AVEC MODE CATÉGORIES (CORRIGÉ) ====================
 function filterProductGrid(){
     if(!isOnPOSPage() || posStep !== 1) return;
     
@@ -268,14 +268,35 @@ function filterProductGrid(){
 
     var html = '';
 
-    // ✅ BOUTON RETOUR VERS LES CATÉGORIES
-    html += '<div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:4px 6px;margin-bottom:4px;background:var(--bg-page);border-radius:8px;">';
-    html += '<button onclick="retournerCategories()" style="display:flex;align-items:center;gap:6px;background:var(--black);color:var(--white);border:none;border-radius:8px;padding:6px 14px;font-size:0.8rem;font-weight:600;cursor:pointer;">';
+    // ✅ BOUTON RETOUR + NOM CATÉGORIE + NOMBRE DE PRODUITS (CORRIGÉ)
+    html += '<div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;margin-bottom:8px;background:var(--bg-card);border-radius:10px;border:1px solid var(--border);flex-wrap:wrap;gap:8px;">';
+    
+    // Groupe gauche : Bouton retour
+    html += '<div style="display:flex;align-items:center;gap:8px;">';
+    html += '<button onclick="retournerCategories()" style="display:flex;align-items:center;gap:6px;background:var(--black);color:var(--white);border:none;border-radius:8px;padding:8px 16px;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;">';
     html += '<i class="fas fa-arrow-left"></i> Retour aux catégories';
     html += '</button>';
+    html += '</div>';
+
+    // Groupe centre : Nom de la catégorie + nombre de produits
     if (posSelectedCategoryForView) {
-        html += '<span style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">📂 ' + escapeHtml(posSelectedCategoryForView) + '</span>';
+        // Compter les produits dans cette catégorie
+        var count = posProductsList.filter(function(p) {
+            if (p.categories && p.categories.length > 0) {
+                return p.categories.includes(posSelectedCategoryForView);
+            }
+            return p.categorie === posSelectedCategoryForView;
+        }).length;
+        
+        html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">';
+        html += '<span style="font-weight:700;font-size:1.1rem;color:var(--text-primary);">📂 ' + escapeHtml(posSelectedCategoryForView) + '</span>';
+        html += '<span style="font-size:0.85rem;color:var(--text-muted);background:var(--gray-100);padding:4px 16px;border-radius:20px;font-weight:600;">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>';
+        html += '</div>';
     }
+
+    // Groupe droit : espace vide (pour alignement)
+    html += '<div style="min-width:20px;"></div>';
+
     html += '</div>';
 
     if(totalProducts === 0){
@@ -983,7 +1004,7 @@ h+='<div class="pos-cart-header"><h3 style="font-size:'+(isMobile?'20px':'1rem')
 if(posPaymentMethod==='espece'||posPaymentMethod==='partiel') {
 h+='<div style="margin-bottom:4px;"><label style="font-size:'+(isMobile?'16px':'0.85rem')+';font-weight:600;">Montant donné</label><input type="number" id="posAmountGiven" placeholder="0.00" value="'+(posAmountGiven>0?posAmountGiven:'')+'" onkeyup="posCalculateChange()" style="width:100%;padding:10px;border:2px solid #e2e8f0;border-radius:6px;font-size:32px !important;font-weight:700 !important;"><div id="posChangeDisplay" style="font-size:32px;font-weight:700;padding:4px 0;margin-right:10px;"></div></div>';
 }
-h+='<button class="pos-finalize-btn" onclick="posFinalizeSale()" style="width:100%;padding:12px;margin-top:6px;background:#14B8A6;color:#fff;border:none;border-radius:12px;font-size:20px !important;font-weight:700 !important;min-height:55px;"><i class="fas fa-check-circle"></i> Finaliser</button></div>';
+h+='<button class="pos-finalize-btn" onclick="posFinalizeSale()" style="width:100%;padding:12px;margin-top:6px;background:#14B8A6;color:#fff;border:none;border-radius:12px;font-size:20px !important;font-weight:700 !important;min-height:55px;"><i class="fas fa-check-circle"></i> Finalizar</button></div>';
 }
 h+='</div></div></div></div>'; c.innerHTML=h;
 
@@ -1161,12 +1182,10 @@ function posResetCart() {
 }
 
 function posChargerCommandesTables() {
-    // Fonction simplifiée - à implémenter selon votre logique
     posCommandesTablesCount = 0;
 }
 
 function posChargerCommandesEnLigneCount() {
-    // Fonction simplifiée - à implémenter selon votre logique
     posCommandesEnLigneCount = 0;
 }
 
