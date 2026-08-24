@@ -282,6 +282,7 @@ box-shadow: var(--shadow-md);
 .sidebar-nav { flex: 1; padding: 14px 12px; }
 .sidebar-nav ul { list-style: none; display: flex; flex-direction: column; gap: 2px; }
 
+/* ✅ TAILLE DE POLICE SIDEBAR - NORMALE SUR ORDINATEUR ET TABLETTE */
 .nav-item {
 display: flex;
 align-items: center;
@@ -290,86 +291,35 @@ padding: 13px 16px;
 border-radius: var(--radius);
 cursor: pointer;
 color: rgba(255,255,255,0.45);
-font-size: 0.9rem;
+font-size: 0.9rem !important;
 font-weight: 500;
 transition: var(--transition);
 }
 
-.nav-item i { width: 24px; text-align: center; font-size: 1rem; }
+.nav-item i { width: 24px; text-align: center; font-size: 1rem !important; }
 .nav-item:hover { background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.7); }
 .nav-item.active { background: rgba(255,255,255,0.06); color: var(--white); font-weight: 600; }
 .nav-item.active::before { content: ''; position: absolute; left: 0; top: 20%; height: 60%; width: 3px; background: var(--accent); border-radius: 0 var(--radius-full) var(--radius-full) 0; }
 
-.logout-item { margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 12px; color: rgba(239,68,68,0.6) !important; }
+.logout-item { margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 12px; color: rgba(239,68,68,0.6) !important; font-size: 0.9rem !important; }
 .logout-item:hover { background: rgba(239,68,68,0.08) !important; }
 
 .sidebar-footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,0.04); }
 .user-info { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 0.85rem; font-weight: 500; }
 .user-info i { font-size: 1.4rem; color: var(--accent); }
 
-/* SIDEBAR - TEXTE 30px ET ICÔNES 30px */
-.sidebar-nav .nav-item {
-font-size: 30px !important;
-padding: 16px 20px !important;
-gap: 18px !important;
-}
+.sidebar-header h2 { font-size: 1.15rem !important; }
+.sidebar-subtitle { font-size: 0.65rem !important; }
 
-.sidebar-nav .nav-item i {
-font-size: 30px !important;
-width: 36px !important;
-text-align: center !important;
-}
-
-.sidebar-header h2 {
-font-size: 32px !important;
-}
-
-.sidebar-subtitle {
-font-size: 20px !important;
-letter-spacing: 2px !important;
-}
-
-.user-info {
-font-size: 28px !important;
-}
-
-.user-info i {
-font-size: 30px !important;
-}
-
-.logout-item {
-font-size: 30px !important;
-}
-
-.logout-item i {
-font-size: 30px !important;
-}
-
-@media(max-width:1024px) {
-.sidebar-nav .nav-item {
-font-size: 26px !important;
-padding: 14px 16px !important;
-gap: 14px !important;
-}
-
-.sidebar-nav .nav-item i {
-font-size: 26px !important;
-width: 32px !important;
-}
-
-.sidebar-header h2 {
-font-size: 28px !important;
-}
-}
-
+/* ✅ SIDEBAR - VERSION MOBILE (AGRANDIE) */
 @media(max-width:768px) {
-.sidebar-nav .nav-item {
+.nav-item {
 font-size: 22px !important;
 padding: 12px 14px !important;
 gap: 12px !important;
 }
 
-.sidebar-nav .nav-item i {
+.nav-item i {
 font-size: 22px !important;
 width: 28px !important;
 }
@@ -377,34 +327,49 @@ width: 28px !important;
 .sidebar-header h2 {
 font-size: 24px !important;
 }
+
+.sidebar-subtitle {
+font-size: 16px !important;
+}
+
+.user-info {
+font-size: 20px !important;
+}
+
+.user-info i {
+font-size: 22px !important;
+}
+
+.logout-item {
+font-size: 22px !important;
+}
+
+.logout-item i {
+font-size: 22px !important;
+}
 }
 
 .mobile-menu-btn {
-font-size: 30px !important;
-width: 56px !important;
-height: 56px !important;
-top: 20px !important;
-left: 20px !important;
-}
-
-@media(max-width:768px) {
-.sidebar {
-width: 320px !important;
-}
-}
-
-/* ✅ GESTION SIDEBAR - ORDINATEUR VISIBLE / TABLETTE CACHÉ */
-.sidebar-overlay {
 display: none;
+background: var(--black);
+border: none;
+color: var(--white);
+font-size: 1.4rem;
+width: 46px;
+height: 46px;
+border-radius: var(--radius);
+cursor: pointer;
 position: fixed;
-inset: 0;
-background: rgba(0,0,0,0.4);
-z-index: 99;
+top: 14px;
+left: 14px;
+z-index: 200;
+box-shadow: var(--shadow);
+align-items: center;
+justify-content: center;
 }
 
-.sidebar-overlay.active {
-display: block !important;
-}
+.sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 99; }
+.sidebar-overlay.active { display: block !important; }
 
 /* ✅ ORDINATEUR > 1024px - SIDEBAR TOUJOURS VISIBLE */
 @media(min-width:1025px) {
@@ -437,6 +402,17 @@ padding: 16px 12px;
 }
 .mobile-menu-btn {
 display: flex !important;
+}
+
+/* ✅ SUR TABLETTE ET MOBILE, LE MENU S'AFFICHE QUAND ON CLIQUE SUR LE BOUTON */
+.sidebar {
+transition: transform 0.3s ease;
+}
+}
+
+@media(max-width:768px) {
+.sidebar {
+width: 320px !important;
 }
 }
 
@@ -595,9 +571,6 @@ color: var(--text-primary);
 
 .hidden { display: none !important; }
 
-/* ==================== MOBILE MENU ==================== */
-.mobile-menu-btn { display: none; background: var(--black); border: none; color: var(--white); font-size: 1.4rem; width: 46px; height: 46px; border-radius: var(--radius); cursor: pointer; position: fixed; top: 14px; left: 14px; z-index: 200; box-shadow: var(--shadow); align-items: center; justify-content: center; }
-
 /* ==================== POS SYSTEM ==================== */
 
 /* ✅ Conteneur principal du POS - 1 Panier / 2 Paiement en haut */
@@ -640,10 +613,11 @@ flex-direction: row !important;
 width: 100% !important;
 }
 
-/* ✅ PRODUITS - prend tout l'espace restant */
+/* ✅ PRODUITS - largeur ajustée pour laisser place au panier */
 .pos-products-panel {
 flex: 1 !important;
 min-width: 0 !important;
+max-width: 68% !important;
 background: var(--bg-card);
 border-radius: var(--radius-xl);
 padding: 12px;
@@ -973,11 +947,10 @@ padding-top: calc(10px + env(safe-area-inset-top, 0px)) !important;
 
 /* ==================== RESPONSIVE ==================== */
 @media(max-width:1024px) {
-/* ✅ Sidebar géré plus haut */
-/* ✅ POS en colonne sur mobile/tablette */
+/* ✅ POS en colonne sur tablette et mobile */
 .pos-container { flex-direction: column; height: auto; min-height: calc(100vh - 160px); }
 .pos-cart-panel { width: 100% !important; min-width: 100% !important; max-width: 100% !important; max-height: 45vh; }
-.pos-products-panel { height: auto; max-height: 50vh; }
+.pos-products-panel { max-width: 100% !important; height: auto; max-height: 50vh; }
 
 .pos-cat-btn {
 padding: 4px 8px !important;
@@ -1249,6 +1222,7 @@ gap: 20px !important;
 
 .pos-products-panel {
 flex: 1 !important;
+max-width: 68% !important;
 min-width: 300px !important;
 max-height: 100% !important;
 min-height: 500px !important;
