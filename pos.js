@@ -4,7 +4,7 @@
 // ✅ Nom produit 22px bold uppercase, Prix produit 24px sur mobile
 // ✅ Nom panier 22px, Prix panier 24px
 // ✅ Bouton Valider 26px / hauteur 60px
-// ✅ CATÉGORIES EN GRAND FORMAT
+// ✅ CATÉGORIES EN GRAND FORMAT - NOM ET NB PRODUITS VISIBLES
 
 var posCart = [];
 var posStep = 1;
@@ -221,19 +221,21 @@ if (clearBtn) clearBtn.style.display = 'none';
 
 function loadMoreProducts(){ posProductOffset+=posProductBatchSize; filterProductGrid(); }
 
-// ==================== AFFICHER LES CATÉGORIES EN GRAND FORMAT ====================
+// ==================== AFFICHER LES CATÉGORIES EN GRAND FORMAT (CORRIGÉ) ====================
 function afficherCategories(grid) {
     var isMobile = window.innerWidth < 700;
-    var gridCols = isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fill, minmax(150px, 1fr))';
+    var gridCols = isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fill, minmax(160px, 1fr))';
     grid.style.gridTemplateColumns = gridCols;
     grid.style.overflowX = 'auto';
     grid.style.flexWrap = 'wrap';
     grid.style.alignContent = 'start';
+    grid.style.gap = '12px';
+    grid.style.padding = '8px';
 
     var html = '';
     
     // ✅ TITRE
-    html += '<div style="grid-column:1/-1;padding:8px 10px;font-size:1.1rem;font-weight:700;color:var(--text-primary);">';
+    html += '<div style="grid-column:1/-1;padding:8px 10px;font-size:1.1rem;font-weight:700;color:#111827;display:flex;align-items:center;gap:8px;">';
     html += '📂 Choisissez une catégorie';
     html += '</div>';
 
@@ -254,19 +256,21 @@ function afficherCategories(grid) {
         for (var i = 0; i < sortedCategories.length; i++) {
             var cat = sortedCategories[i];
             
-            // ✅ Style des cartes catégories (grand format)
+            // ✅ Style des cartes catégories (grand format fixe)
             var cardStyle = isMobile ? 
-                'padding:12px 6px;min-height:100px;border-radius:12px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:#ffffff;border:2px solid #e2e8f0;cursor:pointer;transition:all 0.2s;' : 
-                'padding:20px 12px;min-height:160px;border-radius:16px;border-width:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:#ffffff;border:2px solid #e2e8f0;cursor:pointer;transition:all 0.2s;';
+                'padding:10px 4px;min-height:100px;max-height:130px;border-radius:12px;border:2px solid #e2e8f0;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:#ffffff;cursor:pointer;transition:all 0.2s;' : 
+                'padding:16px 8px;min-height:160px;max-height:190px;border-radius:16px;border:2px solid #e2e8f0;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:#ffffff;cursor:pointer;transition:all 0.2s;';
             
-            var imgSize = isMobile ? '60px' : '80px';
-            var imgStyle = 'width:'+imgSize+';height:'+imgSize+';border-radius:50%;margin-bottom:8px;overflow:hidden;flex-shrink:0;background:#f1f5f9;display:flex;align-items:center;justify-content:center;';
+            var imgSize = isMobile ? '55px' : '75px';
+            var imgStyle = 'width:'+imgSize+';height:'+imgSize+';border-radius:50%;margin-bottom:6px;overflow:hidden;flex-shrink:0;background:#f1f5f9;display:flex;align-items:center;justify-content:center;';
             
-            var nameSize = isMobile ? '14px' : '18px';
-            var nameStyle = 'font-size:'+nameSize+' !important;font-weight:700 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:#111827;margin-top:4px;';
+            // ✅ Nom catégorie - taille fixe et visible sur tous les écrans
+            var nameSize = isMobile ? '13px' : '16px';
+            var nameStyle = 'font-size:'+nameSize+' !important;font-weight:700 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:#111827;margin-top:4px;display:block;line-height:1.3;';
             
-            var countSize = isMobile ? '11px' : '14px';
-            var countStyle = 'font-size:'+countSize+' !important;color:#64748b;';
+            // ✅ Nombre de produits - toujours visible
+            var countSize = isMobile ? '11px' : '13px';
+            var countStyle = 'font-size:'+countSize+' !important;color:#64748b;font-weight:500;display:block;margin-top:2px;';
 
             // ✅ Compter les produits dans cette catégorie
             var count = posProductsList.filter(function(p) {
@@ -280,7 +284,7 @@ function afficherCategories(grid) {
             if (cat.imageBase64) {
                 imgContent = '<img src="' + escapeHtml(cat.imageBase64) + '" loading="lazy" alt="' + escapeHtml(cat.nom) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
             } else {
-                imgContent = '<i class="fas fa-folder" style="font-size:' + (isMobile ? '28px' : '40px') + ';color:#2E7D32;"></i>';
+                imgContent = '<i class="fas fa-folder" style="font-size:' + (isMobile ? '24px' : '32px') + ';color:#2E7D32;"></i>';
             }
 
             html += '<div class="pos-category-card" style="' + cardStyle + '" onclick="selectionnerCategorie(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')" onmouseover="this.style.borderColor=\'#2E7D32\';this.style.transform=\'translateY(-3px)\';this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.1)\';" onmouseout="this.style.borderColor=\'#e2e8f0\';this.style.transform=\'none\';this.style.boxShadow=\'none\';">' +
@@ -693,7 +697,6 @@ var panelPadding = isMobile ? '8px' : '16px';
 
 var h='<div class="pos-container' + (posStep===2 ? ' pos-container-full' : '') + '">' +
 stepIndicator +
-// ✅ Augmenter la hauteur de pos-products-panel de 50px pour afficher 4 produits
 '<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; flex:1; min-width:200px; min-height:520px; background:var(--white); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; height:100%; overflow:hidden;"><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
 '<div style="flex:1;min-width:120px;display:flex;align-items:center;background:#fff;border:2px solid #e2e8f0;border-radius:40px;padding:2px 10px;position:relative;height:'+(isMobile?'38px':'44px')+';">' +
 '<i class="fas fa-search" style="color:#94a3b8;margin-right:6px;font-size:'+(isMobile?'16px':'20px')+';"></i>' +
@@ -728,7 +731,6 @@ if(it.sel&&it.sel!=='Normal') opts+=' <span style="color:#4f46e5;font-size:0.6re
 var btnSize = isMobile ? '36px' : '28px';
 var fontSize = isMobile ? '1.1rem' : '0.7rem';
 var qtySize = isMobile ? '1.2rem' : '0.85rem';
-// ✅ Nom panier 22px, Prix panier 24px
 var nameSize = isMobile ? '22px' : '0.85rem';
 var priceSize = isMobile ? '0.7rem' : '0.7rem';
 var totalSize = isMobile ? '24px' : '0.8rem';
@@ -748,7 +750,6 @@ h+='<div class="pos-cart-item" style="display:flex;align-items:center;justify-co
 }
 }
 h+='</div><div style="padding:8px 0;display:flex;gap:8px;align-items:center;"><label style="font-size:'+(isMobile?'20px':'1rem')+';">Remise:</label><input type="number" id="posDiscountMAD" value="'+posDiscountMAD+'" min="0" step="0.01" onchange="posUpdateDiscountMAD(this.value)" style="width:80px;padding:6px;border:2px solid #e2e8f0;border-radius:6px;font-size:'+(isMobile?'20px':'1rem')+';"></div><div class="pos-cart-footer" style="padding:8px 0;">'+(posDiscountMAD>0?'<div style="display:flex;justify-content:space-between;font-size:'+(isMobile?'20px':'1.1rem')+';"><span>Sous-total</span><span>'+st.toFixed(2)+'</span></div><div style="display:flex;justify-content:space-between;color:#ef4444;font-size:'+(isMobile?'20px':'1.1rem')+';"><span>Remise</span><span>-'+posDiscountMAD.toFixed(2)+'</span></div>':'')+'<div class="pos-cart-total-row" style="display:flex;justify-content:space-between;font-size:'+(isMobile?'28px':'30px')+';font-weight:700;padding:8px 0;border-top:2px solid var(--border);"><span>Total</span><span>'+t.toFixed(2)+' MAD</span></div>' +
-// ✅ Bouton Valider: 26px font-size, hauteur 60px
 '<button class="pos-validate-btn" onclick="posGoToStep2()" '+(posCart.length===0?'disabled':'')+' style="width:100%;padding:16px;background:#2E7D32;color:#fff;border:none;border-radius:12px;font-size:26px;font-weight:700;height:60px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;"><i class="fas fa-check-circle"></i> Valider</button></div>';
 }else{
 var canCredit=posCurrentClient&&posCurrentClient.id;
