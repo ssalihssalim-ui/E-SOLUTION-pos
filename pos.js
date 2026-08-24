@@ -4,6 +4,7 @@
 // ✅ Nom produit 22px bold uppercase, Prix produit 24px sur mobile
 // ✅ Nom panier 22px, Prix panier 24px
 // ✅ Bouton Valider 26px / hauteur 60px
+// ✅ CATÉGORIES EN GRAND FORMAT
 
 var posCart = [];
 var posStep = 1;
@@ -47,6 +48,10 @@ var posHasMoreProducts = false;
 
 var clientCreditsCache = {};
 var clientSearchTimeout = null;
+
+// ✅ MODE CATÉGORIES / PRODUITS
+var posViewMode = 'categories';
+var posSelectedCategoryForView = null;
 
 function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g,function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
 function toDate(val) { if(!val) return null; if(val.toDate) return val.toDate(); if(val.seconds) return new Date(val.seconds*1000); if(typeof val==='string') return new Date(val); if(val instanceof Date) return val; return null; }
@@ -169,7 +174,13 @@ if (typeof window.updatePaymentButtons === 'function') window.updatePaymentButto
 }
 }
 
-function posSearchProducts(query){ clearTimeout(window._searchTimeout); window._searchTimeout=setTimeout(function(){ posProductOffset=0; posSearchQuery=query.toLowerCase().trim(); if(isOnPOSPage()) filterProductGrid(); },150); }
+function posSearchProducts(query){ clearTimeout(window._searchTimeout); window._searchTimeout=setTimeout(function(){ posProductOffset=0; posSearchQuery=query.toLowerCase().trim(); 
+// ✅ Si on est en mode catégories et qu'on tape une recherche, passer en mode produits
+if (posViewMode === 'categories' && posSearchQuery.length > 0) {
+    posViewMode = 'products';
+    posSelectedCategoryForView = null;
+}
+if(isOnPOSPage()) filterProductGrid(); },150); }
 
 function clearPosSearch() {
 var input = document.getElementById('posSearchInput');
@@ -177,6 +188,10 @@ if (input) {
 input.value = '';
 posSearchQuery = '';
 posProductOffset = 0;
+// ✅ Retourner aux catégories quand on efface la recherche
+posViewMode = 'categories';
+posSelectedCategoryForView = null;
+posSelectedCategory = 'all';
 if (isOnPOSPage()) {
 filterProductGrid();
 }
@@ -206,17 +221,167 @@ if (clearBtn) clearBtn.style.display = 'none';
 
 function loadMoreProducts(){ posProductOffset+=posProductBatchSize; filterProductGrid(); }
 
+// ==================== AFFICHER LES CATÉGORIES EN GRAND FORMAT ====================
+function afficherCategories(grid) {
+    var isMobile = window.innerWidth < 700;
+    var gridCols = isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fill, minmax(150px, 1fr))';
+    grid.style.gridTemplateColumns = gridCols;
+    grid.style.overflowX = 'auto';
+    grid.style.flexWrap = 'wrap';
+    grid.style.alignContent = 'start';
+
+    var html = '';
+    
+    // ✅ TITRE
+    html += '<div style="grid-column:1/-1;padding:8px 10px;font-size:1.1rem;font-weight:700;color:var(--text-primary);">';
+    html += '📂 Choisissez une catégorie';
+    html += '</div>';
+
+    if (posCategoriesList.length === 0) {
+        html += '<div style="grid-column:1/-1;text-align:center;padding:40px 10px;">';
+        html += '<i class="fas fa-folder-open" style="font-size:2.5rem;color:#94a3b8;"></i>';
+        html += '<p style="color:#94a3b8;margin-top:10px;">Aucune catégorie disponible</p>';
+        html += '</div>';
+    } else {
+        // ✅ Trier les catégories par ordre
+        var sortedCategories = posCategoriesList.slice().sort(function(a, b) {
+            var ordreA = (a.ordre !== undefined && a.ordre !== null) ? parseInt(a.ordre) : 9999;
+            var ordreB = (b.ordre !== undefined && b.ordre !== null) ? parseInt(b.ordre) : 9999;
+            if (ordreA !== ordreB) return ordreA - ordreB;
+            return (a.nom || '').localeCompare(b.nom || '');
+        });
+
+        for (var i = 0; i < sortedCategories.length; i++) {
+            var cat = sortedCategories[i];
+            
+            // ✅ Style des cartes catégories (grand format)
+            var cardStyle = isMobile ? 
+                'padding:12px 6px;min-height:100px;border-radius:12px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:#ffffff;border:2px solid #e2e8f0;cursor:pointer;transition:all 0.2s;' : 
+                'padding:20px 12px;min-height:160px;border-radius:16px;border-width:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:#ffffff;border:2px solid #e2e8f0;cursor:pointer;transition:all 0.2s;';
+            
+            var imgSize = isMobile ? '60px' : '80px';
+            var imgStyle = 'width:'+imgSize+';height:'+imgSize+';border-radius:50%;margin-bottom:8px;overflow:hidden;flex-shrink:0;background:#f1f5f9;display:flex;align-items:center;justify-content:center;';
+            
+            var nameSize = isMobile ? '14px' : '18px';
+            var nameStyle = 'font-size:'+nameSize+' !important;font-weight:700 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:#111827;margin-top:4px;';
+            
+            var countSize = isMobile ? '11px' : '14px';
+            var countStyle = 'font-size:'+countSize+' !important;color:#64748b;';
+
+            // ✅ Compter les produits dans cette catégorie
+            var count = posProductsList.filter(function(p) {
+                if (p.categories && p.categories.length > 0) {
+                    return p.categories.includes(cat.nom);
+                }
+                return p.categorie === cat.nom;
+            }).length;
+
+            var imgContent = '';
+            if (cat.imageBase64) {
+                imgContent = '<img src="' + escapeHtml(cat.imageBase64) + '" loading="lazy" alt="' + escapeHtml(cat.nom) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
+            } else {
+                imgContent = '<i class="fas fa-folder" style="font-size:' + (isMobile ? '28px' : '40px') + ';color:#2E7D32;"></i>';
+            }
+
+            html += '<div class="pos-category-card" style="' + cardStyle + '" onclick="selectionnerCategorie(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')" onmouseover="this.style.borderColor=\'#2E7D32\';this.style.transform=\'translateY(-3px)\';this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.1)\';" onmouseout="this.style.borderColor=\'#e2e8f0\';this.style.transform=\'none\';this.style.boxShadow=\'none\';">' +
+                '<div style="' + imgStyle + '">' + imgContent + '</div>' +
+                '<span style="' + nameStyle + '">' + escapeHtml(cat.nom) + '</span>' +
+                '<span style="' + countStyle + '">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>' +
+                '</div>';
+        }
+    }
+
+    grid.innerHTML = html;
+}
+
+// ==================== SÉLECTIONNER UNE CATÉGORIE ====================
+function selectionnerCategorie(catName) {
+    posSelectedCategoryForView = catName;
+    posViewMode = 'products';
+    posProductOffset = 0;
+    posSearchQuery = '';
+    
+    // Mettre à jour la catégorie sélectionnée
+    posSelectedCategory = catName;
+    
+    // Mettre à jour les boutons de catégories
+    var catBtns = document.querySelectorAll('.pos-cat-btn');
+    catBtns.forEach(function(btn) {
+        btn.classList.remove('active');
+        if (btn.textContent.trim() === catName) {
+            btn.classList.add('active');
+        }
+    });
+    
+    // Réinitialiser la recherche
+    var searchInput = document.getElementById('posSearchInput');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    
+    if (isOnPOSPage()) {
+        filterProductGrid();
+    }
+}
+
+// ==================== RETOURNER AUX CATÉGORIES ====================
+function retournerCategories() {
+    posViewMode = 'categories';
+    posSelectedCategoryForView = null;
+    posSelectedCategory = 'all';
+    posSearchQuery = '';
+    posProductOffset = 0;
+    
+    // Désactiver tous les boutons de catégories
+    var catBtns = document.querySelectorAll('.pos-cat-btn');
+    catBtns.forEach(function(btn) {
+        btn.classList.remove('active');
+    });
+    var allBtn = document.querySelector('.pos-cat-btn[onclick*="all"]');
+    if (allBtn) allBtn.classList.add('active');
+    
+    // Réinitialiser la recherche
+    var searchInput = document.getElementById('posSearchInput');
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    
+    if (isOnPOSPage()) {
+        filterProductGrid();
+    }
+}
+
 // ==================== FILTER PRODUCT GRID AVEC 5 COLONNES SUR MOBILE ====================
 function filterProductGrid(){
 if(!isOnPOSPage() || posStep !== 1) return;
 var grid=document.getElementById('posProductGrid')||document.querySelector('.pos-products-grid'); if(!grid) return;
-var f=fastSearch(posSearchQuery);
-if (posSelectedCategory !== 'all') {
-f = f.filter(function(p) {
-if (p.categories && p.categories.length > 0) return p.categories.includes(posSelectedCategory);
-return p.categorie === posSelectedCategory;
-});
+
+// ✅ SI ON EST EN MODE CATÉGORIES
+if (posViewMode === 'categories') {
+    afficherCategories(grid);
+    return;
 }
+
+// ✅ SI ON EST EN MODE PRODUITS (afficher les produits d'une catégorie)
+var f=fastSearch(posSearchQuery);
+
+// Filtrer par catégorie sélectionnée
+if (posSelectedCategoryForView) {
+    f = f.filter(function(p) {
+        if (p.categories && p.categories.length > 0) {
+            return p.categories.includes(posSelectedCategoryForView);
+        }
+        return p.categorie === posSelectedCategoryForView;
+    });
+} else if (posSelectedCategory !== 'all') {
+    f = f.filter(function(p) {
+        if (p.categories && p.categories.length > 0) {
+            return p.categories.includes(posSelectedCategory);
+        }
+        return p.categorie === posSelectedCategory;
+    });
+}
+
 f.sort(function(a,b){ return (a.nom||'').localeCompare(b.nom||''); });
 
 var totalProducts = f.length;
@@ -231,6 +396,36 @@ grid.style.overflowX = 'auto';
 grid.style.flexWrap = 'nowrap';
 
 var html='';
+
+// ✅ BOUTON RETOUR + NOM CATÉGORIE + NOMBRE DE PRODUITS (GRAND FORMAT)
+html += '<div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;margin-bottom:10px;background:#ffffff;border-radius:12px;border:2px solid #e2e8f0;flex-wrap:wrap;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">';
+
+// Groupe gauche : Bouton retour
+html += '<div style="display:flex;align-items:center;gap:8px;">';
+html += '<button onclick="retournerCategories()" style="display:flex;align-items:center;gap:6px;background:#111827;color:#ffffff;border:none;border-radius:8px;padding:8px 18px;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;">';
+html += '<i class="fas fa-arrow-left"></i> Retour aux catégories';
+html += '</button>';
+html += '</div>';
+
+// Groupe centre : Nom de la catégorie + nombre de produits
+if (posSelectedCategoryForView) {
+    var count = posProductsList.filter(function(p) {
+        if (p.categories && p.categories.length > 0) {
+            return p.categories.includes(posSelectedCategoryForView);
+        }
+        return p.categorie === posSelectedCategoryForView;
+    }).length;
+    
+    html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">';
+    html += '<span style="font-weight:700;font-size:1.1rem;color:#111827;">📂 ' + escapeHtml(posSelectedCategoryForView) + '</span>';
+    html += '<span style="font-size:0.85rem;color:#64748b;background:#f1f5f9;padding:4px 16px;border-radius:20px;font-weight:600;">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>';
+    html += '</div>';
+}
+
+// Groupe droit : espace vide
+html += '<div style="min-width:20px;"></div>';
+html += '</div>';
+
 if(totalProducts===0){ html+='<div style="grid-column:1/-1;text-align:center;padding:40px 10px;"><i class="fas fa-search" style="font-size:2.5rem;color:#94a3b8;"></i><p style="color:#94a3b8;">'+(posSearchQuery?'Aucun produit pour "'+escapeHtml(posSearchQuery)+'"':'Aucun produit')+'</p>'+(posSearchQuery?'<button class="btn-add" onclick="clearPosSearch()">Effacer</button>':'')+'</div>'; }
 else{
 if(posSearchQuery) html+='<div style="grid-column:1/-1;padding:3px 8px;font-size:0.75rem;color:#94a3b8;">'+totalProducts+' résultat'+(totalProducts>1?'s':'')+'</div>';
@@ -584,6 +779,9 @@ h+='</div></div>'; c.innerHTML=h;
 setStaticBackButtonVisibility(posStep === 2);
 
 if(posStep===1) {
+// ✅ Réinitialiser le mode catégories au chargement
+posViewMode = 'categories';
+posSelectedCategoryForView = null;
 filterProductGrid();
 }
 if(posStep===2) {
@@ -607,7 +805,13 @@ posGoToStep2();
 }
 }
 
-function posFilterCategory(ca){ posSelectedCategory=ca; posProductOffset=0; var si=document.getElementById('posSearchInput'); if(si) posSearchQuery=si.value.toLowerCase().trim(); if(isOnPOSPage()) filterProductGrid(); }
+function posFilterCategory(ca){ 
+    if (ca === 'all') {
+        retournerCategories();
+    } else {
+        selectionnerCategorie(ca);
+    }
+}
 function posUpdateDiscountMAD(v){ posDiscountMAD=parseFloat(v)||0; if(posDiscountMAD<0) posDiscountMAD=0; if(isOnPOSPage()) renderPOS(); }
 function posUpdateQty(i,ch){ var it=posCart[i]; if(!it) return; var p=posProductsList.find(function(x){ return x.id===it.id; }),nq=it.quantite+ch; if(nq<=0) posCart.splice(i,1); else{ if(p&&p.stock!==undefined&&nq>p.stock){ alert('Max: '+p.stock); return; } it.quantite=nq; } updateCartOnly(); }
 function posRemoveItem(i){ posCart.splice(i,1); updateCartOnly(); }
@@ -728,8 +932,24 @@ finally { isFinalizing=false; if(fb){ fb.disabled=false; fb.innerHTML='<i class=
 function goBackToPOS(){ if(window.currentUserData&&(window.currentUserData.userData.role==='caissier'||window.currentUserData.userData.role==='admin')){ if(posCart.length>0&&posStep===1){ if(!confirm('⚠️ '+posCart.length+' article(s) dans le panier. Garder ?')) posResetCart(); } navigateTo('pos'); } }
 if(!window._posKeydownListenerAdded){ window._posKeydownListenerAdded=true; document.addEventListener('keydown',function(event){ if(event.key==='Escape'){ var cp=document.getElementById('pageTitle')?.textContent||''; if(cp!=='POS'&&cp!=='Dashboard'&&cp!=='') goBackToPOS(); } if(event.ctrlKey&&(event.key==='p'||event.key==='P')){ event.preventDefault(); if((document.getElementById('pageTitle')?.textContent||'')!=='POS') navigateTo('pos'); } }); }
 
+// ✅ FONCTIONS MANQUANTES
+function posToggleVoiceSearch() {
+    if (typeof window.toggleVoiceSearch === 'function') {
+        window.toggleVoiceSearch();
+    } else {
+        alert('Fonction de recherche vocale non disponible');
+    }
+}
+
 window.posCart=posCart; window.posStep=posStep; window.posProductsList=posProductsList; window.posAllClients=posAllClients; window.posCurrentClient=posCurrentClient; window.posCurrentTable=posCurrentTable; window.posDiscountMAD=posDiscountMAD; window.posAmountGiven=posAmountGiven; window.posPaymentMethod=posPaymentMethod; window.posResetCart=posResetCart; window.posAddToCartOrOpenOptions=posAddToCartOrOpenOptions; window.posSetPaymentMethod=posSetPaymentMethod; window.posCalculateTotal=posCalculateTotal; window.posFinalizeSale=posFinalizeSale; window.posGoToStep2=posGoToStep2; window.posGoToStep1=posGoToStep1; window.posSearchProducts=posSearchProducts; window.clearPosSearch=clearPosSearch; window.clearClientSearch=clearClientSearch; window.updateClearButtonVisibility=updateClearButtonVisibility; window.updateCartOnly=updateCartOnly; window.renderPOS=renderPOS; window.updatePaymentButtons=updatePaymentButtons; window.loadMoreProducts=loadMoreProducts; window.loadClientCredits=loadClientCredits; window.updateClientCreditDisplay=updateClientCreditDisplay; window.posCalculateChange=posCalculateChange; window.onProductAdded=window.onProductAdded||function(pid){ console.log('Produit ajouté:',pid); };
 window.posNaviguerEtape = posNaviguerEtape;
 window.buildFullPOS = buildFullPOS;
+window.afficherCategories = afficherCategories;
+window.selectionnerCategorie = selectionnerCategorie;
+window.retournerCategories = retournerCategories;
+window.posFilterCategory = posFilterCategory;
+window.posViewMode = posViewMode;
+window.posSelectedCategoryForView = posSelectedCategoryForView;
+window.posToggleVoiceSearch = posToggleVoiceSearch;
 
-console.log('⚡ Mixmax Minimarket - POS chargé (5 colonnes mobile, Nom produit 22px bold uppercase, Prix produit 24px, Nom panier 22px, Prix panier 24px, Valider 26px/60px)');
+console.log('⚡ Mixmax Minimarket - POS chargé (Catégories grand format, 5 colonnes mobile, Nom produit 22px bold uppercase, Prix produit 24px, Nom panier 22px, Prix panier 24px, Valider 26px/60px)');
