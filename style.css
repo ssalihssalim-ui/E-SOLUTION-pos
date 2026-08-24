@@ -312,7 +312,7 @@ transition: var(--transition);
 .user-info { display: flex; align-items: center; gap: 10px; color: rgba(255,255,255,0.6); font-size: 0.85rem; font-weight: 500; }
 .user-info i { font-size: 1.4rem; color: var(--accent); }
 
-/* ✅ MOBILE - TEXTE AGRANDI */
+/* ✅ MOBILE - TEXTE AGRANDI (inchangé) */
 @media(max-width:768px) {
 .nav-item {
 font-size: 22px !important;
@@ -412,6 +412,7 @@ font-weight: 700;
 margin: 0 !important;
 }
 
+/* ✅ MOBILE - inchangé */
 @media(max-width:768px) {
 .main-content { padding: 12px 8px; padding-top: 60px !important; }
 .page-header { padding: 2px 6px !important; min-height: 28px !important; margin-bottom: 2px !important; }
@@ -540,7 +541,7 @@ margin-bottom: 4px !important;
 order: -1 !important;
 }
 
-/* ✅ ROW CONTENT - PRODUITS + PANIER en ligne (flex row) */
+/* ✅ ROW CONTENT - PRODUITS + PANIER en ligne */
 .pos-row {
 display: flex !important;
 flex: 1 !important;
@@ -550,11 +551,10 @@ flex-direction: row !important;
 width: 100% !important;
 }
 
-/* ✅ PRODUITS - 65% sur ordinateur/tablette */
+/* ✅ PRODUITS - prend tout l'espace restant */
 .pos-products-panel {
-flex: 0 0 65% !important;
+flex: 1 !important;
 min-width: 0 !important;
-max-width: 65% !important;
 background: var(--bg-card);
 border-radius: var(--radius-xl);
 padding: 12px;
@@ -703,11 +703,11 @@ font-size: 0.8rem !important;
 color: var(--danger) !important;
 }
 
-/* ✅ PANIER - 32% sur ordinateur/tablette */
+/* ✅ PANIER - À DROITE SUR ORDINATEUR ET TABLETTE */
 .pos-cart-panel {
-flex: 0 0 32% !important;
-min-width: 250px !important;
-max-width: 32% !important;
+width: 30% !important;
+min-width: 280px !important;
+max-width: 30% !important;
 background: var(--bg-card);
 border-radius: var(--radius-xl);
 padding: 16px;
@@ -718,6 +718,61 @@ flex-direction: column;
 height: 100%;
 overflow: hidden;
 transition: background 0.3s ease, border-color 0.3s ease;
+flex-shrink: 0;
+}
+
+/* ✅ SUR MOBILE ET TABLETTE (< 1024px) - PANIER EN BAS */
+@media(max-width:1024px) {
+.pos-container { flex-direction: column; height: auto; min-height: calc(100vh - 160px); }
+.pos-cart-panel { width: 100% !important; min-width: 100% !important; max-width: 100% !important; max-height: 45vh; margin-top: 10px; }
+.pos-products-panel { max-width: 100% !important; height: auto; max-height: 50vh; }
+
+.pos-cat-btn {
+padding: 4px 8px !important;
+font-size: 20px !important;
+gap: 4px !important;
+}
+.pos-cat-btn img {
+max-width: 50px !important;
+max-height: 50px !important;
+}
+
+.pos-cart-item-name {
+font-size: 20px !important;
+font-weight: 700 !important;
+}
+.pos-cart-item-price {
+font-size: 20px !important;
+}
+.pos-cart-item-total {
+font-size: 1rem !important;
+font-weight: 700 !important;
+}
+.pos-qty-btn {
+width: 34px !important;
+height: 34px !important;
+font-size: 0.85rem !important;
+}
+.pos-qty-value {
+font-size: 20px !important;
+}
+.pos-cart-total-row {
+font-size: 25px !important;
+}
+.pos-validate-btn,
+.pos-finalize-btn {
+padding: 14px 18px !important;
+font-size: 1.1rem !important;
+}
+.pos-payment-btn {
+padding: 12px 14px !important;
+font-size: 1rem !important;
+}
+.pos-payment-form input,
+.pos-payment-section input {
+padding: 12px !important;
+font-size: 1rem !important;
+}
 }
 
 .pos-cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -881,63 +936,7 @@ padding-bottom: env(safe-area-inset-bottom, 0px) !important;
 padding-top: calc(10px + env(safe-area-inset-top, 0px)) !important;
 }
 
-/* ==================== RESPONSIVE ==================== */
-
-/* ✅ SUR MOBILE ET TABLETTE (< 1024px) - PANIER EN BAS */
-@media(max-width:1024px) {
-.pos-container { flex-direction: column; height: auto; min-height: calc(100vh - 160px); }
-.pos-row { flex-direction: column !important; gap: 10px !important; }
-.pos-cart-panel { flex: none !important; width: 100% !important; min-width: 100% !important; max-width: 100% !important; max-height: 45vh; margin-top: 10px; }
-.pos-products-panel { flex: none !important; max-width: 100% !important; width: 100% !important; height: auto; max-height: 50vh; }
-
-.pos-cat-btn {
-padding: 4px 8px !important;
-font-size: 20px !important;
-gap: 4px !important;
-}
-.pos-cat-btn img {
-max-width: 50px !important;
-max-height: 50px !important;
-}
-
-.pos-cart-item-name {
-font-size: 20px !important;
-font-weight: 700 !important;
-}
-.pos-cart-item-price {
-font-size: 20px !important;
-}
-.pos-cart-item-total {
-font-size: 1rem !important;
-font-weight: 700 !important;
-}
-.pos-qty-btn {
-width: 34px !important;
-height: 34px !important;
-font-size: 0.85rem !important;
-}
-.pos-qty-value {
-font-size: 20px !important;
-}
-.pos-cart-total-row {
-font-size: 25px !important;
-}
-.pos-validate-btn,
-.pos-finalize-btn {
-padding: 14px 18px !important;
-font-size: 1.1rem !important;
-}
-.pos-payment-btn {
-padding: 12px 14px !important;
-font-size: 1rem !important;
-}
-.pos-payment-form input,
-.pos-payment-section input {
-padding: 12px !important;
-font-size: 1rem !important;
-}
-}
-
+/* ==================== RESPONSIVE MOBILE (INCHANGÉ) ==================== */
 @media(max-width:768px) {
 .login-container, .register-container { flex-direction: column; width: 100%; max-width: 420px; }
 .login-brand, .register-brand { padding: 24px 16px 16px; }
@@ -1159,8 +1158,7 @@ gap: 20px !important;
 }
 
 .pos-products-panel {
-flex: 0 0 65% !important;
-max-width: 65% !important;
+flex: 1 !important;
 min-width: 300px !important;
 max-height: 100% !important;
 min-height: 500px !important;
@@ -1169,13 +1167,14 @@ padding: 16px !important;
 }
 
 .pos-cart-panel {
-flex: 0 0 32% !important;
+width: 30% !important;
 min-width: 280px !important;
-max-width: 32% !important;
+max-width: 30% !important;
 height: 100% !important;
 max-height: 100% !important;
 border-radius: var(--radius-xl) !important;
 padding: 20px !important;
+flex-shrink: 0 !important;
 }
 
 .pos-products-grid {
