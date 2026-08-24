@@ -1,4 +1,4 @@
-// ==================== POS.JS - E-SOLUTION (VERSION COMPLÈTE AVEC MODE CATÉGORIES) ====================
+// ==================== POS.JS - E-SOLUTION ====================
 // Point de vente complet avec mode catégories
 
 var posCart = [];
@@ -220,7 +220,7 @@ if (clearBtn) clearBtn.style.display = 'none';
 
 function loadMoreProducts(){ posProductOffset+=posProductBatchSize; filterProductGrid(); }
 
-// ==================== FILTER PRODUCT GRID AVEC MODE CATÉGORIES ====================
+// ==================== FILTER PRODUCT GRID AVEC MODE CATÉGORIES (CORRIGÉ AVEC BANDEAU) ====================
 function filterProductGrid(){
     if(!isOnPOSPage() || posStep !== 1) return;
     
@@ -268,14 +268,35 @@ function filterProductGrid(){
 
     var html = '';
 
-    // ✅ BOUTON RETOUR VERS LES CATÉGORIES
-    html += '<div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:4px 6px;margin-bottom:4px;background:var(--bg-page);border-radius:8px;">';
-    html += '<button onclick="retournerCategories()" style="display:flex;align-items:center;gap:6px;background:var(--black);color:var(--white);border:none;border-radius:8px;padding:6px 14px;font-size:0.8rem;font-weight:600;cursor:pointer;">';
+    // ✅ BOUTON RETOUR + NOM CATÉGORIE + NOMBRE DE PRODUITS (STYLE INLINE FIABLE)
+    html += '<div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;margin-bottom:10px;background:#ffffff;border-radius:12px;border:2px solid #e2e8f0;flex-wrap:wrap;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">';
+    
+    // Groupe gauche : Bouton retour
+    html += '<div style="display:flex;align-items:center;gap:8px;">';
+    html += '<button onclick="retournerCategories()" style="display:flex;align-items:center;gap:6px;background:#111827;color:#ffffff;border:none;border-radius:8px;padding:8px 18px;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;">';
     html += '<i class="fas fa-arrow-left"></i> Retour aux catégories';
     html += '</button>';
+    html += '</div>';
+
+    // Groupe centre : Nom de la catégorie + nombre de produits
     if (posSelectedCategoryForView) {
-        html += '<span style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">📂 ' + escapeHtml(posSelectedCategoryForView) + '</span>';
+        // Compter les produits dans cette catégorie
+        var count = posProductsList.filter(function(p) {
+            if (p.categories && p.categories.length > 0) {
+                return p.categories.includes(posSelectedCategoryForView);
+            }
+            return p.categorie === posSelectedCategoryForView;
+        }).length;
+        
+        html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">';
+        html += '<span style="font-weight:700;font-size:1.1rem;color:#111827;">📂 ' + escapeHtml(posSelectedCategoryForView) + '</span>';
+        html += '<span style="font-size:0.85rem;color:#64748b;background:#f1f5f9;padding:4px 16px;border-radius:20px;font-weight:600;">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>';
+        html += '</div>';
     }
+
+    // Groupe droit : espace vide (pour alignement)
+    html += '<div style="min-width:20px;"></div>';
+
     html += '</div>';
 
     if(totalProducts === 0){
@@ -1161,12 +1182,10 @@ function posResetCart() {
 }
 
 function posChargerCommandesTables() {
-    // Fonction simplifiée - à implémenter selon votre logique
     posCommandesTablesCount = 0;
 }
 
 function posChargerCommandesEnLigneCount() {
-    // Fonction simplifiée - à implémenter selon votre logique
     posCommandesEnLigneCount = 0;
 }
 
