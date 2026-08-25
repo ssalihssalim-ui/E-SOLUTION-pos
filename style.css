@@ -510,7 +510,7 @@ color: var(--text-primary);
 
 /* ==================== POS SYSTEM - AVEC POSITION ABSOLUTE ==================== */
 
-/* ✅ Conteneur principal du POS - 1 Panier / 2 Paiement en haut */
+/* ✅ Conteneur principal du POS */
 .pos-container {
 display: flex !important;
 flex-direction: column !important;
@@ -617,114 +617,249 @@ border-radius: 6px;
 object-fit: contain;
 }
 
+/* ==================== FORCER 4 COLONNES POS ==================== */
+
+/* ✅ FORCER 4 COLONNES SUR TOUS LES ÉCRANS */
 .pos-products-grid {
-display: grid;
-grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-gap: 6px;
-flex: 1;
-overflow-y: auto;
-padding: 4px;
-align-content: start;
-min-height: 250px;
-max-height: 100%;
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+    padding: 6px !important;
+    overflow-x: auto !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-content: start !important;
 }
 
+/* ✅ CARTES PRODUITS - TAILLE FIXE */
 .pos-product-card {
-background: var(--bg-page);
-border: 2px solid var(--border);
-border-radius: var(--radius-lg);
-cursor: pointer;
-transition: var(--transition);
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-width: 100%;
-aspect-ratio: 1 / 1.1;
-min-height: 90px;
-max-height: 130px;
-padding: 4px;
-overflow: hidden;
+    min-height: 100px !important;
+    max-height: 130px !important;
+    padding: 4px 2px !important;
+    border-radius: 8px !important;
+    border: 2px solid var(--border) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    background: var(--bg-card) !important;
+    cursor: pointer !important;
+    transition: var(--transition) !important;
 }
 
-.pos-product-card:hover {
-border-color: var(--accent);
-box-shadow: var(--shadow);
-background: var(--bg-card);
-}
-
+/* ✅ IMAGE PRODUIT */
 .pos-product-img {
-width: 100%;
-height: 50%;
-border-radius: var(--radius);
-overflow: hidden;
-margin-bottom: 3px;
-background: var(--gray-200);
-flex-shrink: 0;
+    height: 40px !important;
+    width: 80% !important;
+    margin-bottom: 3px !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+    background: var(--gray-100) !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .pos-product-img img {
-width: 100%;
-height: 100%;
-object-fit: cover;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
 }
 
-.pos-product-placeholder {
-display: flex;
-align-items: center;
-justify-content: center;
-background: var(--gray-100);
-}
-
-.pos-product-placeholder i {
-font-size: 18px;
-color: var(--text-muted);
-}
-
-.pos-product-info {
-display: flex;
-flex-direction: column;
-align-items: center;
-width: 100%;
-flex: 1;
-justify-content: center;
-overflow: hidden;
-min-height: 24px;
-}
-
+/* ✅ NOM PRODUIT - UNE SEULE LIGNE */
 .pos-product-name {
-font-size: 0.65rem !important;
-font-weight: 600 !important;
-color: var(--text-primary);
-line-height: 1.2;
-text-align: center;
-overflow: hidden;
-text-overflow: ellipsis;
-white-space: nowrap;
-max-width: 100%;
-width: 100%;
-padding: 0 2px;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+    display: block !important;
+    color: var(--text-primary) !important;
+    padding: 0 2px !important;
+    line-height: 1.2 !important;
 }
 
+/* ✅ PRIX PRODUIT */
 .pos-product-price {
-font-size: 0.7rem !important;
-font-weight: 700 !important;
-color: var(--text-primary);
-white-space: nowrap;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    display: block !important;
+    text-align: center !important;
+    margin-top: 2px !important;
+    color: var(--text-primary) !important;
 }
 
 .pos-old-price {
-font-size: 0.55rem !important;
-text-decoration: line-through;
-color: var(--text-muted);
+    font-size: 10px !important;
+    text-decoration: line-through !important;
+    color: var(--text-muted) !important;
+    margin-right: 4px !important;
 }
 
 .pos-promo-price {
-font-size: 0.7rem !important;
-color: var(--danger) !important;
+    font-size: 14px !important;
+    color: var(--danger) !important;
 }
 
-/* ✅ PANIER - contenu */
+/* ✅ SUR PC - AGRANDIR UN PEU */
+@media(min-width: 1024px) {
+    .pos-product-card {
+        min-height: 160px !important;
+        max-height: 190px !important;
+        padding: 8px 4px !important;
+    }
+    .pos-product-img {
+        height: 70px !important;
+    }
+    .pos-product-name {
+        font-size: 14px !important;
+    }
+    .pos-product-price {
+        font-size: 16px !important;
+    }
+    .pos-promo-price {
+        font-size: 16px !important;
+    }
+}
+
+/* ✅ SUR TABLETTE */
+@media(min-width: 700px) and (max-width: 1024px) {
+    .pos-product-card {
+        min-height: 130px !important;
+        max-height: 160px !important;
+    }
+    .pos-product-img {
+        height: 55px !important;
+    }
+    .pos-product-name {
+        font-size: 13px !important;
+    }
+    .pos-product-price {
+        font-size: 15px !important;
+    }
+}
+
+/* ✅ SUR MOBILE - AGRANDIR NOM ET PRIX */
+@media(max-width: 700px) {
+    .pos-product-card {
+        min-height: 90px !important;
+        max-height: 115px !important;
+        padding: 3px 1px !important;
+        border-width: 1px !important;
+    }
+    .pos-product-img {
+        height: 35px !important;
+        width: 70% !important;
+    }
+    .pos-product-name {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+    }
+    .pos-product-price {
+        font-size: 13px !important;
+    }
+    .pos-promo-price {
+        font-size: 13px !important;
+    }
+}
+
+/* ✅ SUR TRÈS PETIT ÉCRAN */
+@media(max-width: 400px) {
+    .pos-products-grid {
+        gap: 4px !important;
+        padding: 3px !important;
+    }
+    .pos-product-card {
+        min-height: 75px !important;
+        max-height: 95px !important;
+        padding: 2px 1px !important;
+    }
+    .pos-product-img {
+        height: 28px !important;
+        width: 60% !important;
+    }
+    .pos-product-name {
+        font-size: 9px !important;
+    }
+    .pos-product-price {
+        font-size: 11px !important;
+    }
+    .pos-promo-price {
+        font-size: 11px !important;
+    }
+}
+
+/* ✅ DÉSACTIVER LES AUTO-FILL */
+.pos-products-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+}
+
+/* ✅ CORRECTION BANDEAU CATÉGORIE */
+.pos-category-header {
+    grid-column: 1 / -1 !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    padding: 8px 12px !important;
+    margin-bottom: 8px !important;
+    background: var(--bg-card) !important;
+    border-radius: 10px !important;
+    border: 1px solid var(--border) !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+}
+
+.pos-category-header .header-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.pos-category-header .btn-back {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    background: var(--black) !important;
+    color: var(--white) !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 6px 14px !important;
+    font-size: 0.8rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+}
+
+.pos-category-header .header-center {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
+}
+
+.pos-category-header .category-name {
+    font-weight: 700 !important;
+    font-size: 1rem !important;
+    color: var(--text-primary) !important;
+}
+
+.pos-category-header .category-count {
+    font-size: 0.75rem !important;
+    color: var(--text-secondary) !important;
+    background: var(--gray-100) !important;
+    padding: 2px 12px !important;
+    border-radius: 20px !important;
+    font-weight: 600 !important;
+}
+
+.pos-category-header .header-right {
+    min-width: 20px !important;
+}
+
+/* ==================== PANIER ==================== */
 .pos-cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
 .pos-cart-header h3 { font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px; color: var(--text-primary); }
 .pos-cart-badge { background: var(--black); color: var(--white); padding: 1px 6px; border-radius: var(--radius-full); font-size: 0.6rem; font-weight: 700; }
@@ -942,9 +1077,6 @@ font-size: 0.85rem !important;
 .main-content { padding: 12px 8px; }
 .pos-container { gap: 8px; }
 .pos-products-panel { padding: 8px; max-height: 50vh; min-height: 250px; }
-.pos-products-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 4px; }
-.pos-product-card { padding: 4px; min-height: 70px; max-height: 100px; }
-.pos-product-img { height: 45%; }
 .pos-cart-panel { max-height: 35vh; padding: 10px; }
 .pos-payment-section input, .pos-payment-form input, .pos-payment-form select {
 padding: 10px !important;
@@ -955,158 +1087,6 @@ font-size: 0.85rem !important;
 @media(max-width:700px) {
 .main-content { padding: 6px 2px; }
 .pos-container { gap: 4px; height: calc(100vh - 110px); }
-
-.pos-products-grid {
-grid-template-columns: repeat(5, 1fr) !important;
-gap: 3px !important;
-padding: 2px !important;
-min-height: 200px !important;
-max-height: 50vh !important;
-align-content: start !important;
-}
-
-.pos-product-card {
-padding: 3px 1px !important;
-min-height: 55px !important;
-max-height: 80px !important;
-aspect-ratio: 1 / 1 !important;
-border-radius: 4px !important;
-border-width: 1px !important;
-}
-
-.pos-product-img {
-height: 35% !important;
-border-radius: 3px !important;
-margin-bottom: 1px !important;
-}
-
-.pos-product-placeholder i {
-font-size: 12px !important;
-}
-
-.pos-product-name {
-font-size: 7px !important;
-font-weight: 600 !important;
-line-height: 1.1 !important;
-white-space: nowrap !important;
-overflow: hidden !important;
-text-overflow: ellipsis !important;
-max-width: 100% !important;
-margin: 1px 0 !important;
-}
-
-.pos-product-price {
-font-size: 8px !important;
-font-weight: 700 !important;
-}
-
-.pos-old-price {
-font-size: 6px !important;
-}
-
-.pos-promo-price {
-font-size: 8px !important;
-}
-
-.pos-products-panel {
-min-height: 250px !important;
-max-height: 55vh !important;
-padding: 4px !important;
-}
-
-.pos-cart-panel {
-max-height: 30vh !important;
-min-height: 80px !important;
-padding: 6px !important;
-}
-
-.pos-cart-item {
-padding: 3px 0 !important;
-}
-
-.pos-cart-item-name {
-font-size: 12px !important;
-}
-
-.pos-cart-item-price {
-font-size: 10px !important;
-}
-
-.pos-cart-item-total {
-font-size: 12px !important;
-}
-
-.pos-qty-btn {
-width: 22px !important;
-height: 22px !important;
-font-size: 10px !important;
-}
-
-.pos-qty-value {
-font-size: 12px !important;
-min-width: 16px !important;
-}
-
-.pos-cart-total-row {
-font-size: 14px !important;
-}
-
-.pos-cat-btn {
-padding: 2px 4px !important;
-font-size: 10px !important;
-gap: 2px !important;
-}
-.pos-cat-btn img {
-max-width: 18px !important;
-max-height: 18px !important;
-}
-
-.pos-categories-bar {
-gap: 3px !important;
-margin-bottom: 4px !important;
-}
-
-.pos-validate-btn,
-.pos-finalize-btn {
-padding: 6px !important;
-font-size: 12px !important;
-height: 36px !important;
-}
-}
-
-@media(max-width:480px) {
-.pos-products-grid {
-gap: 2px !important;
-padding: 2px !important;
-min-height: 150px !important;
-max-height: 45vh !important;
-}
-
-.pos-product-card {
-min-height: 45px !important;
-max-height: 65px !important;
-padding: 2px 1px !important;
-border-radius: 3px !important;
-}
-
-.pos-product-img {
-height: 30% !important;
-}
-
-.pos-product-name {
-font-size: 6px !important;
-}
-
-.pos-product-price {
-font-size: 7px !important;
-}
-
-.pos-validate-btn,
-.pos-finalize-btn {
-font-size: 10px !important;
-padding: 4px !important;
-height: 28px !important;
-}
 }
 
 .pos-container-full .pos-products-panel {
@@ -1177,35 +1157,6 @@ height: 100% !important;
 max-height: 100% !important;
 border-radius: var(--radius-lg) !important;
 padding: 12px !important;
-}
-
-.pos-products-grid {
-grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
-gap: 8px !important;
-padding: 4px !important;
-min-height: 350px !important;
-max-height: 100% !important;
-}
-
-.pos-product-card {
-min-height: 110px !important;
-max-height: 140px !important;
-aspect-ratio: 1 / 1.1 !important;
-padding: 6px !important;
-border-radius: 8px !important;
-}
-
-.pos-product-img {
-height: 50% !important;
-border-radius: 6px !important;
-}
-
-.pos-product-name {
-font-size: 0.7rem !important;
-}
-
-.pos-product-price {
-font-size: 0.75rem !important;
 }
 
 .pos-cat-btn {
