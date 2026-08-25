@@ -993,7 +993,7 @@ object-fit: contain;
         min-width: 100% !important; 
         max-width: 100% !important; 
         max-height: 40vh; 
-        margin-top: 6px; 
+        margin-top: 26px; 
     }
     .pos-products-panel { 
         width: 100% !important; 
@@ -1043,7 +1043,7 @@ object-fit: contain;
         border-radius: 0 !important;
         padding: 16px !important;
         position: static !important;
-        margin-top: 0 !important;
+        margin-top: 20px !important;
     }
 }
 
