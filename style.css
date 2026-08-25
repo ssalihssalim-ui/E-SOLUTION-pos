@@ -577,7 +577,7 @@ max-height: calc(100vh - 180px);
 transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-/* ✅ PANIER - 30% à droite */
+/* ✅ PANIER - 30% à droite - PADDING TOP 30px SUR PC ET TABLETTE */
 .pos-cart-panel {
 position: absolute !important;
 right: 0 !important;
@@ -589,6 +589,7 @@ height: 100% !important;
 background: var(--bg-card);
 border-radius: var(--radius-lg);
 padding: 10px;
+padding-top: 30px !important;
 box-shadow: var(--shadow-xs);
 border: 1px solid var(--border);
 display: flex;
@@ -814,6 +815,11 @@ object-fit: contain;
         margin-bottom: 6px !important;
         border-bottom: 1px solid var(--border) !important;
     }
+    
+    /* ✅ PADDING TOP PANIER 30px SUR PC */
+    .pos-cart-panel {
+        padding-top: 30px !important;
+    }
 }
 
 /* ============================================================
@@ -847,6 +853,11 @@ object-fit: contain;
         border-bottom: 1px solid var(--border) !important;
     }
     
+    /* ✅ PADDING TOP PANIER 30px SUR TABLETTE */
+    .pos-cart-panel {
+        padding-top: 30px !important;
+    }
+    
     .pos-container {
         overflow-y: auto !important;
         overflow-x: hidden !important;
@@ -857,7 +868,7 @@ object-fit: contain;
 }
 
 /* ============================================================
-   ✅ SUR MOBILE (< 700px)
+   ✅ SUR MOBILE (< 700px) - PADDING TOP NORMAL
    ============================================================ */
 @media(max-width: 700px) {
     .pos-product-card {
@@ -892,6 +903,11 @@ object-fit: contain;
         flex-shrink: 0 !important;
         margin-bottom: 4px !important;
         border-bottom: 1px solid var(--border) !important;
+    }
+    
+    /* ✅ PADDING TOP PANIER 10px SUR MOBILE */
+    .pos-cart-panel {
+        padding-top: 10px !important;
     }
 }
 
@@ -950,6 +966,7 @@ object-fit: contain;
     flex: 1 1 100% !important;
     border-radius: 0 !important;
     padding: 16px !important;
+    padding-top: 30px !important;
     position: static !important;
     margin-top: 0 !important;
 }
@@ -973,6 +990,13 @@ object-fit: contain;
     border-bottom: 1px solid var(--border) !important;
 }
 
+/* ✅ SUR MOBILE EN ÉTAPE 2 - PADDING TOP NORMAL */
+@media(max-width: 700px) {
+    .pos-container-full .pos-cart-panel {
+        padding-top: 10px !important;
+    }
+}
+
 /* ============================================================
    ✅ SUR MOBILE ET TABLETTE (< 1024px) - PANIER EN BAS
    ============================================================ */
@@ -993,7 +1017,7 @@ object-fit: contain;
         min-width: 100% !important; 
         max-width: 100% !important; 
         max-height: 40vh; 
-        margin-top: 26px; 
+        margin-top: 6px; 
     }
     .pos-products-panel { 
         width: 100% !important; 
@@ -1042,8 +1066,16 @@ object-fit: contain;
         flex: 1 !important;
         border-radius: 0 !important;
         padding: 16px !important;
+        padding-top: 30px !important;
         position: static !important;
-        margin-top: 20px !important;
+        margin-top: 0 !important;
+    }
+}
+
+/* ✅ SUR MOBILE EN ÉTAPE 2 DANS LE RESPONSIVE */
+@media(max-width: 700px) {
+    .pos-container-full .pos-cart-panel {
+        padding-top: 10px !important;
     }
 }
 
