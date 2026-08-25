@@ -5,6 +5,8 @@
 // ✅ Nom panier 22px, Prix panier 24px
 // ✅ Bouton Valider 26px / hauteur 60px
 // ✅ CATÉGORIES EN GRAND FORMAT - NOM ET NB PRODUITS VISIBLES
+// ✅ CONTENEUR ÉLARGI - CARTES PRODUITS PLUS GRANDES
+// ✅ FONT SIZE PRODUITS AUGMENTÉ
 
 var posCart = [];
 var posStep = 1;
@@ -221,16 +223,16 @@ if (clearBtn) clearBtn.style.display = 'none';
 
 function loadMoreProducts(){ posProductOffset+=posProductBatchSize; filterProductGrid(); }
 
-// ==================== AFFICHER LES CATÉGORIES EN GRAND FORMAT (CORRIGÉ) ====================
+// ==================== AFFICHER LES CATÉGORIES EN GRAND FORMAT ====================
 function afficherCategories(grid) {
     var isMobile = window.innerWidth < 700;
-    var gridCols = isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fill, minmax(160px, 1fr))';
+    var gridCols = isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fill, minmax(170px, 1fr))';
     grid.style.gridTemplateColumns = gridCols;
     grid.style.overflowX = 'auto';
     grid.style.flexWrap = 'wrap';
     grid.style.alignContent = 'start';
-    grid.style.gap = '12px';
-    grid.style.padding = '8px';
+    grid.style.gap = '14px';
+    grid.style.padding = '10px';
 
     var html = '';
     
@@ -256,21 +258,21 @@ function afficherCategories(grid) {
         for (var i = 0; i < sortedCategories.length; i++) {
             var cat = sortedCategories[i];
             
-            // ✅ Style des cartes catégories (grand format fixe)
+            // ✅ Style des cartes catégories (grand format)
             var cardStyle = isMobile ? 
-                'padding:10px 4px;min-height:100px;max-height:130px;border-radius:12px;border:2px solid #e2e8f0;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:#ffffff;cursor:pointer;transition:all 0.2s;' : 
-                'padding:16px 8px;min-height:160px;max-height:190px;border-radius:16px;border:2px solid #e2e8f0;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:#ffffff;cursor:pointer;transition:all 0.2s;';
+                'padding:12px 4px;min-height:110px;max-height:140px;border-radius:12px;border:2px solid #e2e8f0;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:#ffffff;cursor:pointer;transition:all 0.2s;' : 
+                'padding:20px 8px;min-height:180px;max-height:210px;border-radius:16px;border:2px solid #e2e8f0;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:#ffffff;cursor:pointer;transition:all 0.2s;';
             
-            var imgSize = isMobile ? '55px' : '75px';
-            var imgStyle = 'width:'+imgSize+';height:'+imgSize+';border-radius:50%;margin-bottom:6px;overflow:hidden;flex-shrink:0;background:#f1f5f9;display:flex;align-items:center;justify-content:center;';
+            var imgSize = isMobile ? '60px' : '80px';
+            var imgStyle = 'width:'+imgSize+';height:'+imgSize+';border-radius:50%;margin-bottom:8px;overflow:hidden;flex-shrink:0;background:#f1f5f9;display:flex;align-items:center;justify-content:center;';
             
-            // ✅ Nom catégorie - taille fixe et visible sur tous les écrans
-            var nameSize = isMobile ? '13px' : '16px';
-            var nameStyle = 'font-size:'+nameSize+' !important;font-weight:700 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:#111827;margin-top:4px;display:block;line-height:1.3;';
+            // ✅ Nom catégorie - taille augmentée
+            var nameSize = isMobile ? '14px' : '18px';
+            var nameStyle = 'font-size:'+nameSize+' !important;font-weight:700 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:#111827;margin-top:6px;display:block;line-height:1.3;';
             
             // ✅ Nombre de produits - toujours visible
-            var countSize = isMobile ? '11px' : '13px';
-            var countStyle = 'font-size:'+countSize+' !important;color:#64748b;font-weight:500;display:block;margin-top:2px;';
+            var countSize = isMobile ? '12px' : '14px';
+            var countStyle = 'font-size:'+countSize+' !important;color:#64748b;font-weight:500;display:block;margin-top:4px;';
 
             // ✅ Compter les produits dans cette catégorie
             var count = posProductsList.filter(function(p) {
@@ -284,7 +286,7 @@ function afficherCategories(grid) {
             if (cat.imageBase64) {
                 imgContent = '<img src="' + escapeHtml(cat.imageBase64) + '" loading="lazy" alt="' + escapeHtml(cat.nom) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
             } else {
-                imgContent = '<i class="fas fa-folder" style="font-size:' + (isMobile ? '24px' : '32px') + ';color:#2E7D32;"></i>';
+                imgContent = '<i class="fas fa-folder" style="font-size:' + (isMobile ? '28px' : '40px') + ';color:#2E7D32;"></i>';
             }
 
             html += '<div class="pos-category-card" style="' + cardStyle + '" onclick="selectionnerCategorie(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')" onmouseover="this.style.borderColor=\'#2E7D32\';this.style.transform=\'translateY(-3px)\';this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.1)\';" onmouseout="this.style.borderColor=\'#e2e8f0\';this.style.transform=\'none\';this.style.boxShadow=\'none\';">' +
@@ -392,21 +394,23 @@ var totalProducts = f.length;
 var displayProducts = f.slice(0, posProductOffset + posProductBatchSize);
 posHasMoreProducts = (posProductOffset + posProductBatchSize) < totalProducts;
 
-// ✅ Détection mobile pour 5 colonnes
+// ✅ Détection mobile pour 5 colonnes - GRILLE ÉLARGIE
 var isMobile = window.innerWidth < 700;
-var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(120px, 1fr))';
+var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(150px, 1fr))';
 grid.style.gridTemplateColumns = gridCols;
 grid.style.overflowX = 'auto';
-grid.style.flexWrap = 'nowrap';
+grid.style.flexWrap = 'wrap';
+grid.style.gap = '10px';
+grid.style.padding = '6px';
 
 var html='';
 
 // ✅ BOUTON RETOUR + NOM CATÉGORIE + NOMBRE DE PRODUITS (GRAND FORMAT)
-html += '<div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:10px 14px;margin-bottom:10px;background:#ffffff;border-radius:12px;border:2px solid #e2e8f0;flex-wrap:wrap;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">';
+html += '<div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;margin-bottom:12px;background:#ffffff;border-radius:12px;border:2px solid #e2e8f0;flex-wrap:wrap;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,0.06);">';
 
 // Groupe gauche : Bouton retour
 html += '<div style="display:flex;align-items:center;gap:8px;">';
-html += '<button onclick="retournerCategories()" style="display:flex;align-items:center;gap:6px;background:#111827;color:#ffffff;border:none;border-radius:8px;padding:8px 18px;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;">';
+html += '<button onclick="retournerCategories()" style="display:flex;align-items:center;gap:6px;background:#111827;color:#ffffff;border:none;border-radius:8px;padding:10px 20px;font-size:0.95rem;font-weight:600;cursor:pointer;transition:all 0.2s;">';
 html += '<i class="fas fa-arrow-left"></i> Retour aux catégories';
 html += '</button>';
 html += '</div>';
@@ -420,9 +424,9 @@ if (posSelectedCategoryForView) {
         return p.categorie === posSelectedCategoryForView;
     }).length;
     
-    html += '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">';
-    html += '<span style="font-weight:700;font-size:1.1rem;color:#111827;">📂 ' + escapeHtml(posSelectedCategoryForView) + '</span>';
-    html += '<span style="font-size:0.85rem;color:#64748b;background:#f1f5f9;padding:4px 16px;border-radius:20px;font-weight:600;">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>';
+    html += '<div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">';
+    html += '<span style="font-weight:700;font-size:1.2rem;color:#111827;">📂 ' + escapeHtml(posSelectedCategoryForView) + '</span>';
+    html += '<span style="font-size:0.95rem;color:#64748b;background:#f1f5f9;padding:4px 18px;border-radius:20px;font-weight:600;">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>';
     html += '</div>';
 }
 
@@ -434,17 +438,22 @@ if(totalProducts===0){ html+='<div style="grid-column:1/-1;text-align:center;pad
 else{
 if(posSearchQuery) html+='<div style="grid-column:1/-1;padding:3px 8px;font-size:0.75rem;color:#94a3b8;">'+totalProducts+' résultat'+(totalProducts>1?'s':'')+'</div>';
 for(var j=0;j<displayProducts.length;j++){ var p=displayProducts[j],pr=p.prixPromo&&p.prixPromo>0?p.prixPromo:p.prixVente,hp=p.prixPromo&&p.prixPromo>0,sc='',stt=''; if(p.stock!==undefined){ if(p.stock<=0){sc='pos-out-of-stock';stt=' (Rupture)';}else if(p.stock<=5) stt=' ('+p.stock+' rest.)'; } var dn=escapeHtml(p.nom); if(posSearchQuery) dn=dn.replace(new RegExp('('+posSearchQuery.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark style="background:#fef3c7;border-radius:3px;">$1</mark>');
-// ✅ Style adapté pour mobile (5 colonnes) - Nom 22px bold uppercase, Prix 24px
-var cardStyle = isMobile ? 'padding:4px 2px;min-height:90px;border-radius:8px;border-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;' : '';
-var imgStyle = isMobile ? 'height:35px;width:100%;margin-bottom:2px;border-radius:6px;' : 'height:80px;margin-bottom:6px;';
-var nameStyle = isMobile ? 'font-size:22px !important;font-weight:700 !important;text-transform:uppercase;line-height:1.2;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;margin-right:0;display:block;' : 'font-size:0.78rem;font-weight:600;line-height:1.2;';
-var priceStyle = isMobile ? 'font-size:24px !important;font-weight:700;display:block;text-align:center;margin-top:2px;' : 'font-size:0.82rem;font-weight:700;';
+
+// ✅ Style adapté - CARTES PRODUITS PLUS GRANDES ET FONT SIZE AUGMENTÉ
+var cardStyle = isMobile ? 
+    'padding:6px 4px;min-height:100px;border-radius:10px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#ffffff;border:2px solid #e2e8f0;' : 
+    'padding:12px 10px;min-height:190px;border-radius:14px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#ffffff;border:2px solid #e2e8f0;';
+var imgStyle = isMobile ? 'height:45px;width:100%;margin-bottom:4px;border-radius:8px;' : 'height:90px;margin-bottom:8px;border-radius:8px;';
+// ✅ FONT SIZE AUGMENTÉ - Nom produit 26px sur mobile, 18px sur PC
+var nameStyle = isMobile ? 'font-size:26px !important;font-weight:700 !important;text-transform:uppercase;line-height:1.2;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:block;' : 'font-size:1.1rem !important;font-weight:700 !important;line-height:1.3;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:block;';
+// ✅ FONT SIZE AUGMENTÉ - Prix produit 28px sur mobile, 20px sur PC
+var priceStyle = isMobile ? 'font-size:28px !important;font-weight:700;display:block;text-align:center;margin-top:4px;' : 'font-size:1.2rem !important;font-weight:700;display:block;text-align:center;margin-top:4px;';
 
 html+='<div class="pos-product-card '+sc+'" style="'+cardStyle+'" onclick="posAddToCartOrOpenOptions(\''+p.id+'\')">'+
-(p.imageBase64?'<div class="pos-product-img" style="width:100%;'+imgStyle+'overflow:hidden;background:var(--gray-200);border-radius:6px;flex-shrink:0;"><img src="'+escapeHtml(p.imageBase64)+'" loading="lazy" alt="" style="width:100%;height:100%;object-fit:cover;"></div>':'<div class="pos-product-img pos-product-placeholder" style="width:100%;'+imgStyle+'overflow:hidden;background:var(--gray-200);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-box" style="'+(isMobile?'font-size:16px;':'font-size:24px;')+'"></i></div>')+
+(p.imageBase64?'<div class="pos-product-img" style="width:100%;'+imgStyle+'overflow:hidden;background:var(--gray-200);border-radius:8px;flex-shrink:0;"><img src="'+escapeHtml(p.imageBase64)+'" loading="lazy" alt="" style="width:100%;height:100%;object-fit:cover;"></div>':'<div class="pos-product-img pos-product-placeholder" style="width:100%;'+imgStyle+'overflow:hidden;background:var(--gray-200);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-box" style="'+(isMobile?'font-size:20px;':'font-size:28px;')+'"></i></div>')+
 '<div class="pos-product-info" style="display:flex;flex-direction:column;align-items:center;width:100%;flex:1;justify-content:center;">'+
 '<span class="pos-product-name" style="'+nameStyle+'">'+dn+stt+'</span>'+
-'<span class="pos-product-price" style="'+priceStyle+'">'+(hp?'<span class="pos-old-price" style="'+(isMobile?'font-size:16px;':'')+'text-decoration:line-through;color:#94a3b8;">'+p.prixVente.toFixed(2)+'</span> <span class="pos-promo-price" style="'+(isMobile?'font-size:24px;color:#ef4444;':'')+'">'+pr.toFixed(2)+' MAD</span>':pr.toFixed(2)+' MAD</span>')+'</span>'+
+'<span class="pos-product-price" style="'+priceStyle+'">'+(hp?'<span class="pos-old-price" style="'+(isMobile?'font-size:18px;':'font-size:0.9rem;')+'text-decoration:line-through;color:#94a3b8;">'+p.prixVente.toFixed(2)+'</span> <span class="pos-promo-price" style="'+(isMobile?'font-size:28px;color:#ef4444;':'font-size:1.2rem;color:#ef4444;')+'">'+pr.toFixed(2)+' MAD</span>':pr.toFixed(2)+' MAD</span>')+'</span>'+
 '</div></div>'; }
 if(posHasMoreProducts){ html+='<div style="grid-column:1/-1;text-align:center;padding:10px;"><button class="btn-add" onclick="loadMoreProducts()" style="font-size:0.8rem;">Afficher plus ('+(totalProducts-displayProducts.length)+' produits restants)</button></div>'; }
 }
@@ -689,15 +698,16 @@ var stepIndicator = '<div class="pos-steps-nav" style="display:flex; justify-con
 
 var productPanelDisplay = (posStep === 2) ? 'display:none;' : '';
 
-// Styles pour mobile (5 colonnes)
-var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(120px, 1fr))';
-var gridGap = isMobile ? '4px' : '10px';
-var gridPadding = isMobile ? '2px' : '4px';
-var panelPadding = isMobile ? '8px' : '16px';
+// ✅ Styles pour mobile (5 colonnes) - GRILLE ÉLARGIE
+var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(150px, 1fr))';
+var gridGap = isMobile ? '6px' : '12px';
+var gridPadding = isMobile ? '4px' : '8px';
+var panelPadding = isMobile ? '10px' : '18px';
 
 var h='<div class="pos-container' + (posStep===2 ? ' pos-container-full' : '') + '">' +
 stepIndicator +
-'<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; flex:1; min-width:200px; min-height:520px; background:var(--white); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; height:100%; overflow:hidden;"><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
+// ✅ CONTENEUR ÉLARGI - min-height augmenté
+'<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; flex:1; min-width:200px; min-height:650px; background:var(--white); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; height:100%; overflow:hidden;"><div style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
 '<div style="flex:1;min-width:120px;display:flex;align-items:center;background:#fff;border:2px solid #e2e8f0;border-radius:40px;padding:2px 10px;position:relative;height:'+(isMobile?'38px':'44px')+';">' +
 '<i class="fas fa-search" style="color:#94a3b8;margin-right:6px;font-size:'+(isMobile?'16px':'20px')+';"></i>' +
 '<input type="text" id="posSearchInput" placeholder="🔍 Rechercher..." value="'+escapeHtml(posSearchQuery)+'" onkeyup="posSearchProducts(this.value); updateClearButtonVisibility();" oninput="updateClearButtonVisibility();" style="border:none;outline:none;padding:0;width:100%;background:transparent;font-size:'+(isMobile?'16px':'24px')+';padding-right:30px;height:'+(isMobile?'38px':'44px')+';">' +
@@ -718,7 +728,7 @@ var ac = posSelectedCategory===ca.nom?'active':'';
 var ih = ca.imageBase64?'<img src="'+escapeHtml(ca.imageBase64)+'" loading="lazy">':'<i class="fas fa-folder"></i>';
 h+='<button class="pos-cat-btn '+ac+'" onclick="posFilterCategory(\''+escapeHtml(ca.nom).replace(/'/g,"\\'")+'\')" style="padding:'+(isMobile?'4px 8px':'12px 24px')+';font-size:'+(isMobile?'16px':'0.9rem')+';gap:'+(isMobile?'4px':'10px')+';">'+ih+' '+escapeHtml(ca.nom)+'</button>';
 }
-h+='</div></div><div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:auto;flex-wrap:nowrap;"></div></div><div class="pos-cart-panel">';
+h+='</div></div><div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:auto;flex-wrap:wrap;"></div></div><div class="pos-cart-panel">';
 if(posStep===1){
 h+='<div class="pos-cart-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 4px;"><h3 style="font-size:'+(isMobile?'24px':'1rem')+';"><i class="fas fa-shopping-cart"></i> Panier <span class="pos-cart-badge" style="background:#2E7D32;color:#fff;border-radius:50%;padding:2px 10px;font-size:'+(isMobile?'20px':'0.7rem')+';">'+posCart.length+'</span></h3><button class="pos-clear-btn" onclick="posResetCart()" style="font-size:'+(isMobile?'18px':'0.9rem')+';background:#ef4444;color:#fff;border:none;border-radius:8px;padding:'+(isMobile?'6px 12px':'8px 16px')+';cursor:pointer;"><i class="fas fa-trash-alt"></i> Vider</button></div><div class="pos-cart-items" style="max-height:'+(isMobile?'200px':'300px')+';overflow-y:auto;padding:4px;">';
 if(posCart.length===0){ h+='<div class="pos-cart-empty" style="text-align:center;padding:20px;color:#94a3b8;"><i class="fas fa-shopping-basket" style="font-size:'+(isMobile?'32px':'40px')+';"></i><p style="font-size:'+(isMobile?'20px':'1rem')+';">Panier vide</p></div>'; }
@@ -953,4 +963,4 @@ window.posViewMode = posViewMode;
 window.posSelectedCategoryForView = posSelectedCategoryForView;
 window.posToggleVoiceSearch = posToggleVoiceSearch;
 
-console.log('⚡ Mixmax Minimarket - POS chargé (Catégories grand format, 5 colonnes mobile, Nom produit 22px bold uppercase, Prix produit 24px, Nom panier 22px, Prix panier 24px, Valider 26px/60px)');
+console.log('⚡ Mixmax Minimarket - POS chargé (Catégories grand format, 5 colonnes mobile, Conteneur élargi, Font size augmenté)');
