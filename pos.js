@@ -1,13 +1,13 @@
 // ==================== POS.JS - 5 COLONNES SUR MOBILE ====================
 // Mixmax Minimarket – Point de vente complet avec virtualisation
 // ✅ 5 colonnes sur mobile (< 700px)
+// ✅ 5 colonnes sur PC et tablette
 // ✅ Nom produit 22px bold uppercase, Prix produit 24px sur mobile
 // ✅ Nom panier 22px, Prix panier 24px
 // ✅ Bouton Valider 26px / hauteur 60px
-// ✅ CATÉGORIES EN GRAND FORMAT - NOM ET NB PRODUITS VISIBLES
-// ✅ CONTENEUR ÉLARGI - CARTES PRODUITS PLUS GRANDES
-// ✅ FONT SIZE PRODUITS AUGMENTÉ
-// ✅ BARRE RECHERCHE + BOUTONS + SLIDE CATÉGORIES CACHÉS SOUS BOUTON "AFFICHER PLUS"
+// ✅ CATÉGORIES EN GRAND FORMAT - 5 PAR LIGNE
+// ✅ PRODUITS 5 PAR LIGNE
+// ✅ CONTENEUR ÉLARGI
 
 var posCart = [];
 var posStep = 1;
@@ -187,7 +187,6 @@ if (typeof window.updatePaymentButtons === 'function') window.updatePaymentButto
 }
 
 function posSearchProducts(query){ clearTimeout(window._searchTimeout); window._searchTimeout=setTimeout(function(){ posProductOffset=0; posSearchQuery=query.toLowerCase().trim(); 
-// ✅ Si on est en mode catégories et qu'on tape une recherche, passer en mode produits
 if (posViewMode === 'categories' && posSearchQuery.length > 0) {
     posViewMode = 'products';
     posSelectedCategoryForView = null;
@@ -200,7 +199,6 @@ if (input) {
 input.value = '';
 posSearchQuery = '';
 posProductOffset = 0;
-// ✅ Retourner aux catégories quand on efface la recherche
 posViewMode = 'categories';
 posSelectedCategoryForView = null;
 posSelectedCategory = 'all';
@@ -233,20 +231,21 @@ if (clearBtn) clearBtn.style.display = 'none';
 
 function loadMoreProducts(){ posProductOffset+=posProductBatchSize; filterProductGrid(); }
 
-// ==================== AFFICHER LES CATÉGORIES EN GRAND FORMAT ====================
+// ==================== AFFICHER LES CATÉGORIES - 5 PAR LIGNE ====================
 function afficherCategories(grid) {
     var isMobile = window.innerWidth < 700;
-    var gridCols = isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fill, minmax(180px, 1fr))';
+    // ✅ 5 colonnes sur PC, 4 sur mobile
+    var gridCols = isMobile ? 'repeat(4, 1fr)' : 'repeat(5, 1fr)';
     grid.style.gridTemplateColumns = gridCols;
     grid.style.overflowX = 'auto';
     grid.style.flexWrap = 'wrap';
     grid.style.alignContent = 'start';
     grid.style.gap = '16px';
     grid.style.padding = '12px';
+    grid.style.justifyContent = 'center';
 
     var html = '';
     
-    // ✅ TITRE
     html += '<div style="grid-column:1/-1;padding:10px 12px;font-size:1.2rem;font-weight:700;color:#111827;display:flex;align-items:center;gap:10px;">';
     html += '📂 Choisissez une catégorie';
     html += '</div>';
@@ -257,7 +256,6 @@ function afficherCategories(grid) {
         html += '<p style="color:#94a3b8;margin-top:10px;">Aucune catégorie disponible</p>';
         html += '</div>';
     } else {
-        // ✅ Trier les catégories par ordre
         var sortedCategories = posCategoriesList.slice().sort(function(a, b) {
             var ordreA = (a.ordre !== undefined && a.ordre !== null) ? parseInt(a.ordre) : 9999;
             var ordreB = (b.ordre !== undefined && b.ordre !== null) ? parseInt(b.ordre) : 9999;
@@ -268,23 +266,20 @@ function afficherCategories(grid) {
         for (var i = 0; i < sortedCategories.length; i++) {
             var cat = sortedCategories[i];
             
-            // ✅ Style des cartes catégories (grand format)
+            // ✅ Style adapté pour 5 colonnes
             var cardStyle = isMobile ? 
                 'padding:12px 4px;min-height:110px;max-height:140px;border-radius:12px;border:2px solid #e2e8f0;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:#ffffff;cursor:pointer;transition:all 0.2s;' : 
-                'padding:24px 12px;min-height:200px;max-height:240px;border-radius:16px;border:2px solid #e2e8f0;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:#ffffff;cursor:pointer;transition:all 0.2s;';
+                'padding:16px 8px;min-height:170px;max-height:200px;border-radius:14px;border:2px solid #e2e8f0;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:#ffffff;cursor:pointer;transition:all 0.2s;';
             
-            var imgSize = isMobile ? '60px' : '90px';
-            var imgStyle = 'width:'+imgSize+';height:'+imgSize+';border-radius:50%;margin-bottom:10px;overflow:hidden;flex-shrink:0;background:#f1f5f9;display:flex;align-items:center;justify-content:center;';
+            var imgSize = isMobile ? '55px' : '75px';
+            var imgStyle = 'width:'+imgSize+';height:'+imgSize+';border-radius:50%;margin-bottom:8px;overflow:hidden;flex-shrink:0;background:#f1f5f9;display:flex;align-items:center;justify-content:center;';
             
-            // ✅ Nom catégorie - taille augmentée
-            var nameSize = isMobile ? '14px' : '20px';
-            var nameStyle = 'font-size:'+nameSize+' !important;font-weight:700 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:#111827;margin-top:8px;display:block;line-height:1.3;';
+            var nameSize = isMobile ? '13px' : '16px';
+            var nameStyle = 'font-size:'+nameSize+' !important;font-weight:700 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:#111827;margin-top:6px;display:block;line-height:1.3;';
             
-            // ✅ Nombre de produits - toujours visible
-            var countSize = isMobile ? '12px' : '15px';
-            var countStyle = 'font-size:'+countSize+' !important;color:#64748b;font-weight:500;display:block;margin-top:4px;';
+            var countSize = isMobile ? '11px' : '13px';
+            var countStyle = 'font-size:'+countSize+' !important;color:#64748b;font-weight:500;display:block;margin-top:3px;';
 
-            // ✅ Compter les produits dans cette catégorie
             var count = posProductsList.filter(function(p) {
                 if (p.categories && p.categories.length > 0) {
                     return p.categories.includes(cat.nom);
@@ -296,7 +291,7 @@ function afficherCategories(grid) {
             if (cat.imageBase64) {
                 imgContent = '<img src="' + escapeHtml(cat.imageBase64) + '" loading="lazy" alt="' + escapeHtml(cat.nom) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
             } else {
-                imgContent = '<i class="fas fa-folder" style="font-size:' + (isMobile ? '28px' : '44px') + ';color:#2E7D32;"></i>';
+                imgContent = '<i class="fas fa-folder" style="font-size:' + (isMobile ? '24px' : '32px') + ';color:#2E7D32;"></i>';
             }
 
             html += '<div class="pos-category-card" style="' + cardStyle + '" onclick="selectionnerCategorie(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')" onmouseover="this.style.borderColor=\'#2E7D32\';this.style.transform=\'translateY(-3px)\';this.style.boxShadow=\'0 4px 12px rgba(0,0,0,0.1)\';" onmouseout="this.style.borderColor=\'#e2e8f0\';this.style.transform=\'none\';this.style.boxShadow=\'none\';">' +
@@ -316,11 +311,8 @@ function selectionnerCategorie(catName) {
     posViewMode = 'products';
     posProductOffset = 0;
     posSearchQuery = '';
-    
-    // Mettre à jour la catégorie sélectionnée
     posSelectedCategory = catName;
     
-    // Mettre à jour les boutons de catégories
     var catBtns = document.querySelectorAll('.pos-cat-btn');
     catBtns.forEach(function(btn) {
         btn.classList.remove('active');
@@ -329,7 +321,6 @@ function selectionnerCategorie(catName) {
         }
     });
     
-    // Réinitialiser la recherche
     var searchInput = document.getElementById('posSearchInput');
     if (searchInput) {
         searchInput.value = '';
@@ -348,7 +339,6 @@ function retournerCategories() {
     posSearchQuery = '';
     posProductOffset = 0;
     
-    // Désactiver tous les boutons de catégories
     var catBtns = document.querySelectorAll('.pos-cat-btn');
     catBtns.forEach(function(btn) {
         btn.classList.remove('active');
@@ -356,7 +346,6 @@ function retournerCategories() {
     var allBtn = document.querySelector('.pos-cat-btn[onclick*="all"]');
     if (allBtn) allBtn.classList.add('active');
     
-    // Réinitialiser la recherche
     var searchInput = document.getElementById('posSearchInput');
     if (searchInput) {
         searchInput.value = '';
@@ -367,21 +356,18 @@ function retournerCategories() {
     }
 }
 
-// ==================== FILTER PRODUCT GRID AVEC 5 COLONNES SUR MOBILE ====================
+// ==================== FILTER PRODUCT GRID - 5 PAR LIGNE ====================
 function filterProductGrid(){
 if(!isOnPOSPage() || posStep !== 1) return;
 var grid=document.getElementById('posProductGrid')||document.querySelector('.pos-products-grid'); if(!grid) return;
 
-// ✅ SI ON EST EN MODE CATÉGORIES
 if (posViewMode === 'categories') {
     afficherCategories(grid);
     return;
 }
 
-// ✅ SI ON EST EN MODE PRODUITS (afficher les produits d'une catégorie)
 var f=fastSearch(posSearchQuery);
 
-// Filtrer par catégorie sélectionnée
 if (posSelectedCategoryForView) {
     f = f.filter(function(p) {
         if (p.categories && p.categories.length > 0) {
@@ -404,28 +390,26 @@ var totalProducts = f.length;
 var displayProducts = f.slice(0, posProductOffset + posProductBatchSize);
 posHasMoreProducts = (posProductOffset + posProductBatchSize) < totalProducts;
 
-// ✅ Détection mobile - GRILLE ÉLARGIE
+// ✅ 5 colonnes sur PC, 5 sur mobile
 var isMobile = window.innerWidth < 700;
-var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(170px, 1fr))';
+var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(5, 1fr)';
 grid.style.gridTemplateColumns = gridCols;
 grid.style.overflowX = 'auto';
 grid.style.flexWrap = 'wrap';
 grid.style.gap = '14px';
 grid.style.padding = '10px';
+grid.style.justifyContent = 'center';
 
 var html='';
 
-// ✅ BOUTON RETOUR + NOM CATÉGORIE + NOMBRE DE PRODUITS (GRAND FORMAT)
 html += '<div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:14px 20px;margin-bottom:14px;background:#ffffff;border-radius:14px;border:2px solid #e2e8f0;flex-wrap:wrap;gap:12px;box-shadow:0 2px 4px rgba(0,0,0,0.06);">';
 
-// Groupe gauche : Bouton retour
 html += '<div style="display:flex;align-items:center;gap:10px;">';
 html += '<button onclick="retournerCategories()" style="display:flex;align-items:center;gap:6px;background:#111827;color:#ffffff;border:none;border-radius:8px;padding:10px 22px;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.2s;">';
-html += '<i class="fas fa-arrow-left"></i> Retour aux catégories';
+html += '<i class="fas fa-arrow-left"></i> Retour';
 html += '</button>';
 html += '</div>';
 
-// Groupe centre : Nom de la catégorie + nombre de produits
 if (posSelectedCategoryForView) {
     var count = posProductsList.filter(function(p) {
         if (p.categories && p.categories.length > 0) {
@@ -440,7 +424,6 @@ if (posSelectedCategoryForView) {
     html += '</div>';
 }
 
-// Groupe droit : espace vide
 html += '<div style="min-width:20px;"></div>';
 html += '</div>';
 
@@ -449,21 +432,19 @@ else{
 if(posSearchQuery) html+='<div style="grid-column:1/-1;padding:3px 8px;font-size:0.75rem;color:#94a3b8;">'+totalProducts+' résultat'+(totalProducts>1?'s':'')+'</div>';
 for(var j=0;j<displayProducts.length;j++){ var p=displayProducts[j],pr=p.prixPromo&&p.prixPromo>0?p.prixPromo:p.prixVente,hp=p.prixPromo&&p.prixPromo>0,sc='',stt=''; if(p.stock!==undefined){ if(p.stock<=0){sc='pos-out-of-stock';stt=' (Rupture)';}else if(p.stock<=5) stt=' ('+p.stock+' rest.)'; } var dn=escapeHtml(p.nom); if(posSearchQuery) dn=dn.replace(new RegExp('('+posSearchQuery.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark style="background:#fef3c7;border-radius:3px;">$1</mark>');
 
-// ✅ Style adapté - CARTES PRODUITS PLUS GRANDES ET FONT SIZE AUGMENTÉ
+// ✅ Style adapté pour 5 colonnes
 var cardStyle = isMobile ? 
     'padding:8px 4px;min-height:110px;border-radius:12px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#ffffff;border:2px solid #e2e8f0;' : 
-    'padding:16px 12px;min-height:220px;border-radius:16px;border-width:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#ffffff;border:2px solid #e2e8f0;';
-var imgStyle = isMobile ? 'height:50px;width:100%;margin-bottom:6px;border-radius:8px;' : 'height:100px;margin-bottom:10px;border-radius:10px;';
-// ✅ FONT SIZE AUGMENTÉ - Nom produit 26px sur mobile, 20px sur PC
-var nameStyle = isMobile ? 'font-size:26px !important;font-weight:700 !important;text-transform:uppercase;line-height:1.2;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:block;' : 'font-size:1.2rem !important;font-weight:700 !important;line-height:1.3;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:block;';
-// ✅ FONT SIZE AUGMENTÉ - Prix produit 28px sur mobile, 22px sur PC
-var priceStyle = isMobile ? 'font-size:28px !important;font-weight:700;display:block;text-align:center;margin-top:4px;' : 'font-size:1.3rem !important;font-weight:700;display:block;text-align:center;margin-top:6px;';
+    'padding:12px 8px;min-height:200px;border-radius:14px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#ffffff;border:2px solid #e2e8f0;';
+var imgStyle = isMobile ? 'height:45px;width:100%;margin-bottom:4px;border-radius:8px;' : 'height:85px;margin-bottom:8px;border-radius:10px;';
+var nameStyle = isMobile ? 'font-size:22px !important;font-weight:700 !important;text-transform:uppercase;line-height:1.2;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:block;' : 'font-size:1.1rem !important;font-weight:700 !important;line-height:1.3;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:block;';
+var priceStyle = isMobile ? 'font-size:24px !important;font-weight:700;display:block;text-align:center;margin-top:4px;' : 'font-size:1.2rem !important;font-weight:700;display:block;text-align:center;margin-top:4px;';
 
 html+='<div class="pos-product-card '+sc+'" style="'+cardStyle+'" onclick="posAddToCartOrOpenOptions(\''+p.id+'\')">'+
-(p.imageBase64?'<div class="pos-product-img" style="width:100%;'+imgStyle+'overflow:hidden;background:var(--gray-200);border-radius:8px;flex-shrink:0;"><img src="'+escapeHtml(p.imageBase64)+'" loading="lazy" alt="" style="width:100%;height:100%;object-fit:cover;"></div>':'<div class="pos-product-img pos-product-placeholder" style="width:100%;'+imgStyle+'overflow:hidden;background:var(--gray-200);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-box" style="'+(isMobile?'font-size:20px;':'font-size:32px;')+'"></i></div>')+
+(p.imageBase64?'<div class="pos-product-img" style="width:100%;'+imgStyle+'overflow:hidden;background:var(--gray-200);border-radius:8px;flex-shrink:0;"><img src="'+escapeHtml(p.imageBase64)+'" loading="lazy" alt="" style="width:100%;height:100%;object-fit:cover;"></div>':'<div class="pos-product-img pos-product-placeholder" style="width:100%;'+imgStyle+'overflow:hidden;background:var(--gray-200);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-box" style="'+(isMobile?'font-size:18px;':'font-size:28px;')+'"></i></div>')+
 '<div class="pos-product-info" style="display:flex;flex-direction:column;align-items:center;width:100%;flex:1;justify-content:center;">'+
 '<span class="pos-product-name" style="'+nameStyle+'">'+dn+stt+'</span>'+
-'<span class="pos-product-price" style="'+priceStyle+'">'+(hp?'<span class="pos-old-price" style="'+(isMobile?'font-size:18px;':'font-size:1rem;')+'text-decoration:line-through;color:#94a3b8;">'+p.prixVente.toFixed(2)+'</span> <span class="pos-promo-price" style="'+(isMobile?'font-size:28px;color:#ef4444;':'font-size:1.3rem;color:#ef4444;')+'">'+pr.toFixed(2)+' MAD</span>':pr.toFixed(2)+' MAD</span>')+'</span>'+
+'<span class="pos-product-price" style="'+priceStyle+'">'+(hp?'<span class="pos-old-price" style="'+(isMobile?'font-size:16px;':'font-size:0.9rem;')+'text-decoration:line-through;color:#94a3b8;">'+p.prixVente.toFixed(2)+'</span> <span class="pos-promo-price" style="'+(isMobile?'font-size:24px;color:#ef4444;':'font-size:1.2rem;color:#ef4444;')+'">'+pr.toFixed(2)+' MAD</span>':pr.toFixed(2)+' MAD</span>')+'</span>'+
 '</div></div>'; }
 if(posHasMoreProducts){ html+='<div style="grid-column:1/-1;text-align:center;padding:10px;"><button class="btn-add" onclick="loadMoreProducts()" style="font-size:0.8rem;">Afficher plus ('+(totalProducts-displayProducts.length)+' produits restants)</button></div>'; }
 }
@@ -600,7 +581,6 @@ function posAddToCartOrOpenOptions(pid){ var p=posProductsList.find(function(x){
 async function posOpenOptionsModal(pid){ var p=posProductsList.find(function(x){ return x.id===pid; }); if(!p) return; if(p.stock!==undefined&&p.stock<=0){ alert('Rupture'); return; } if(typeof allStockData==='undefined'||allStockData.length===0){ try{ var snap=await db.collection('stock').orderBy('nom').get(); allStockData=[]; snap.forEach(function(d){ var dd=d.data();dd.id=d.id;allStockData.push(dd); }); }catch(e){} } try{ var doc=await db.collection('products').doc(pid).get(); posCurrentProductIngredients=doc.exists?(doc.data().ingredients||[]):[]; }catch(e){ posCurrentProductIngredients=[]; } var grouped={}; posCurrentProductIngredients.forEach(function(ing){ var si=allStockData.find(function(s){ return s.id===ing.idStock; }),cat=si?si.categorie:'Autre'; if(!grouped[cat]) grouped[cat]=[]; grouped[cat].push(ing.nom); }); var order=['Sauces','Légumes','Fruits','Viande','Poulet','Poisson'],sortedCats=Object.keys(grouped).sort(function(a,b){ var ia=order.indexOf(a),ib=order.indexOf(b); if(ia!==-1&&ib!==-1) return ia-ib; if(ia!==-1) return -1; if(ib!==-1) return 1; return a.localeCompare(b); }); posCurrentProductId=pid; var h='<h4>'+escapeHtml(p.nom)+'</h4>'; if(sortedCats.length===0) h+='<div style="color:#94a3b8;">Aucun ingrédient</div>'; else sortedCats.forEach(function(cat){ h+='<div style="margin-bottom:10px;"><label style="font-weight:600;">🥫 '+escapeHtml(cat)+'</label><div style="display:flex;flex-wrap:wrap;gap:4px;">'; grouped[cat].forEach(function(ing){ h+='<label style="display:flex;align-items:center;gap:3px;padding:4px 6px;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;font-size:0.7rem;"><input type="checkbox" class="pos-interdit-check" value="'+escapeHtml(ing)+'"> '+escapeHtml(ing)+'</label>'; }); h+='</div></div>'; }); h+='<div><label>🌶️ Épices:</label><div style="display:flex;flex-wrap:wrap;gap:4px;">'; posEpicesList.forEach(function(s,idx){ h+='<label style="padding:4px 6px;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;font-size:0.7rem;"><input type="radio" name="pos-epice" value="'+s+'" '+(idx===0?'checked':'')+'> '+s+'</label>'; }); h+='</div></div><div><label>🧂 Sel:</label><div style="display:flex;flex-wrap:wrap;gap:4px;">'; posSelList.forEach(function(s,idx){ h+='<label style="padding:4px 6px;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;font-size:0.7rem;"><input type="radio" name="pos-sel" value="'+s+'" '+(idx===0?'checked':'')+'> '+s+'</label>'; }); h+='</div></div>'; h+='<div style="text-align:right;margin-top:15px;"><button class="btn-cancel" onclick="closeModal()">Annuler</button> <button class="btn-save" onclick="posConfirmOptions()">Ajouter</button></div>'; openModal('Personnaliser',h); }
 function posConfirmOptions(){ var interdits=[]; document.querySelectorAll('.pos-interdit-check:checked').forEach(function(cb){ interdits.push(cb.value); }); var epice=(document.querySelector('input[name="pos-epice"]:checked')||{}).value||'Normal',sel=(document.querySelector('input[name="pos-sel"]:checked')||{}).value||'Normal',p=posProductsList.find(function(x){ return x.id===posCurrentProductId; }); if(!p){ closeModal(); return; } var ex=posCart.find(function(x){ return x.id===posCurrentProductId; }); if(ex){ if(p.stock!==undefined&&ex.quantite>=p.stock){ alert('Stock insuffisant'); closeModal(); return; } ex.quantite+=1; }else{ var pr=p.prixPromo&&p.prixPromo>0?p.prixPromo:p.prixVente; posCart.push({id:p.id,nom:p.nom,prixUnitaire:pr,prixAchat:p.prixAchat||0,prixPromo:p.prixPromo||0,prixVente:p.prixVente||0,quantite:1,categorie:p.categorie||'',imageBase64:p.imageBase64||'',sauces:[],interdits:interdits,epice:epice,sel:sel}); } if(typeof window.onProductAdded==='function') window.onProductAdded(p.id); closeModal(); updateCartOnly(); }
 
-// ==================== UPDATE CART ONLY AVEC BOUTONS AMÉLIORÉS ====================
 function updateCartOnly(){
 if(!isOnPOSPage()) return;
 var ci=document.querySelector('.pos-cart-items');
@@ -609,12 +589,10 @@ var html='';
 if(posCart.length===0) {
 html='<div class="pos-cart-empty"><i class="fas fa-shopping-basket"></i><p>Panier vide</p></div>';
 } else {
-// Détection mobile pour les styles
 var isMobile = window.innerWidth < 700;
 var btnSize = isMobile ? '40px' : '28px';
 var fontSize = isMobile ? '1.2rem' : '0.7rem';
 var qtySize = isMobile ? '1.3rem' : '0.85rem';
-// ✅ Nom panier 22px, Prix panier 24px
 var nameSize = isMobile ? '22px' : '0.85rem';
 var priceSize = isMobile ? '0.7rem' : '0.7rem';
 var totalSize = isMobile ? '24px' : '0.8rem';
@@ -651,7 +629,6 @@ tr.textContent=t.toFixed(2)+' MAD';
 var vb=document.querySelector('.pos-validate-btn');
 if(vb) {
 vb.disabled=posCart.length===0;
-// ✅ Bouton Valider: 26px font-size, hauteur 60px
 vb.style.height = '60px';
 vb.style.fontSize = '26px';
 vb.style.fontWeight = '700';
@@ -689,7 +666,6 @@ var st=posCalculateTotal(),t=st-posDiscountMAD;
 var isMobile = window.innerWidth < 700;
 var productPanelStyle = posStep===2 ? ' style="display:none;"' : '';
 
-// ===== INDICATEUR D'ÉTAPE (CLICABLE) =====
 var stepSize = isMobile ? '22px' : '28px';
 var stepNumberSize = isMobile ? '22px' : '28px';
 var stepNumberSize2 = isMobile ? '26px' : '38px';
@@ -708,19 +684,19 @@ var stepIndicator = '<div class="pos-steps-nav" style="display:flex; justify-con
 
 var productPanelDisplay = (posStep === 2) ? 'display:none;' : '';
 
-// ✅ Styles pour mobile (5 colonnes) - GRILLE ÉLARGIE
-var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(170px, 1fr))';
+// ✅ 5 colonnes partout
+var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(5, 1fr)';
 var gridGap = isMobile ? '6px' : '14px';
 var gridPadding = isMobile ? '4px' : '10px';
-var panelPadding = isMobile ? '10px' : '20px';
+var panelPadding = isMobile ? '10px' : '24px';
 
 var h='<div class="pos-container' + (posStep===2 ? ' pos-container-full' : '') + '">' +
 stepIndicator +
 // ✅ CONTENEUR ÉLARGI
-'<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; flex:1; min-width:200px; min-height:700px; background:var(--white); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; height:100%; overflow:hidden;">' +
+'<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; flex:1; min-width:200px; max-width:100%; min-height:700px; background:var(--white); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; height:100%; overflow:hidden;">' +
 '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;">';
 
-// ✅ BOUTON "AFFICHER PLUS" POUR DÉROULER LA BARRE DE RECHERCHE
+// ✅ BOUTON "AFFICHER PLUS"
 h += '<div style="display:flex;justify-content:center;padding:4px 0;">';
 h += '<button onclick="toggleSearchBar()" style="display:flex;align-items:center;gap:8px;background:#2E7D32;color:#ffffff;border:none;border-radius:30px;padding:8px 24px;font-size:0.85rem;font-weight:600;cursor:pointer;transition:all 0.2s;box-shadow:0 2px 8px rgba(46,125,50,0.3);">';
 h += '<i class="fas fa-' + (posShowSearchBar ? 'chevron-up' : 'chevron-down') + '"></i>';
@@ -758,8 +734,8 @@ h+='<button class="pos-cat-btn '+ac+'" onclick="posFilterCategory(\''+escapeHtml
 }
 h+='</div></div></div>';
 
-// ✅ GRILLE PRODUITS
-h += '<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:auto;flex-wrap:wrap;"></div></div><div class="pos-cart-panel">';
+// ✅ GRILLE PRODUITS - 5 colonnes
+h += '<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:repeat(5, 1fr);gap:'+gridGap+';padding:'+gridPadding+';overflow-x:auto;flex-wrap:wrap;justify-content:center;"></div></div><div class="pos-cart-panel">';
 
 if(posStep===1){
 h+='<div class="pos-cart-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 4px;"><h3 style="font-size:'+(isMobile?'24px':'1rem')+';"><i class="fas fa-shopping-cart"></i> Panier <span class="pos-cart-badge" style="background:#2E7D32;color:#fff;border-radius:50%;padding:2px 10px;font-size:'+(isMobile?'20px':'0.7rem')+';">'+posCart.length+'</span></h3><button class="pos-clear-btn" onclick="posResetCart()" style="font-size:'+(isMobile?'18px':'0.9rem')+';background:#ef4444;color:#fff;border:none;border-radius:8px;padding:'+(isMobile?'6px 12px':'8px 16px')+';cursor:pointer;"><i class="fas fa-trash-alt"></i> Vider</button></div><div class="pos-cart-items" style="max-height:'+(isMobile?'200px':'300px')+';overflow-y:auto;padding:4px;">';
@@ -822,7 +798,6 @@ h+='</div></div>'; c.innerHTML=h;
 setStaticBackButtonVisibility(posStep === 2);
 
 if(posStep===1) {
-// ✅ Réinitialiser le mode catégories au chargement
 posViewMode = 'categories';
 posSelectedCategoryForView = null;
 filterProductGrid();
@@ -975,7 +950,6 @@ finally { isFinalizing=false; if(fb){ fb.disabled=false; fb.innerHTML='<i class=
 function goBackToPOS(){ if(window.currentUserData&&(window.currentUserData.userData.role==='caissier'||window.currentUserData.userData.role==='admin')){ if(posCart.length>0&&posStep===1){ if(!confirm('⚠️ '+posCart.length+' article(s) dans le panier. Garder ?')) posResetCart(); } navigateTo('pos'); } }
 if(!window._posKeydownListenerAdded){ window._posKeydownListenerAdded=true; document.addEventListener('keydown',function(event){ if(event.key==='Escape'){ var cp=document.getElementById('pageTitle')?.textContent||''; if(cp!=='POS'&&cp!=='Dashboard'&&cp!=='') goBackToPOS(); } if(event.ctrlKey&&(event.key==='p'||event.key==='P')){ event.preventDefault(); if((document.getElementById('pageTitle')?.textContent||'')!=='POS') navigateTo('pos'); } }); }
 
-// ✅ FONCTIONS MANQUANTES
 function posToggleVoiceSearch() {
     if (typeof window.toggleVoiceSearch === 'function') {
         window.toggleVoiceSearch();
@@ -996,4 +970,4 @@ window.posSelectedCategoryForView = posSelectedCategoryForView;
 window.posToggleVoiceSearch = posToggleVoiceSearch;
 window.toggleSearchBar = toggleSearchBar;
 
-console.log('⚡ Mixmax Minimarket - POS chargé (Catégories grand format, Conteneur élargi, Font size augmenté, Barre recherche cachée)');
+console.log('⚡ Mixmax Minimarket - POS chargé (5 colonnes PC, 5 colonnes mobile, Conteneur élargi)');
