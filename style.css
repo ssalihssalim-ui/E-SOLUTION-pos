@@ -103,7 +103,7 @@ background: var(--bg-page);
 transition: background 0.3s ease, color 0.3s ease;
 }
 
-/* ==================== SCROLLBAR MINIMAL ==================== */
+/* ==================== SCROLLBAR ==================== */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: var(--radius-full); }
@@ -255,7 +255,7 @@ transition: var(--transition);
 /* ==================== DASHBOARD LAYOUT ==================== */
 .dashboard { display: flex; height: 100vh; height: 100dvh; background: var(--bg-page); overflow: hidden; position: relative; }
 
-/* ==================== SIDEBAR - CACHÉ SUR TOUS LES ÉCRANS ==================== */
+/* ==================== SIDEBAR ==================== */
 .sidebar {
 width: 300px;
 background: var(--bg-dark);
@@ -352,7 +352,7 @@ align-items: center;
 justify-content: center;
 }
 
-/* ✅ OVERLAY - FERME LE MENU EN CLIQUANT DEHORS */
+/* ✅ OVERLAY */
 .sidebar-overlay {
 display: none;
 position: fixed;
@@ -509,14 +509,14 @@ color: var(--text-primary);
 .hidden { display: none !important; }
 
 /* ============================================================
-   ✅ POS SYSTEM - COMPLET AVEC CORRECTIONS
+   ✅ POS SYSTEM - ÉTAPES TOUJOURS EN HAUT
    ============================================================ */
 
 /* ✅ Conteneur principal du POS */
 .pos-container {
 display: flex !important;
 flex-direction: column !important;
-gap: 8px !important;
+gap: 6px !important;
 height: calc(100vh - 160px) !important;
 min-height: 400px !important;
 max-height: calc(100vh - 100px) !important;
@@ -527,7 +527,7 @@ overflow-y: auto !important;
 overflow-x: hidden !important;
 }
 
-/* ✅ INDICATEUR D'ÉTAPE - TOUJOURS EN HAUT SUR TOUS LES ÉCRANS */
+/* ✅ INDICATEUR D'ÉTAPE - TOUJOURS EN HAUT (STICKY) */
 .pos-steps-nav {
 display: flex !important;
 justify-content: center !important;
@@ -541,10 +541,11 @@ flex-shrink: 0 !important;
 flex-wrap: wrap !important;
 min-height: 32px !important;
 max-height: 42px !important;
-margin-bottom: 8px !important;
+margin-bottom: 6px !important;
 position: sticky !important;
 top: 0 !important;
-z-index: 50 !important;
+z-index: 100 !important;
+border-bottom: 1px solid var(--border) !important;
 }
 
 /* ✅ ROW CONTENT */
@@ -800,6 +801,19 @@ object-fit: contain;
     .pos-promo-price {
         font-size: 17px !important;
     }
+    
+    /* ✅ LES STEPS RESTENT EN HAUT SUR PC */
+    .pos-steps-nav {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 100 !important;
+        background: var(--bg-page) !important;
+        padding: 8px 16px !important;
+        border-radius: var(--radius) !important;
+        flex-shrink: 0 !important;
+        margin-bottom: 6px !important;
+        border-bottom: 1px solid var(--border) !important;
+    }
 }
 
 /* ============================================================
@@ -824,12 +838,13 @@ object-fit: contain;
     .pos-steps-nav {
         position: sticky !important;
         top: 0 !important;
-        z-index: 50 !important;
+        z-index: 100 !important;
         background: var(--bg-page) !important;
         padding: 8px 12px !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 6px !important;
         border-radius: var(--radius) !important;
         flex-shrink: 0 !important;
+        border-bottom: 1px solid var(--border) !important;
     }
     
     .pos-container {
@@ -837,10 +852,6 @@ object-fit: contain;
         overflow-x: hidden !important;
         height: 100vh !important;
         height: 100dvh !important;
-        padding-top: 0 !important;
-    }
-    
-    .pos-row {
         padding-top: 0 !important;
     }
 }
@@ -874,12 +885,13 @@ object-fit: contain;
     .pos-steps-nav {
         position: sticky !important;
         top: 0 !important;
-        z-index: 50 !important;
+        z-index: 100 !important;
         background: var(--bg-page) !important;
         padding: 6px 10px !important;
         border-radius: var(--radius) !important;
         flex-shrink: 0 !important;
         margin-bottom: 4px !important;
+        border-bottom: 1px solid var(--border) !important;
     }
 }
 
@@ -953,21 +965,42 @@ object-fit: contain;
 .pos-container-full .pos-steps-nav {
     position: sticky !important;
     top: 0 !important;
-    z-index: 50 !important;
+    z-index: 100 !important;
     background: var(--bg-page) !important;
     padding: 8px 12px !important;
     border-radius: 0 !important;
     flex-shrink: 0 !important;
+    border-bottom: 1px solid var(--border) !important;
 }
 
 /* ============================================================
    ✅ SUR MOBILE ET TABLETTE (< 1024px) - PANIER EN BAS
    ============================================================ */
 @media(max-width:1024px) {
-    .pos-container { flex-direction: column; height: auto; min-height: calc(100vh - 140px); }
-    .pos-row { position: static !important; flex-direction: column !important; gap: 8px !important; }
-    .pos-cart-panel { position: static !important; width: 100% !important; min-width: 100% !important; max-width: 100% !important; max-height: 40vh; margin-top: 6px; }
-    .pos-products-panel { width: 100% !important; max-width: 100% !important; height: auto; max-height: 50vh; }
+    .pos-container { 
+        flex-direction: column; 
+        height: auto; 
+        min-height: calc(100vh - 140px); 
+    }
+    .pos-row { 
+        position: static !important; 
+        flex-direction: column !important; 
+        gap: 8px !important; 
+    }
+    .pos-cart-panel { 
+        position: static !important; 
+        width: 100% !important; 
+        min-width: 100% !important; 
+        max-width: 100% !important; 
+        max-height: 40vh; 
+        margin-top: 6px; 
+    }
+    .pos-products-panel { 
+        width: 100% !important; 
+        max-width: 100% !important; 
+        height: auto; 
+        max-height: 50vh; 
+    }
 
     .pos-cat-btn {
         padding: 4px 8px !important;
@@ -983,12 +1016,13 @@ object-fit: contain;
     .pos-steps-nav {
         position: sticky !important;
         top: 0 !important;
-        z-index: 50 !important;
+        z-index: 100 !important;
         background: var(--bg-page) !important;
         padding: 8px 12px !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 6px !important;
         border-radius: var(--radius) !important;
         flex-shrink: 0 !important;
+        border-bottom: 1px solid var(--border) !important;
     }
     
     .pos-container-full .pos-steps-nav {
@@ -1081,6 +1115,10 @@ object-fit: contain;
     background: #14B8A6 !important;
     color: #FFFFFF !important;
     border-color: #14B8A6 !important;
+}
+[data-theme="dark"] .pos-steps-nav {
+    background: #161B22 !important;
+    border-bottom-color: #30363D !important;
 }
 
 /* ============================================================
