@@ -1893,3 +1893,197 @@ border-color: #30363D !important;
 background: #161B22 !important;
 border-color: #14B8A6 !important;
 }
+
+
+/* ============================================================
+   ✅ FORCER 4 COLONNES POS - SOLUTION ULTIME
+   ============================================================ */
+
+/* ✅ FORCER 4 COLONNES SUR TOUS LES ÉCRANS */
+.pos-products-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+    padding: 6px !important;
+    justify-content: center !important;
+    align-content: start !important;
+}
+
+/* ✅ CARTES PRODUITS - TAILLE FIXE */
+.pos-product-card {
+    min-height: 100px !important;
+    max-height: 130px !important;
+    padding: 4px 2px !important;
+    border-radius: 8px !important;
+    border: 2px solid #e2e8f0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    cursor: pointer !important;
+}
+
+/* ✅ IMAGE PRODUIT */
+.pos-product-img {
+    height: 40px !important;
+    width: 80% !important;
+    margin-bottom: 3px !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+    background: #f1f5f9 !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.pos-product-img img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+
+/* ✅ NOM PRODUIT - UNE SEULE LIGNE */
+.pos-product-name {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+    display: block !important;
+    color: #111827 !important;
+    padding: 0 2px !important;
+    line-height: 1.2 !important;
+}
+
+/* ✅ PRIX PRODUIT */
+.pos-product-price {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    display: block !important;
+    text-align: center !important;
+    margin-top: 2px !important;
+    color: #111827 !important;
+}
+
+.pos-old-price {
+    font-size: 10px !important;
+    text-decoration: line-through !important;
+    color: #94a3b8 !important;
+    margin-right: 4px !important;
+}
+
+.pos-promo-price {
+    font-size: 14px !important;
+    color: #ef4444 !important;
+}
+
+/* ✅ MODE SOMBRE */
+[data-theme="dark"] .pos-product-card {
+    background: #0D1117 !important;
+    border-color: #30363D !important;
+}
+[data-theme="dark"] .pos-product-name {
+    color: #F0F6FC !important;
+}
+[data-theme="dark"] .pos-product-price {
+    color: #F0F6FC !important;
+}
+[data-theme="dark"] .pos-old-price {
+    color: #8B949E !important;
+}
+[data-theme="dark"] .pos-promo-price {
+    color: #F87171 !important;
+}
+[data-theme="dark"] .pos-product-img {
+    background: #1C2333 !important;
+}
+
+/* ✅ SUR PC - AGRANDIR */
+@media(min-width: 1024px) {
+    .pos-product-card {
+        min-height: 170px !important;
+        max-height: 200px !important;
+        padding: 8px 4px !important;
+    }
+    .pos-product-img {
+        height: 80px !important;
+    }
+    .pos-product-name {
+        font-size: 15px !important;
+    }
+    .pos-product-price {
+        font-size: 17px !important;
+    }
+    .pos-promo-price {
+        font-size: 17px !important;
+    }
+}
+
+/* ✅ SUR TABLETTE */
+@media(min-width: 700px) and (max-width: 1024px) {
+    .pos-product-card {
+        min-height: 140px !important;
+        max-height: 170px !important;
+    }
+    .pos-product-img {
+        height: 60px !important;
+    }
+    .pos-product-name {
+        font-size: 14px !important;
+    }
+    .pos-product-price {
+        font-size: 16px !important;
+    }
+}
+
+/* ✅ SUR MOBILE - AGRANDIR NOM ET PRIX */
+@media(max-width: 700px) {
+    .pos-product-card {
+        min-height: 90px !important;
+        max-height: 115px !important;
+        padding: 3px 1px !important;
+        border-width: 1px !important;
+    }
+    .pos-product-img {
+        height: 35px !important;
+        width: 70% !important;
+    }
+    .pos-product-name {
+        font-size: 12px !important;
+        font-weight: 700 !important;
+    }
+    .pos-product-price {
+        font-size: 14px !important;
+    }
+    .pos-promo-price {
+        font-size: 14px !important;
+    }
+}
+
+/* ✅ SUR TRÈS PETIT ÉCRAN */
+@media(max-width: 400px) {
+    .pos-products-grid {
+        gap: 4px !important;
+        padding: 3px !important;
+    }
+    .pos-product-card {
+        min-height: 75px !important;
+        max-height: 95px !important;
+        padding: 2px 1px !important;
+    }
+    .pos-product-img {
+        height: 28px !important;
+        width: 60% !important;
+    }
+    .pos-product-name {
+        font-size: 10px !important;
+    }
+    .pos-product-price {
+        font-size: 12px !important;
+    }
+}
