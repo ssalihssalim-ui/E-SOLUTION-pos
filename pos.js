@@ -1,8 +1,8 @@
 // ==================== POS.JS - E-SOLUTION ====================
 // Point de vente complet avec mode catégories
-// ✅ 4 colonnes FIXES partout
-// ✅ Nom produit bien affiché (une seule ligne)
-// ✅ Image + nom + prix bien visibles
+// ✅ 4 colonnes catégories sur mobile ET PC
+// ✅ 4 colonnes produits sur mobile ET PC
+// ✅ Nom produit 16px bold, Prix produit 18px bold
 
 var posCart = [];
 var posStep = 1;
@@ -225,15 +225,17 @@ if (clearBtn) clearBtn.style.display = 'none';
 
 function loadMoreProducts(){ posProductOffset+=posProductBatchSize; filterProductGrid(); }
 
-// ==================== AFFICHER LES CATÉGORIES - 4 COLONNES FIXES ====================
+// ==================== AFFICHER LES CATÉGORIES - 4 COLONNES ====================
 function afficherCategories(grid) {
-    // ✅ FORCER 4 COLONNES
-    grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+    var isMobile = window.innerWidth < 700;
+    // ✅ 4 colonnes partout
+    var gridCols = 'repeat(4, 1fr)';
+    grid.style.gridTemplateColumns = gridCols;
     grid.style.overflowX = 'auto';
     grid.style.flexWrap = 'wrap';
     grid.style.alignContent = 'start';
-    grid.style.gap = '10px';
-    grid.style.padding = '8px';
+    grid.style.gap = isMobile ? '8px' : '14px';
+    grid.style.padding = isMobile ? '6px' : '12px';
     grid.style.justifyContent = 'center';
 
     var html = '';
@@ -258,17 +260,17 @@ function afficherCategories(grid) {
         for (var i = 0; i < sortedCategories.length; i++) {
             var cat = sortedCategories[i];
             
-            var cardStyle = window.innerWidth < 700 ? 
+            var cardStyle = isMobile ? 
                 'padding:10px 4px;min-height:95px;max-height:120px;border-radius:10px;border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:var(--bg-card);cursor:pointer;transition:var(--transition);' : 
                 'padding:14px 8px;min-height:160px;max-height:190px;border-radius:14px;border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:var(--bg-card);cursor:pointer;transition:var(--transition);';
             
-            var imgSize = window.innerWidth < 700 ? '48px' : '70px';
+            var imgSize = isMobile ? '48px' : '70px';
             var imgStyle = 'width:'+imgSize+';height:'+imgSize+';border-radius:50%;margin-bottom:6px;overflow:hidden;flex-shrink:0;background:var(--gray-100);display:flex;align-items:center;justify-content:center;';
             
-            var nameSize = window.innerWidth < 700 ? '11px' : '15px';
+            var nameSize = isMobile ? '11px' : '15px';
             var nameStyle = 'font-size:'+nameSize+' !important;font-weight:700 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--text-primary);margin-top:4px;display:block;line-height:1.3;';
             
-            var countSize = window.innerWidth < 700 ? '9px' : '12px';
+            var countSize = isMobile ? '9px' : '12px';
             var countStyle = 'font-size:'+countSize+' !important;color:var(--text-secondary);font-weight:500;display:block;margin-top:2px;';
 
             var count = posProductsList.filter(function(p) {
@@ -282,10 +284,10 @@ function afficherCategories(grid) {
             if (cat.imageBase64) {
                 imgContent = '<img src="' + escapeHtml(cat.imageBase64) + '" loading="lazy" alt="' + escapeHtml(cat.nom) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
             } else {
-                imgContent = '<i class="fas fa-folder" style="font-size:' + (window.innerWidth < 700 ? '18px' : '28px') + ';color:var(--accent);"></i>';
+                imgContent = '<i class="fas fa-folder" style="font-size:' + (isMobile ? '18px' : '28px') + ';color:var(--accent);"></i>';
             }
 
-            html += '<div class="pos-category-card" style="' + cardStyle + '" onclick="selectionnerCategorie(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')">' +
+            html += '<div class="pos-category-card" style="' + cardStyle + '" onclick="selectionnerCategorie(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')" onmouseover="this.style.borderColor=\'var(--accent)\';this.style.transform=\'translateY(-3px)\';this.style.boxShadow=\'var(--shadow-md)\';" onmouseout="this.style.borderColor=\'var(--border)\';this.style.transform=\'none\';this.style.boxShadow=\'none\';">' +
                 '<div style="' + imgStyle + '">' + imgContent + '</div>' +
                 '<span style="' + nameStyle + '">' + escapeHtml(cat.nom) + '</span>' +
                 '<span style="' + countStyle + '">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>' +
@@ -347,7 +349,7 @@ function retournerCategories() {
     }
 }
 
-// ==================== FILTER PRODUCT GRID - 4 COLONNES FIXES ====================
+// ==================== FILTER PRODUCT GRID - 4 COLONNES ====================
 function filterProductGrid(){
 if(!isOnPOSPage() || posStep !== 1) return;
 var grid=document.getElementById('posProductGrid')||document.querySelector('.pos-products-grid'); if(!grid) return;
@@ -381,12 +383,14 @@ var totalProducts = f.length;
 var displayProducts = f.slice(0, posProductOffset + posProductBatchSize);
 posHasMoreProducts = (posProductOffset + posProductBatchSize) < totalProducts;
 
-// ✅ FORCER 4 COLONNES - PAS DE AUTO-FILL
-grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+var isMobile = window.innerWidth < 700;
+// ✅ 4 colonnes partout
+var gridCols = 'repeat(4, 1fr)';
+grid.style.gridTemplateColumns = gridCols;
 grid.style.overflowX = 'auto';
 grid.style.flexWrap = 'wrap';
-grid.style.gap = '8px';
-grid.style.padding = '6px';
+grid.style.gap = isMobile ? '6px' : '12px';
+grid.style.padding = isMobile ? '4px' : '10px';
 grid.style.justifyContent = 'center';
 
 var html='';
@@ -426,35 +430,37 @@ var pr=p.prixPromo&&p.prixPromo>0?p.prixPromo:p.prixVente;
 var hp=p.prixPromo&&p.prixPromo>0;
 var sc='', stt=''; 
 if(p.stock!==undefined){ 
-    if(p.stock<=0){sc='pos-out-of-stock';stt=' ❌';}else if(p.stock<=5) stt=' ('+p.stock+' rest.)'; 
+    if(p.stock<=0){sc='pos-out-of-stock';stt=' (Rupture)';}else if(p.stock<=5) stt=' ('+p.stock+' rest.)'; 
 } 
 var dn=escapeHtml(p.nom); 
 if(posSearchQuery) dn=dn.replace(new RegExp('('+posSearchQuery.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark style="background:#fef3c7;border-radius:3px;">$1</mark>');
 
-var isMobile = window.innerWidth < 700;
-
-// ✅ CARTE PRODUIT - TAILLE FIXE POUR 4 COLONNES
+// ✅ STYLES - 4 colonnes, font-size fixe
 var cardStyle = isMobile ? 
-    'padding:4px 2px;min-height:100px;max-height:120px;border-radius:8px;border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-card);cursor:pointer;transition:var(--transition);width:100%;' : 
-    'padding:10px 6px;min-height:180px;max-height:200px;border-radius:12px;border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-card);cursor:pointer;transition:var(--transition);width:100%;';
+    'padding:6px 3px;min-height:100px;border-radius:10px;border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-card);cursor:pointer;transition:var(--transition);' : 
+    'padding:12px 8px;min-height:190px;border-radius:14px;border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg-card);cursor:pointer;transition:var(--transition);';
 
-// ✅ IMAGE - BIEN CENTRÉE
 var imgStyle = isMobile ? 
-    'height:40px;width:80%;margin-bottom:3px;border-radius:6px;overflow:hidden;background:var(--gray-100);flex-shrink:0;display:flex;align-items:center;justify-content:center;' : 
-    'height:75px;width:85%;margin-bottom:6px;border-radius:8px;overflow:hidden;background:var(--gray-100);flex-shrink:0;display:flex;align-items:center;justify-content:center;';
+    'height:40px;width:100%;margin-bottom:4px;border-radius:8px;overflow:hidden;background:var(--gray-100);flex-shrink:0;' : 
+    'height:80px;width:100%;margin-bottom:8px;border-radius:10px;overflow:hidden;background:var(--gray-100);flex-shrink:0;';
 
-// ✅ NOM PRODUIT - UNE SEULE LIGNE, BIEN VISIBLE
+// ✅ Nom produit: 16px bold sur mobile ET PC
 var nameStyle = isMobile ? 
-    'font-size:13px !important;font-weight:700 !important;text-transform:uppercase;line-height:1.2;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:block;color:var(--text-primary);padding:0 2px;' : 
-    'font-size:15px !important;font-weight:700 !important;line-height:1.3;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:block;color:var(--text-primary);padding:0 4px;';
+    'font-size:16px !important;font-weight:700 !important;text-transform:uppercase;line-height:1.2;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:block;color:var(--text-primary);' : 
+    'font-size:16px !important;font-weight:700 !important;line-height:1.3;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;display:block;color:var(--text-primary);';
 
-// ✅ PRIX PRODUIT - BIEN VISIBLE
+// ✅ Prix produit: 18px bold sur mobile ET PC
 var priceStyle = isMobile ? 
-    'font-size:15px !important;font-weight:700;display:block;text-align:center;margin-top:2px;color:var(--text-primary);' : 
-    'font-size:17px !important;font-weight:700;display:block;text-align:center;margin-top:4px;color:var(--text-primary);';
+    'font-size:18px !important;font-weight:700;display:block;text-align:center;margin-top:2px;color:var(--text-primary);' : 
+    'font-size:18px !important;font-weight:700;display:block;text-align:center;margin-top:4px;color:var(--text-primary);';
 
-var oldPriceStyle = 'font-size:11px;text-decoration:line-through;color:var(--text-muted);margin-right:4px;';
-var promoPriceStyle = isMobile ? 'font-size:15px;color:var(--danger);' : 'font-size:17px;color:var(--danger);';
+var oldPriceStyle = isMobile ? 
+    'font-size:12px;text-decoration:line-through;color:var(--text-muted);margin-right:4px;' : 
+    'font-size:12px;text-decoration:line-through;color:var(--text-muted);margin-right:4px;';
+
+var promoPriceStyle = isMobile ? 
+    'font-size:18px;color:var(--danger);' : 
+    'font-size:18px;color:var(--danger);';
 
 var imgContent = '';
 if (p.imageBase64) {
@@ -464,7 +470,7 @@ if (p.imageBase64) {
 }
 
 html+='<div class="pos-product-card '+sc+'" style="'+cardStyle+'" onclick="posAddToCartOrOpenOptions(\''+p.id+'\')">'+
-    '<div class="pos-product-img" style="'+imgStyle+'">'+imgContent+'</div>'+
+    '<div class="pos-product-img" style="'+imgStyle+'display:flex;align-items:center;justify-content:center;">'+imgContent+'</div>'+
     '<div class="pos-product-info" style="display:flex;flex-direction:column;align-items:center;width:100%;flex:1;justify-content:center;overflow:hidden;">'+
         '<span class="pos-product-name" style="'+nameStyle+'">'+dn+stt+'</span>'+
         '<span class="pos-product-price" style="'+priceStyle+'">'+
@@ -714,14 +720,13 @@ var stepIndicator = '<div class="pos-steps-nav" style="display:flex; justify-con
 
 var productPanelDisplay = (posStep === 2) ? 'display:none;' : '';
 
-var gridGap = isMobile ? '6px' : '10px';
-var gridPadding = isMobile ? '4px' : '8px';
-var panelPadding = isMobile ? '10px' : '20px';
+var gridGap = isMobile ? '6px' : '12px';
+var gridPadding = isMobile ? '4px' : '10px';
+var panelPadding = isMobile ? '10px' : '24px';
 
 var h='<div class="pos-container' + (posStep===2 ? ' pos-container-full' : '') + '">' +
 stepIndicator +
-// ✅ pos-products-panel - largeur augmentée
-'<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; flex:1; min-width:280px; max-width:100%; min-height:700px; background:var(--bg-card); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; height:100%; overflow:hidden;">' +
+'<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; flex:1; min-width:200px; max-width:100%; min-height:700px; background:var(--bg-card); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; height:100%; overflow:hidden;">' +
 '<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:8px;">';
 
 // ✅ BOUTON "AFFICHER PLUS"
@@ -762,8 +767,9 @@ h+='<button class="pos-cat-btn '+ac+'" onclick="posFilterCategory(\''+escapeHtml
 }
 h+='</div></div></div>';
 
-// ✅ GRILLE PRODUITS - 4 COLONNES FIXES
-h += '<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:repeat(4, 1fr);gap:'+gridGap+';padding:'+gridPadding+';overflow-x:auto;flex-wrap:wrap;justify-content:center;"></div></div><div class="pos-cart-panel">';
+// ✅ GRILLE PRODUITS - 4 colonnes partout
+var gridCols = 'repeat(4, 1fr)';
+h += '<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:auto;flex-wrap:wrap;justify-content:center;"></div></div><div class="pos-cart-panel">';
 
 if(posStep===1){
 h+='<div class="pos-cart-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 4px;"><h3 style="font-size:'+(isMobile?'24px':'1rem')+';color:var(--text-primary);"><i class="fas fa-shopping-cart"></i> Panier <span class="pos-cart-badge" style="background:var(--accent);color:#fff;border-radius:50%;padding:2px 10px;font-size:'+(isMobile?'20px':'0.7rem')+';">'+posCart.length+'</span></h3><button class="pos-clear-btn" onclick="posResetCart()" style="font-size:'+(isMobile?'18px':'0.9rem')+';background:var(--danger);color:#fff;border:none;border-radius:8px;padding:'+(isMobile?'6px 12px':'8px 16px')+';cursor:pointer;"><i class="fas fa-trash-alt"></i> Vider</button></div><div class="pos-cart-items" style="max-height:'+(isMobile?'200px':'300px')+';overflow-y:auto;padding:4px;">';
