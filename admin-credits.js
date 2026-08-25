@@ -1,7 +1,7 @@
 // ==================== ADMIN-CREDITS.JS - E-SOLUTION ====================
 // Version : Design PRO - Facture/Date/Client en colonnes séparées
 // BOUTONS AVEC ICÔNES CORRIGÉS - Font Awesome fonctionnel
-// Version FINALE
+// Version FINALE - AVEC MODAL DÉTAILS FACTURE
 
 // ========== VARIABLES GLOBALES ==========
 window.creditsPeriod = window.creditsPeriod || 'all';
@@ -960,6 +960,7 @@ window.filteredCredits = filtered;
 renderCreditsTablePro();
 }
 
+// ==================== RENDER CREDITS TABLE PRO ====================
 function renderCreditsTablePro() {
 var cont = document.getElementById('creditsTableContainer');
 if (!cont) return;
@@ -1017,7 +1018,13 @@ pageData.forEach(function(d, index) {
 var reste = d.remainingAmount || d.total || 0;
 if (!d.paid) tc += reste;
 
-const factureHtml = renderCreditFactureCell(d);
+const factureNum = d.factureNum || d.id?.substring(0, 8) || '---';
+const factureHtml = `
+<div class="facture-cell">
+<i class="fas fa-file-invoice"></i>
+<span class="facture-number">#${factureNum}</span>
+</div>
+`;
 const dateHtml = renderCreditDateCell(d);
 const clientHtml = renderCreditClientCell(d);
 
@@ -1060,7 +1067,9 @@ var isSelected = window.creditSelectedIds.includes(d.id);
 var rowClass = isSelected ? ' style="background:#fef3c7; border-left:4px solid #d97706;"' : '';
 
 h += `<tr${rowClass}>
-<td>${factureHtml}</td>
+<td onclick="openCreditFactureDetails('${d.id}', '${escapeHtml(factureNum)}')" style="cursor:pointer;">
+${factureHtml}
+</td>
 <td>${dateHtml}</td>
 <td>${clientHtml}</td>
 <td>${articlesHtml}</td>
@@ -1087,6 +1096,8 @@ h += `
 cont.innerHTML = h;
 document.getElementById('creditsPagination').innerHTML = getPaginationHTML('credits', data.length);
 }
+
+// ==================== SÉLECTION CRÉDITS ====================
 
 function toggleCreditSelectionMode() {
 window.creditSelectionMode = !window.creditSelectionMode;
@@ -1384,6 +1395,231 @@ throw e;
 }
 }
 
+// ==================== FONCTIONS POUR LE MODAL DÉTAILS FACTURE CRÉDIT ====================
+
+// Variable pour stocker l'ID du crédit en cours
+var currentCreditId = null;
+
+// Fonction pour ouvrir le modal des détails de facture crédit
+function openCreditFactureDetails(creditId, factureNum) {
+    // Créer le modal s'il n'existe pas
+    var modal = document.getElementById('creditFactureDetailsModal');
+    if (!modal) {
+        var modalHTML = `
+            <div id="creditFactureDetailsModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+                <div style="background:var(--bg-card);border-radius:var(--radius-xl);width:100%;max-width:900px;max-height:90vh;display:flex;flex-direction:column;box-shadow:var(--shadow-xl);border:1px solid var(--border);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:2px solid var(--border);flex-shrink:0;">
+                        <h3 id="creditFactureDetailsTitle" style="font-size:1.4rem;font-weight:700;color:var(--text-primary);margin:0;display:flex;align-items:center;gap:10px;">
+                            <i class="fas fa-file-invoice" style="color:var(--accent);font-size:1.4rem;"></i>
+                            📄 Détails du crédit
+                        </h3>
+                        <button onclick="closeCreditFactureDetails()" style="background:none;border:none;font-size:2rem;cursor:pointer;color:var(--text-muted);padding:0 14px;border-radius:8px;transition:var(--transition);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div id="creditFactureDetailsBody" style="flex:1;overflow-y:auto;padding:24px;padding-top:16px;">
+                        <div style="text-align:center;padding:40px;">
+                            <i class="fas fa-spinner fa-spin" style="font-size:2.5rem;color:var(--accent);"></i>
+                            <p style="color:var(--text-secondary);margin-top:12px;font-size:1.1rem;">Chargement...</p>
+                        </div>
+                    </div>
+                    <div style="padding:12px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;">
+                        <button onclick="closeCreditFactureDetails()" style="padding:12px 28px;border-radius:var(--radius);border:none;background:var(--gray-100);color:var(--text-secondary);font-weight:600;cursor:pointer;transition:var(--transition);font-size:1rem;">
+                            Fermer
+                        </button>
+                        <button onclick="printCreditFactureDetails()" style="padding:12px 28px;border-radius:var(--radius);border:none;background:var(--black);color:var(--white);font-weight:600;cursor:pointer;transition:var(--transition);font-size:1rem;display:flex;align-items:center;gap:8px;">
+                            <i class="fas fa-print"></i> Imprimer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        var div = document.createElement('div');
+        div.innerHTML = modalHTML;
+        document.body.appendChild(div.firstElementChild);
+        
+        // Fermer en cliquant à l'extérieur
+        document.getElementById('creditFactureDetailsModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeCreditFactureDetails();
+            }
+        });
+        
+        modal = document.getElementById('creditFactureDetailsModal');
+    }
+    
+    // Afficher le modal
+    modal.style.display = 'flex';
+    document.getElementById('creditFactureDetailsTitle').textContent = '📄 Détails crédit N° ' + (factureNum || 'N/A');
+    currentCreditId = creditId;
+    loadCreditFactureDetails(creditId);
+}
+
+// Fonction pour fermer le modal des détails du crédit
+function closeCreditFactureDetails() {
+    var modal = document.getElementById('creditFactureDetailsModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    currentCreditId = null;
+}
+
+// Fonction pour charger les données du crédit
+async function loadCreditFactureDetails(creditId) {
+    var body = document.getElementById('creditFactureDetailsBody');
+    if (!body) return;
+    
+    try {
+        var doc = await db.collection('credits').doc(creditId).get();
+        
+        if (!doc.exists) {
+            body.innerHTML = `
+                <div style="text-align:center;padding:40px;">
+                    <i class="fas fa-exclamation-triangle" style="font-size:3rem;color:var(--danger);"></i>
+                    <p style="color:var(--text-secondary);margin-top:12px;font-size:1.1rem;">Crédit non trouvé</p>
+                </div>
+            `;
+            return;
+        }
+        
+        var data = doc.data();
+        renderCreditFactureDetails(data);
+        
+    } catch(e) {
+        console.error('Erreur chargement crédit:', e);
+        body.innerHTML = `
+            <div style="text-align:center;padding:40px;">
+                <i class="fas fa-exclamation-triangle" style="font-size:3rem;color:var(--danger);"></i>
+                <p style="color:var(--text-secondary);margin-top:12px;font-size:1.1rem;">Erreur lors du chargement: ${e.message}</p>
+            </div>
+        `;
+    }
+}
+
+// Fonction pour afficher les détails du crédit - FONT SIZE AGRANDI
+function renderCreditFactureDetails(data) {
+    var body = document.getElementById('creditFactureDetailsBody');
+    if (!body) return;
+    
+    var date = data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date();
+    var dateStr = date.toLocaleDateString('fr-FR');
+    var timeStr = date.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+    
+    var statusBg = data.paid ? '#ECFDF5' : '#FEF3C7';
+    var statusColor = data.paid ? '#065F46' : '#92400E';
+    
+    var html = `
+        <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--border);">
+            <div>
+                <h4 style="font-size:1.4rem;font-weight:700;color:var(--text-primary);margin:0;">Crédit N° ${data.factureNum || 'N/A'}</h4>
+                <p style="color:var(--text-secondary);font-size:1.1rem;margin:6px 0 0 0;">
+                    <i class="far fa-calendar-alt"></i> ${dateStr} à ${timeStr}
+                </p>
+            </div>
+            <span style="display:inline-block;padding:6px 18px;border-radius:20px;font-size:1rem;font-weight:600;text-transform:uppercase;background:${statusBg};color:${statusColor};">
+                ${data.paid ? 'Payé' : 'Impayé'}
+            </span>
+        </div>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+            <div style="background:var(--bg-page);border-radius:var(--radius);padding:14px 18px;border:1px solid var(--border);">
+                <p style="font-size:0.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin:0 0 6px 0;">Client</p>
+                <p style="font-size:1.2rem;font-weight:600;color:var(--text-primary);margin:0;">${escapeHtml(data.clientName || 'Passager')}</p>
+                <p style="font-size:1rem;color:var(--text-secondary);margin:4px 0 0 0;">${data.clientId ? 'ID: ' + data.clientId : 'Client non identifié'}</p>
+            </div>
+            <div style="background:var(--bg-page);border-radius:var(--radius);padding:14px 18px;border:1px solid var(--border);">
+                <p style="font-size:0.8rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin:0 0 6px 0;">Vendeur / Mode</p>
+                <p style="font-size:1.2rem;font-weight:600;color:var(--text-primary);margin:0;">${escapeHtml(data.vendeur || 'N/A')}</p>
+                <p style="font-size:1rem;color:var(--text-secondary);margin:4px 0 0 0;">💳 ${escapeHtml(data.paymentMethod || '—')}</p>
+            </div>
+        </div>
+        
+        <div style="margin-bottom:18px;">
+            <p style="font-size:0.9rem;font-weight:600;color:var(--text-muted);text-transform:uppercase;margin:0 0 10px 0;">Articles</p>
+            <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;">
+                <table style="width:100%;border-collapse:collapse;font-size:1rem;">
+                    <thead>
+                        <tr style="background:var(--bg-page);">
+                            <th style="padding:10px 14px;text-align:left;font-weight:600;color:var(--text-secondary);border-bottom:2px solid var(--border);font-size:0.9rem;">Produit</th>
+                            <th style="padding:10px 14px;text-align:center;font-weight:600;color:var(--text-secondary);border-bottom:2px solid var(--border);font-size:0.9rem;">Qté</th>
+                            <th style="padding:10px 14px;text-align:right;font-weight:600;color:var(--text-secondary);border-bottom:2px solid var(--border);font-size:0.9rem;">Prix unit.</th>
+                            <th style="padding:10px 14px;text-align:right;font-weight:600;color:var(--text-secondary);border-bottom:2px solid var(--border);font-size:0.9rem;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+    
+    var items = data.items || [];
+    if (items.length === 0) {
+        html += '<tr><td colspan="4" style="padding:16px;text-align:center;color:var(--text-muted);font-size:1rem;">Aucun article</td></tr>';
+    } else {
+        items.forEach(function(item) {
+            var prix = item.prixVente || item.prixUnitaire || 0;
+            var total = prix * (item.quantite || 1);
+            var opts = '';
+            if (item.interdits && item.interdits.length) opts += ' 🚫' + escapeHtml(item.interdits.join(','));
+            if (item.epice && item.epice !== 'Normal') opts += ' 🌶️' + escapeHtml(item.epice);
+            if (item.sel && item.sel !== 'Normal') opts += ' 🧂' + escapeHtml(item.sel);
+            
+            html += `
+                <tr style="border-bottom:1px solid var(--border);">
+                    <td style="padding:10px 14px;color:var(--text-primary);font-size:1.05rem;">${escapeHtml(item.nom || 'Produit')}${opts}</td>
+                    <td style="padding:10px 14px;text-align:center;color:var(--text-primary);font-size:1.05rem;">${item.quantite || 1}</td>
+                    <td style="padding:10px 14px;text-align:right;color:var(--text-secondary);font-size:1.05rem;">${prix.toFixed(2)} MAD</td>
+                    <td style="padding:10px 14px;text-align:right;font-weight:600;color:var(--text-primary);font-size:1.05rem;">${total.toFixed(2)} MAD</td>
+                </tr>
+            `;
+        });
+    }
+    
+    var restant = data.remainingAmount || data.total || 0;
+    var amountGiven = data.amountGiven || 0;
+    var total = data.total || 0;
+    
+    html += `
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div style="display:flex;justify-content:flex-end;padding-top:16px;border-top:2px solid var(--border);">
+            <div style="width:280px;">
+                <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:1.1rem;color:var(--text-secondary);">
+                    <span>Total</span>
+                    <span>${total.toFixed(2)} MAD</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:6px 0;font-size:1.1rem;color:var(--text-secondary);">
+                    <span>Payé</span>
+                    <span>${amountGiven.toFixed(2)} MAD</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;padding:10px 0;font-size:1.5rem;font-weight:700;color:var(--danger);border-top:2px solid var(--border);margin-top:6px;">
+                    <span>Reste à payer</span>
+                    <span>${restant.toFixed(2)} MAD</span>
+                </div>
+                ${data.discountMAD > 0 ? `
+                <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:1rem;color:var(--text-secondary);">
+                    <span>Remise</span>
+                    <span>-${data.discountMAD.toFixed(2)} MAD</span>
+                </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+    
+    body.innerHTML = html;
+}
+
+// Fonction pour imprimer depuis le modal crédit
+function printCreditFactureDetails() {
+    if (currentCreditId) {
+        printFacture(currentCreditId);
+    } else {
+        alert('Aucun crédit sélectionné');
+    }
+}
+
+// ==================== EXPOSITION DES FONCTIONS GLOBALES ====================
+
 window.loadCreditsPage = loadCreditsPage;
 window.loadCredits = loadCredits;
 window.applyCreditsFilters = applyCreditsFilters;
@@ -1416,4 +1652,12 @@ window.renderCreditFactureCell = renderCreditFactureCell;
 window.renderCreditDateCell = renderCreditDateCell;
 window.renderCreditClientCell = renderCreditClientCell;
 
+// ✅ AJOUT DES FONCTIONS MODAL FACTURE CRÉDIT
+window.openCreditFactureDetails = openCreditFactureDetails;
+window.closeCreditFactureDetails = closeCreditFactureDetails;
+window.loadCreditFactureDetails = loadCreditFactureDetails;
+window.renderCreditFactureDetails = renderCreditFactureDetails;
+window.printCreditFactureDetails = printCreditFactureDetails;
+
 console.log('🚀 E-SOLUTION - Admin Credits PRO chargé');
+console.log('✅ Détails facture crédit modal ajouté - Font size agrandi');
