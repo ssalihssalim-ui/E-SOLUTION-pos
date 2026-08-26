@@ -3,6 +3,7 @@
 // ✅ BOUTONS AVEC ICÔNES CORRIGÉS - Font Awesome fonctionnel
 // ✅ SÉLECTION EN MASSE
 // ✅ DÉTAILS FACTURE MODAL AVEC X POUR FERMER - FONT SIZE AGRANDI
+// ✅ PAGINATION CORRIGÉE - SANS ICÔNES
 
 // ========== VARIABLES GLOBALES ==========
 window.commandesSearch = window.commandesSearch || '';
@@ -2109,6 +2110,78 @@ function printFactureDetails() {
     }
 }
 
+// ==================== PAGINATION (SANS ICÔNES) ====================
+
+// Fonction de pagination générique
+function getPaginationHTML(pageType, totalItems) {
+    var itemsPerPage = 20;
+    var totalPages = Math.ceil(totalItems / itemsPerPage);
+    var currentPage = window.currentPages ? window.currentPages[pageType] || 1 : 1;
+    
+    if (totalPages <= 1) {
+        return '';
+    }
+    
+    var html = `
+        <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:16px;flex-wrap:wrap;">
+            <button onclick="changePage('${pageType}', 1)" class="btn-add" style="padding:6px 12px;font-size:0.75rem;background:var(--black);color:var(--white);border:none;border-radius:8px;cursor:pointer;${currentPage === 1 ? 'opacity:0.4;cursor:not-allowed;' : ''}">
+                <<
+            </button>
+            <button onclick="changePage('${pageType}', ${currentPage - 1})" class="btn-add" style="padding:6px 12px;font-size:0.75rem;background:var(--black);color:var(--white);border:none;border-radius:8px;cursor:pointer;${currentPage === 1 ? 'opacity:0.4;cursor:not-allowed;' : ''}">
+                <
+            </button>
+            <span style="font-size:0.85rem;color:var(--text-secondary);font-weight:600;">Page ${currentPage} / ${totalPages}</span>
+            <button onclick="changePage('${pageType}', ${currentPage + 1})" class="btn-add" style="padding:6px 12px;font-size:0.75rem;background:var(--black);color:var(--white);border:none;border-radius:8px;cursor:pointer;${currentPage === totalPages ? 'opacity:0.4;cursor:not-allowed;' : ''}">
+                >
+            </button>
+            <button onclick="changePage('${pageType}', ${totalPages})" class="btn-add" style="padding:6px 12px;font-size:0.75rem;background:var(--black);color:var(--white);border:none;border-radius:8px;cursor:pointer;${currentPage === totalPages ? 'opacity:0.4;cursor:not-allowed;' : ''}">
+                >>
+            </button>
+        </div>
+    `;
+    return html;
+}
+
+// Fonction pour changer de page
+function changePage(pageType, page) {
+    if (!window.currentPages) window.currentPages = {};
+    
+    var itemsPerPage = 20;
+    var totalItems = 0;
+    
+    if (pageType === 'ventes') {
+        totalItems = window.filteredVentes ? window.filteredVentes.length : 0;
+    } else if (pageType === 'credits') {
+        totalItems = window.filteredCredits ? window.filteredCredits.length : 0;
+    } else if (pageType === 'commandes') {
+        totalItems = window.filteredCommandes ? window.filteredCommandes.length : 0;
+    }
+    
+    var totalPages = Math.ceil(totalItems / itemsPerPage);
+    if (page < 1 || page > totalPages) return;
+    
+    window.currentPages[pageType] = page;
+    
+    // Re-rendre la page correspondante
+    if (pageType === 'ventes' && typeof renderVentesTablePro === 'function') {
+        renderVentesTablePro();
+    } else if (pageType === 'credits' && typeof renderCreditsTablePro === 'function') {
+        renderCreditsTablePro();
+    } else if (pageType === 'commandes' && typeof renderCommandesTablePro === 'function') {
+        renderCommandesTablePro();
+    }
+}
+
+// Fonction pour obtenir les données de la page courante
+function getPageData(pageType, data) {
+    if (!window.currentPages) window.currentPages = {};
+    var currentPage = window.currentPages[pageType] || 1;
+    var itemsPerPage = 20;
+    var start = (currentPage - 1) * itemsPerPage;
+    var end = start + itemsPerPage;
+    return data.slice(start, end);
+}
+
 // ==================== EXPOSITION DES FONCTIONS GLOBALES ====================
 
 window.loadCommandesPage = loadCommandesPage;
@@ -2151,5 +2224,11 @@ window.loadFactureDetails = loadFactureDetails;
 window.renderFactureDetails = renderFactureDetails;
 window.printFactureDetails = printFactureDetails;
 
+// ✅ AJOUT DES FONCTIONS PAGINATION
+window.getPaginationHTML = getPaginationHTML;
+window.changePage = changePage;
+window.getPageData = getPageData;
+
 console.log('🚀 E-SOLUTION - Admin Ventes PRO chargé');
 console.log('✅ Détails facture modal ajouté - Font size agrandi');
+console.log('✅ Pagination corrigée - Sans icônes');
