@@ -2,6 +2,7 @@
 // Version : Design PRO - Facture/Date/Client en colonnes séparées
 // BOUTONS AVEC ICÔNES CORRIGÉS - Font Awesome fonctionnel
 // Version FINALE - AVEC MODAL DÉTAILS FACTURE ET PAIEMENT CRÉDIT
+// ✅ PAGINATION CORRIGÉE
 
 // ========== VARIABLES GLOBALES ==========
 window.creditsPeriod = window.creditsPeriod || 'all';
@@ -1315,7 +1316,6 @@ async function confirmCreditPayment(creditId) {
         var nouveauRestant = restant - montant;
         var estPaye = nouveauRestant <= 0.01;
         
-        // ✅ METTRE À JOUR LE CRÉDIT EXISTANT (pas créer un nouveau)
         await db.collection('credits').doc(creditId).update({
             amountGiven: nouveauPaye,
             remainingAmount: Math.max(0, nouveauRestant),
@@ -1325,7 +1325,6 @@ async function confirmCreditPayment(creditId) {
             lastPaymentAmount: montant
         });
 
-        // Mettre à jour le cache
         var updatedCredit = {
             ...credit,
             amountGiven: nouveauPaye,
@@ -1334,7 +1333,6 @@ async function confirmCreditPayment(creditId) {
         };
         await CacheDB.set('credits', creditId, updatedCredit);
         
-        // Mettre à jour les données locales
         var index = window.allCreditsData.findIndex(function(c) { return c.id === creditId; });
         if (index !== -1) {
             window.allCreditsData[index] = updatedCredit;
@@ -1345,7 +1343,6 @@ async function confirmCreditPayment(creditId) {
               'Montant payé: ' + montant.toFixed(2) + ' MAD\n' +
               'Reste à payer: ' + Math.max(0, nouveauRestant).toFixed(2) + ' MAD');
         
-        // Rafraîchir la liste
         loadCredits();
         CacheDB.sync();
 
@@ -1574,7 +1571,6 @@ function printCreditFactureDetails() {
 // ==================== AUTRES FONCTIONS ====================
 
 async function payerCredit(creditId) {
-    // Rediriger vers le modal de paiement
     openCreditPaymentModal(creditId);
 }
 
@@ -1732,6 +1728,77 @@ throw e;
 }
 }
 
+// ==================== PAGINATION (SANS ICÔNES) ====================
+
+// Fonction de pagination générique
+function getPaginationHTML(pageType, totalItems) {
+    var itemsPerPage = 20;
+    var totalPages = Math.ceil(totalItems / itemsPerPage);
+    var currentPage = window.currentPages ? window.currentPages[pageType] || 1 : 1;
+    
+    if (totalPages <= 1) {
+        return '';
+    }
+    
+    var html = `
+        <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:16px;flex-wrap:wrap;">
+            <button onclick="changePage('${pageType}', 1)" class="btn-add" style="padding:6px 12px;font-size:0.75rem;background:var(--black);color:var(--white);border:none;border-radius:8px;cursor:pointer;${currentPage === 1 ? 'opacity:0.4;cursor:not-allowed;' : ''}">
+                <<
+            </button>
+            <button onclick="changePage('${pageType}', ${currentPage - 1})" class="btn-add" style="padding:6px 12px;font-size:0.75rem;background:var(--black);color:var(--white);border:none;border-radius:8px;cursor:pointer;${currentPage === 1 ? 'opacity:0.4;cursor:not-allowed;' : ''}">
+                <
+            </button>
+            <span style="font-size:0.85rem;color:var(--text-secondary);font-weight:600;">Page ${currentPage} / ${totalPages}</span>
+            <button onclick="changePage('${pageType}', ${currentPage + 1})" class="btn-add" style="padding:6px 12px;font-size:0.75rem;background:var(--black);color:var(--white);border:none;border-radius:8px;cursor:pointer;${currentPage === totalPages ? 'opacity:0.4;cursor:not-allowed;' : ''}">
+                >
+            </button>
+            <button onclick="changePage('${pageType}', ${totalPages})" class="btn-add" style="padding:6px 12px;font-size:0.75rem;background:var(--black);color:var(--white);border:none;border-radius:8px;cursor:pointer;${currentPage === totalPages ? 'opacity:0.4;cursor:not-allowed;' : ''}">
+                >>
+            </button>
+        </div>
+    `;
+    return html;
+}
+
+// Fonction pour changer de page
+function changePage(pageType, page) {
+    if (!window.currentPages) window.currentPages = {};
+    
+    var itemsPerPage = 20;
+    var totalItems = 0;
+    
+    if (pageType === 'credits') {
+        totalItems = window.filteredCredits ? window.filteredCredits.length : 0;
+    } else if (pageType === 'ventes') {
+        totalItems = window.filteredVentes ? window.filteredVentes.length : 0;
+    } else if (pageType === 'commandes') {
+        totalItems = window.filteredCommandes ? window.filteredCommandes.length : 0;
+    }
+    
+    var totalPages = Math.ceil(totalItems / itemsPerPage);
+    if (page < 1 || page > totalPages) return;
+    
+    window.currentPages[pageType] = page;
+    
+    if (pageType === 'credits' && typeof renderCreditsTablePro === 'function') {
+        renderCreditsTablePro();
+    } else if (pageType === 'ventes' && typeof renderVentesTablePro === 'function') {
+        renderVentesTablePro();
+    } else if (pageType === 'commandes' && typeof renderCommandesTablePro === 'function') {
+        renderCommandesTablePro();
+    }
+}
+
+// Fonction pour obtenir les données de la page courante
+function getPageData(pageType, data) {
+    if (!window.currentPages) window.currentPages = {};
+    var currentPage = window.currentPages[pageType] || 1;
+    var itemsPerPage = 20;
+    var start = (currentPage - 1) * itemsPerPage;
+    var end = start + itemsPerPage;
+    return data.slice(start, end);
+}
+
 // ==================== EXPOSITION DES FONCTIONS GLOBALES ====================
 
 window.loadCreditsPage = loadCreditsPage;
@@ -1777,6 +1844,12 @@ window.printCreditFactureDetails = printCreditFactureDetails;
 window.openCreditPaymentModal = openCreditPaymentModal;
 window.confirmCreditPayment = confirmCreditPayment;
 
+// ✅ AJOUT DES FONCTIONS PAGINATION
+window.getPaginationHTML = getPaginationHTML;
+window.changePage = changePage;
+window.getPageData = getPageData;
+
 console.log('🚀 E-SOLUTION - Admin Credits PRO chargé');
 console.log('✅ Détails facture crédit modal ajouté - Font size agrandi');
 console.log('✅ Paiement crédit avec modal - Mise à jour du crédit existant');
+console.log('✅ Pagination corrigée - Sans icônes');
