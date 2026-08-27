@@ -1,9 +1,10 @@
-// ==================== POS.JS - E-SOLUTION (VERSION CORRIGÉE) ====================
-// ✅ Taille de "1 - Panier" et "2 - Paiement" réduite
-// ✅ Barre de recherche, boutons Tables/En ligne, catégories masqués par défaut
-// ✅ Bouton "Afficher tout" centré
-// ✅ Scroll activé pour voir le panier en bas
-// ✅ Scroll activé sur la page paiement
+// ==================== POS.JS - E-SOLUTION (VERSION COMPLÈTE AVEC MODE CATÉGORIES) ====================
+// Point de vente complet avec mode catégories
+// ✅ Nom produit peut sauter à la ligne
+// ✅ Image taille fixe et conteneur agrandi
+// ✅ Pas de scroll horizontal
+// ✅ Panier 20% - Produits 80% en hauteur
+// ✅ Espace en dessous du bouton Valider
 
 var posCart = [];
 var posStep = 1;
@@ -49,6 +50,7 @@ var posHasMoreProducts = false;
 var clientCreditsCache = {};
 var clientSearchTimeout = null;
 
+// ✅ MODE CATÉGORIES / PRODUITS
 var posViewMode = 'categories';
 var posSelectedCategoryForView = null;
 
@@ -252,6 +254,7 @@ if (clearBtn) clearBtn.style.display = 'none';
 
 function loadMoreProducts(){ posProductOffset+=posProductBatchSize; filterProductGrid(); }
 
+// ==================== FILTER PRODUCT GRID AVEC MODE CATÉGORIES ====================
 function filterProductGrid(){
     if(!isOnPOSPage() || posStep !== 1) return;
     
@@ -377,6 +380,7 @@ function filterProductGrid(){
     updateClearButtonVisibility();
 }
 
+// ==================== AFFICHER LES CATÉGORIES ====================
 function afficherCategories(grid) {
     var isMobile = window.innerWidth < 700;
     var gridCols = isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fill, minmax(130px, 1fr))';
@@ -448,6 +452,7 @@ function afficherCategories(grid) {
     grid.innerHTML = html;
 }
 
+// ==================== SÉLECTIONNER UNE CATÉGORIE ====================
 function selectionnerCategorie(catName) {
     posSelectedCategoryForView = catName;
     posViewMode = 'products';
@@ -474,6 +479,7 @@ function selectionnerCategorie(catName) {
     }
 }
 
+// ==================== RETOURNER AUX CATÉGORIES ====================
 function retournerCategories() {
     posViewMode = 'categories';
     posSelectedCategoryForView = null;
@@ -889,7 +895,7 @@ function renderPOS(){
     buildFullPOS(c);
 }
 
-// ==================== buildFullPOS AVEC CORRECTIONS ====================
+// ==================== buildFullPOS AVEC HAUTEURS CORRIGÉES ====================
 function buildFullPOS(c){
 if(posProductsList.length===0&&posCategoriesList.length===0){ c.innerHTML='<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:#14B8A6;"></i><p>Chargement...</p></div>'; return; }
 var st=posCalculateTotal(),t=st-posDiscountMAD;
@@ -923,10 +929,12 @@ var gridGap = isMobile ? '4px' : '8px';
 var gridPadding = isMobile ? '2px' : '4px';
 var panelPadding = isMobile ? '8px' : '12px';
 
-var h='<div class="pos-container' + (posStep===2 ? ' pos-container-full' : '') + '" style="display:flex;flex-direction:column;gap:6px;height:auto;padding-bottom:20px;">' +
+var h='<div class="pos-container' + (posStep===2 ? ' pos-container-full' : '') + '" style="display:flex;flex-direction:column;gap:6px;height:auto;padding-bottom:30px;">' +
 stepIndicator +
 '<div class="pos-row" style="display:flex;flex-direction:column;gap:8px;width:100%;height:auto;">' +
-'<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; width:100%; background:var(--bg-card); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; height:auto; overflow:visible; min-height:300px; max-height:'+productsPanelMaxHeight+';">' +
+
+// ✅ PRODUITS 80% DE LA HAUTEUR
+'<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; width:100%; background:var(--bg-card); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; height:auto; overflow:visible; min-height:350px; max-height:80vh; flex:8;">' +
 
 // ===== BOUTON AFFICHER TOUT CENTRÉ =====
 '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:6px;">' +
@@ -970,11 +978,11 @@ h+='</div>' +
 '<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:hidden;overflow-y:auto;flex-wrap:wrap;align-content:start;flex:1;"></div>' +
 '</div>' +
 
-// ===== PANIER EN DESSOUS =====
-'<div class="pos-cart-panel" style="width:100%;background:var(--bg-card);border-radius:var(--radius-xl);box-shadow:var(--shadow-xs);border:1px solid var(--border);display:flex;flex-direction:column;margin-top:4px;max-height:400px;">';
+// ✅ PANIER 20% DE LA HAUTEUR
+'<div class="pos-cart-panel" style="width:100%;background:var(--bg-card);border-radius:var(--radius-xl);box-shadow:var(--shadow-xs);border:1px solid var(--border);display:flex;flex-direction:column;margin-top:4px;max-height:35vh;flex:2;min-height:120px;">';
 
 if(posStep===1){
-h+='<div class="pos-cart-header" style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid var(--border);flex-shrink:0;"><h3 style="font-size:'+(isMobile?'18px':'0.9rem')+';"><i class="fas fa-shopping-cart"></i> Panier <span class="pos-cart-badge" style="background:#14B8A6;color:#fff;border-radius:50%;padding:1px 6px;font-size:'+(isMobile?'12px':'0.6rem')+';">'+posCart.length+'</span></h3><button class="pos-clear-btn" onclick="posResetCart()" style="font-size:'+(isMobile?'12px':'0.7rem')+';background:#ef4444;color:#fff;border:none;border-radius:4px;padding:'+(isMobile?'3px 8px':'4px 10px')+';cursor:pointer;"><i class="fas fa-trash-alt"></i> Vider</button></div><div class="pos-cart-items" style="flex:1;overflow-y:auto;padding:4px 8px;min-height:60px;">';
+h+='<div class="pos-cart-header" style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid var(--border);flex-shrink:0;"><h3 style="font-size:'+(isMobile?'18px':'0.9rem')+';"><i class="fas fa-shopping-cart"></i> Panier <span class="pos-cart-badge" style="background:#14B8A6;color:#fff;border-radius:50%;padding:1px 6px;font-size:'+(isMobile?'12px':'0.6rem')+';">'+posCart.length+'</span></h3><button class="pos-clear-btn" onclick="posResetCart()" style="font-size:'+(isMobile?'12px':'0.7rem')+';background:#ef4444;color:#fff;border:none;border-radius:4px;padding:'+(isMobile?'3px 8px':'4px 10px')+';cursor:pointer;"><i class="fas fa-trash-alt"></i> Vider</button></div><div class="pos-cart-items" style="flex:1;overflow-y:auto;padding:4px 8px;min-height:60px;max-height:180px;">';
 if(posCart.length===0){ h+='<div class="pos-cart-empty" style="text-align:center;padding:15px 8px;color:#94a3b8;"><i class="fas fa-shopping-basket" style="font-size:'+(isMobile?'22px':'28px')+';"></i><p style="font-size:'+(isMobile?'12px':'0.8rem')+';">Panier vide</p></div>'; }
 else{
 for(var k=0;k<posCart.length;k++){
@@ -1004,9 +1012,11 @@ h+='<div class="pos-cart-item" style="display:flex;align-items:center;justify-co
 }
 }
 h+='</div><div style="padding:2px 0;display:flex;gap:3px;align-items:center;flex-shrink:0;"><label style="font-size:'+(isMobile?'12px':'0.7rem')+';">Remise:</label><input type="number" id="posDiscountMAD" value="'+posDiscountMAD+'" min="0" step="0.01" onchange="posUpdateDiscountMAD(this.value)" style="width:50px;padding:2px;border:2px solid #e2e8f0;border-radius:4px;font-size:'+(isMobile?'12px':'0.7rem')+';"></div><div class="pos-cart-footer" style="padding:2px 0;flex-shrink:0;">'+(posDiscountMAD>0?'<div style="display:flex;justify-content:space-between;font-size:'+(isMobile?'12px':'0.8rem')+';"><span>Sous-total</span><span>'+st.toFixed(2)+'</span></div><div style="display:flex;justify-content:space-between;color:#ef4444;font-size:'+(isMobile?'12px':'0.8rem')+';"><span>Remise</span><span>-'+posDiscountMAD.toFixed(2)+'</span></div>':'')+'<div class="pos-cart-total-row" style="display:flex;justify-content:space-between;font-size:'+(isMobile?'18px':'20px')+';font-weight:700;padding:3px 0;border-top:2px solid var(--border);"><span>Total</span><span>'+t.toFixed(2)+' MAD</span></div>' +
-'<button class="pos-validate-btn" onclick="posGoToStep2()" '+(posCart.length===0?'disabled':'')+' style="width:100%;padding:10px;background:#14B8A6;color:#fff;border:none;border-radius:8px;font-size:18px;font-weight:700;height:40px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:4px;"><i class="fas fa-check-circle"></i> Valider</button></div>';
+
+// ✅ ESPACE EN DESSOUS DU BOUTON VALIDER
+'<button class="pos-validate-btn" onclick="posGoToStep2()" '+(posCart.length===0?'disabled':'')+' style="width:100%;padding:10px;background:#14B8A6;color:#fff;border:none;border-radius:8px;font-size:18px;font-weight:700;height:40px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:12px;"><i class="fas fa-check-circle"></i> Valider</button></div>';
 }else{
-// ✅ ÉTAPE PAIEMENT AVEC SCROLL
+// ÉTAPE PAIEMENT AVEC SCROLL
 var canCredit=posCurrentClient&&posCurrentClient.id;
 var creditDisplay = '';
 if (posCurrentClient && posCurrentClient.id) {
@@ -1028,7 +1038,7 @@ h+='<div class="pos-cart-header" style="padding:6px 10px;border-bottom:1px solid
 if(posPaymentMethod==='espece'||posPaymentMethod==='partiel') {
 h+='<div style="margin-bottom:3px;"><label style="font-size:'+(isMobile?'12px':'0.7rem')+';font-weight:600;">Montant donné</label><input type="number" id="posAmountGiven" placeholder="0.00" value="'+(posAmountGiven>0?posAmountGiven:'')+'" onkeyup="posCalculateChange()" style="width:100%;padding:6px;border:2px solid #e2e8f0;border-radius:4px;font-size:24px !important;font-weight:700 !important;"><div id="posChangeDisplay" style="font-size:22px;font-weight:700;padding:2px 0;margin-right:6px;"></div></div>';
 }
-h+='<button class="pos-finalize-btn" onclick="posFinalizeSale()" style="width:100%;padding:8px;margin-top:4px;background:#14B8A6;color:#fff;border:none;border-radius:8px;font-size:16px !important;font-weight:700 !important;min-height:40px;"><i class="fas fa-check-circle"></i> Finaliser</button></div>';
+h+='<button class="pos-finalize-btn" onclick="posFinalizeSale()" style="width:100%;padding:8px;margin-top:4px;background:#14B8A6;color:#fff;border:none;border-radius:8px;font-size:16px !important;font-weight:700 !important;min-height:40px;margin-bottom:12px;"><i class="fas fa-check-circle"></i> Finaliser</button></div>';
 }
 h+='</div></div></div></div>'; c.innerHTML=h;
 
