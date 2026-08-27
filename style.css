@@ -509,25 +509,35 @@ color: var(--text-primary);
 .hidden { display: none !important; }
 
 /* ============================================================
-   ✅ POS SYSTEM - ÉTAPES TOUJOURS EN HAUT
+   ✅ POS SYSTEM - HAUTEUR AUGMENTÉE
    ============================================================ */
 
-/* ✅ Conteneur principal du POS */
+/* ✅ DYNAMIC CONTENT - PAGE PLUS HAUTE */
+#dynamicContent {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    padding-bottom: 40px !important;
+    position: relative !important;
+}
+
+/* ✅ Conteneur principal du POS - HAUTEUR AUGMENTÉE */
 .pos-container {
 display: flex !important;
 flex-direction: column !important;
-gap: 6px !important;
+gap: 8px !important;
 height: auto !important;
-min-height: 100vh !important;
+min-height: 120vh !important;
 max-height: none !important;
 width: 100% !important;
-padding: 0 4px 30px 4px !important;
+padding: 0 4px 40px 4px !important;
 position: relative !important;
 overflow-y: visible !important;
 overflow-x: hidden !important;
 }
 
-/* ✅ INDICATEUR D'ÉTAPE - TOUJOURS EN HAUT (STICKY) - TAILLE RÉDUITE */
+/* ✅ INDICATEUR D'ÉTAPE - TOUJOURS EN HAUT */
 .pos-steps-nav {
 display: flex !important;
 justify-content: center !important;
@@ -596,32 +606,32 @@ font-size: 13px !important;
 .pos-row {
 display: flex !important;
 flex-direction: column !important;
-gap: 8px !important;
+gap: 10px !important;
 width: 100% !important;
 height: auto !important;
 }
 
-/* ✅ PRODUITS - 80% DE LA HAUTEUR */
+/* ✅ PRODUITS - HAUTEUR AUGMENTÉE */
 .pos-products-panel {
 width: 100% !important;
 min-width: 0 !important;
 max-width: 100% !important;
 background: var(--bg-card) !important;
 border-radius: var(--radius-lg) !important;
-padding: 8px !important;
+padding: 10px !important;
 box-shadow: var(--shadow-xs) !important;
 border: 1px solid var(--border) !important;
 display: flex !important;
 flex-direction: column !important;
 height: auto !important;
 overflow: visible !important;
-min-height: 350px !important;
-max-height: 80vh !important;
+min-height: 450px !important;
+max-height: 85vh !important;
 flex: 8 !important;
 transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-/* ✅ PANIER - 20% DE LA HAUTEUR */
+/* ✅ PANIER - HAUTEUR AUGMENTÉE */
 .pos-cart-panel {
 position: static !important;
 width: 100% !important;
@@ -630,39 +640,40 @@ max-width: 100% !important;
 height: auto !important;
 background: var(--bg-card) !important;
 border-radius: var(--radius-lg) !important;
-padding: 8px !important;
+padding: 10px !important;
 padding-top: 10px !important;
 box-shadow: var(--shadow-xs) !important;
 border: 1px solid var(--border) !important;
 display: flex !important;
 flex-direction: column !important;
 overflow: hidden !important;
-margin-top: 4px !important;
-max-height: 35vh !important;
-flex: 2 !important;
-min-height: 120px !important;
+margin-top: 6px !important;
+max-height: 40vh !important;
+flex: 3 !important;
+min-height: 150px !important;
 transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-/* ✅ GRILLE PRODUITS - 4 COLONNES */
+/* ✅ GRILLE PRODUITS ET CATÉGORIES - BIEN ALIGNÉE */
 .pos-products-grid {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
-    gap: 8px !important;
-    padding: 6px !important;
+    gap: 10px !important;
+    padding: 8px !important;
     justify-content: center !important;
     align-content: start !important;
     overflow-x: auto !important;
+    overflow-y: auto !important;
     flex-wrap: wrap !important;
     flex: 1 !important;
 }
 
-/* ✅ CARTES PRODUITS - TAILLE FIXE */
+/* ✅ CARTES PRODUITS - BIEN ESPACÉES */
 .pos-product-card {
-    min-height: 100px !important;
-    max-height: 130px !important;
-    padding: 4px 2px !important;
-    border-radius: 8px !important;
+    min-height: 120px !important;
+    max-height: 155px !important;
+    padding: 6px 4px !important;
+    border-radius: 10px !important;
     border: 2px solid var(--border) !important;
     display: flex !important;
     flex-direction: column !important;
@@ -672,14 +683,21 @@ transition: background 0.3s ease, border-color 0.3s ease;
     background: var(--bg-card) !important;
     cursor: pointer !important;
     transition: var(--transition) !important;
+    gap: 2px !important;
+}
+
+.pos-product-card:hover {
+    border-color: var(--accent) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: var(--shadow-md) !important;
 }
 
 /* ✅ IMAGE PRODUIT */
 .pos-product-img {
-    height: 40px !important;
+    height: 50px !important;
     width: 80% !important;
     margin-bottom: 3px !important;
-    border-radius: 6px !important;
+    border-radius: 8px !important;
     overflow: hidden !important;
     background: var(--gray-100) !important;
     flex-shrink: 0 !important;
@@ -694,9 +712,9 @@ transition: background 0.3s ease, border-color 0.3s ease;
     object-fit: cover !important;
 }
 
-/* ✅ NOM PRODUIT - UNE SEULE LIGNE */
+/* ✅ NOM PRODUIT */
 .pos-product-name {
-    font-size: 12px !important;
+    font-size: 13px !important;
     font-weight: 700 !important;
     text-align: center !important;
     overflow: hidden !important;
@@ -711,7 +729,7 @@ transition: background 0.3s ease, border-color 0.3s ease;
 
 /* ✅ PRIX PRODUIT */
 .pos-product-price {
-    font-size: 14px !important;
+    font-size: 15px !important;
     font-weight: 700 !important;
     display: block !important;
     text-align: center !important;
@@ -727,12 +745,56 @@ transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .pos-promo-price {
-    font-size: 14px !important;
+    font-size: 15px !important;
     color: var(--danger) !important;
 }
 
-/* ✅ CATÉGORIES */
-.pos-categories-bar { display: flex; gap: 6px; margin-bottom: 8px; overflow-x: auto; padding-bottom: 4px; flex-shrink: 0; }
+/* ✅ CARTES CATÉGORIES - MÊME STYLE QUE PRODUITS */
+.pos-category-card {
+    min-height: 120px !important;
+    max-height: 155px !important;
+    padding: 6px 4px !important;
+    border-radius: 10px !important;
+    border: 2px solid var(--border) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    background: var(--bg-card) !important;
+    cursor: pointer !important;
+    transition: var(--transition) !important;
+    gap: 2px !important;
+}
+
+.pos-category-card:hover {
+    border-color: var(--accent) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: var(--shadow-md) !important;
+}
+
+.pos-category-card img {
+    height: 50px !important;
+    width: 50px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    margin-bottom: 4px !important;
+}
+
+.pos-category-card .fas.fa-folder {
+    font-size: 32px !important;
+    color: var(--accent) !important;
+}
+
+/* ✅ CATÉGORIES BAR */
+.pos-categories-bar { 
+    display: flex; 
+    gap: 6px; 
+    margin-bottom: 8px; 
+    overflow-x: auto; 
+    padding-bottom: 4px; 
+    flex-shrink: 0; 
+}
 
 .pos-cat-btn {
 display: flex;
@@ -787,20 +849,20 @@ object-fit: contain;
     overflow-y: auto !important;
     padding: 4px 8px !important;
     min-height: 60px !important;
-    max-height: 180px !important;
+    max-height: 200px !important;
 }
 
 /* ✅ PAIEMENT - SCROLL */
 .pos-payment-form {
     flex: 1 !important;
     overflow-y: auto !important;
-    max-height: 400px !important;
+    max-height: 450px !important;
     padding: 6px 10px !important;
 }
 
 /* ✅ BOUTON VALIDER - ESPACE EN DESSOUS */
 .pos-validate-btn {
-    margin-bottom: 12px !important;
+    margin-bottom: 15px !important;
 }
 
 /* ✅ CORRECTION BANDEAU CATÉGORIE */
@@ -918,22 +980,32 @@ object-fit: contain;
 /* ✅ SUR PC (> 1024px) */
 @media(min-width: 1024px) {
     .pos-product-card {
-        min-height: 150px !important;
-        max-height: 180px !important;
-        padding: 6px 4px !important;
+        min-height: 160px !important;
+        max-height: 195px !important;
+        padding: 8px 6px !important;
     }
     .pos-product-img {
-        height: 65px !important;
+        height: 70px !important;
         width: 80% !important;
     }
     .pos-product-name {
-        font-size: 13px !important;
+        font-size: 14px !important;
     }
     .pos-product-price {
-        font-size: 15px !important;
+        font-size: 16px !important;
     }
     .pos-promo-price {
-        font-size: 15px !important;
+        font-size: 16px !important;
+    }
+    
+    .pos-category-card {
+        min-height: 160px !important;
+        max-height: 195px !important;
+        padding: 8px 6px !important;
+    }
+    .pos-category-card img {
+        height: 60px !important;
+        width: 60px !important;
     }
     
     .pos-steps-nav {
@@ -953,24 +1025,30 @@ object-fit: contain;
     }
     
     .pos-products-panel {
-        max-height: 75vh !important;
-        min-height: 350px !important;
+        max-height: 80vh !important;
+        min-height: 400px !important;
     }
     
     .pos-cart-panel {
-        max-height: 30vh !important;
-        min-height: 130px !important;
+        max-height: 35vh !important;
+        min-height: 160px !important;
+    }
+    
+    .pos-products-grid {
+        gap: 12px !important;
+        padding: 10px !important;
     }
 }
 
 /* ✅ SUR TABLETTE (700px - 1024px) */
 @media(min-width: 700px) and (max-width: 1024px) {
     .pos-product-card {
-        min-height: 120px !important;
-        max-height: 150px !important;
+        min-height: 130px !important;
+        max-height: 160px !important;
+        padding: 6px 4px !important;
     }
     .pos-product-img {
-        height: 50px !important;
+        height: 55px !important;
         width: 80% !important;
     }
     .pos-product-name {
@@ -978,6 +1056,16 @@ object-fit: contain;
     }
     .pos-product-price {
         font-size: 14px !important;
+    }
+    
+    .pos-category-card {
+        min-height: 130px !important;
+        max-height: 160px !important;
+        padding: 6px 4px !important;
+    }
+    .pos-category-card img {
+        height: 50px !important;
+        width: 50px !important;
     }
     
     .pos-steps-nav {
@@ -997,26 +1085,31 @@ object-fit: contain;
     }
     
     .pos-products-panel {
-        max-height: 55vh !important;
-        min-height: 280px !important;
+        max-height: 60vh !important;
+        min-height: 300px !important;
     }
     
     .pos-cart-panel {
-        max-height: 35vh !important;
-        min-height: 110px !important;
+        max-height: 38vh !important;
+        min-height: 130px !important;
+    }
+    
+    .pos-products-grid {
+        gap: 8px !important;
+        padding: 6px !important;
     }
 }
 
 /* ✅ SUR MOBILE (< 700px) */
 @media(max-width: 700px) {
     .pos-product-card {
-        min-height: 90px !important;
-        max-height: 115px !important;
-        padding: 3px 1px !important;
+        min-height: 100px !important;
+        max-height: 125px !important;
+        padding: 4px 2px !important;
         border-width: 1px !important;
     }
     .pos-product-img {
-        height: 35px !important;
+        height: 40px !important;
         width: 70% !important;
     }
     .pos-product-name {
@@ -1028,6 +1121,19 @@ object-fit: contain;
     }
     .pos-promo-price {
         font-size: 13px !important;
+    }
+    
+    .pos-category-card {
+        min-height: 100px !important;
+        max-height: 125px !important;
+        padding: 4px 2px !important;
+    }
+    .pos-category-card img {
+        height: 40px !important;
+        width: 40px !important;
+    }
+    .pos-category-card .fas.fa-folder {
+        font-size: 24px !important;
     }
     
     .pos-steps-nav {
@@ -1047,21 +1153,21 @@ object-fit: contain;
     }
     
     .pos-products-panel {
-        max-height: 45vh !important;
-        min-height: 200px !important;
+        max-height: 50vh !important;
+        min-height: 220px !important;
     }
     
     .pos-cart-panel {
         max-height: 45vh !important;
-        min-height: 80px !important;
+        min-height: 100px !important;
     }
     
     .pos-cart-items {
-        max-height: 120px !important;
+        max-height: 130px !important;
     }
     
     .pos-payment-form {
-        max-height: 300px !important;
+        max-height: 320px !important;
     }
     
     .pos-step {
@@ -1075,6 +1181,11 @@ object-fit: contain;
     .pos-step span:last-child {
         font-size: 11px !important;
     }
+    
+    .pos-products-grid {
+        gap: 6px !important;
+        padding: 4px !important;
+    }
 }
 
 /* ✅ SUR TRÈS PETIT ÉCRAN (< 400px) */
@@ -1084,12 +1195,12 @@ object-fit: contain;
         padding: 3px !important;
     }
     .pos-product-card {
-        min-height: 75px !important;
-        max-height: 95px !important;
+        min-height: 80px !important;
+        max-height: 100px !important;
         padding: 2px 1px !important;
     }
     .pos-product-img {
-        height: 28px !important;
+        height: 30px !important;
         width: 60% !important;
     }
     .pos-product-name {
@@ -1100,6 +1211,16 @@ object-fit: contain;
     }
     .pos-promo-price {
         font-size: 12px !important;
+    }
+    
+    .pos-category-card {
+        min-height: 80px !important;
+        max-height: 100px !important;
+        padding: 2px 1px !important;
+    }
+    .pos-category-card img {
+        height: 30px !important;
+        width: 30px !important;
     }
 }
 
@@ -1177,32 +1298,13 @@ object-fit: contain;
     border-bottom-color: #30363D !important;
 }
 
-/* ============================================================
-   ✅ CATÉGORIES CARDS
-   ============================================================ */
-.pos-category-card {
-transition: all 0.2s ease;
-}
-
-.pos-category-card:hover {
-border-color: var(--accent) !important;
-transform: translateY(-3px);
-box-shadow: var(--shadow-md);
-background: var(--bg-card) !important;
-}
-
-.pos-category-card:active {
-transform: scale(0.95);
-}
-
 [data-theme="dark"] .pos-category-card {
-background: #0D1117 !important;
-border-color: #30363D !important;
+    background: #0D1117 !important;
+    border-color: #30363D !important;
 }
-
 [data-theme="dark"] .pos-category-card:hover {
-background: #161B22 !important;
-border-color: #14B8A6 !important;
+    background: #161B22 !important;
+    border-color: #14B8A6 !important;
 }
 
 /* ============================================================
