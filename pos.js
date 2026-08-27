@@ -11,7 +11,6 @@
 // ✅ Retour automatique à l'étape 1 après finalisation
 // ✅ CA et Profit client mis à jour (FORCE UPDATE)
 // ✅ Bouton "Afficher tout" corrigé
-// ✅ Bouton X (effacer) corrigé
 
 var posCart = [];
 var posStep = 1;
@@ -65,86 +64,86 @@ var posSelectedCategoryForView = null;
 // ✅ FONCTION DE FORCE POUR METTRE À JOUR LE CLIENT
 // ======================================================
 async function forceUpdateClient(clientId, total, profitTotal) {
-    try {
-        console.log('🔥 FORCE UPDATE CLIENT:', clientId);
-        console.log('  - CA à ajouter:', total);
-        console.log('  - Profit à ajouter:', profitTotal);
-        
-        if (!clientId) {
-            console.warn('⚠️ Client ID manquant');
-            return false;
-        }
-        
-        const docRef = db.collection('clients').doc(clientId);
-        const doc = await docRef.get();
-        
-        if (!doc.exists) {
-            console.error('❌ Client non trouvé:', clientId);
-            return false;
-        }
-        
-        const data = doc.data();
-        const ancienCA = data.ca || 0;
-        const ancienProfit = data.profit || 0;
-        const nouveauCA = ancienCA + total;
-        const nouveauProfit = ancienProfit + profitTotal;
-        
-        console.log('  - Ancien CA:', ancienCA, '→ Nouveau CA:', nouveauCA);
-        console.log('  - Ancien Profit:', ancienProfit, '→ Nouveau Profit:', nouveauProfit);
-        
-        await docRef.update({
-            ca: nouveauCA,
-            profit: nouveauProfit,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        console.log('✅ Firestore mis à jour');
-        
-        const updatedData = { 
-            ...data, 
-            ca: nouveauCA, 
-            profit: nouveauProfit,
-            updatedAt: new Date()
-        };
-        await CacheDB.set('clients', clientId, updatedData);
-        console.log('✅ Cache mis à jour');
-        
-        const clientIndex = posAllClients.findIndex(c => c.id === clientId);
-        if (clientIndex !== -1) {
-            posAllClients[clientIndex].ca = nouveauCA;
-            posAllClients[clientIndex].profit = nouveauProfit;
-            console.log('✅ posAllClients mis à jour');
-        }
-        
-        const filteredIndex = posFilteredClients.findIndex(c => c.id === clientId);
-        if (filteredIndex !== -1) {
-            posFilteredClients[filteredIndex].ca = nouveauCA;
-            posFilteredClients[filteredIndex].profit = nouveauProfit;
-        }
-        
-        if (posCurrentClient && posCurrentClient.id === clientId) {
-            posCurrentClient.ca = nouveauCA;
-            posCurrentClient.profit = nouveauProfit;
-            console.log('✅ posCurrentClient mis à jour');
-        }
-        
-        if (window.allClientsData) {
-            const adminIndex = window.allClientsData.findIndex(c => c.id === clientId);
-            if (adminIndex !== -1) {
-                window.allClientsData[adminIndex].ca = nouveauCA;
-                window.allClientsData[adminIndex].profit = nouveauProfit;
-                console.log('✅ window.allClientsData mis à jour');
-            }
-        }
-        
-        console.log('✅ Client mis à jour avec succès !');
-        console.log('📊 NOUVELLES VALEURS - CA:', nouveauCA, 'Profit:', nouveauProfit);
-        
-        return true;
-        
-    } catch(e) {
-        console.error('❌ Erreur forceUpdateClient:', e);
-        return false;
-    }
+try {
+console.log('🔥 FORCE UPDATE CLIENT:', clientId);
+console.log(' - CA à ajouter:', total);
+console.log(' - Profit à ajouter:', profitTotal);
+
+if (!clientId) {
+console.warn('⚠️ Client ID manquant');
+return false;
+}
+
+const docRef = db.collection('clients').doc(clientId);
+const doc = await docRef.get();
+
+if (!doc.exists) {
+console.error('❌ Client non trouvé:', clientId);
+return false;
+}
+
+const data = doc.data();
+const ancienCA = data.ca || 0;
+const ancienProfit = data.profit || 0;
+const nouveauCA = ancienCA + total;
+const nouveauProfit = ancienProfit + profitTotal;
+
+console.log(' - Ancien CA:', ancienCA, '→ Nouveau CA:', nouveauCA);
+console.log(' - Ancien Profit:', ancienProfit, '→ Nouveau Profit:', nouveauProfit);
+
+await docRef.update({
+ca: nouveauCA,
+profit: nouveauProfit,
+updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+});
+console.log('✅ Firestore mis à jour');
+
+const updatedData = {
+...data,
+ca: nouveauCA,
+profit: nouveauProfit,
+updatedAt: new Date()
+};
+await CacheDB.set('clients', clientId, updatedData);
+console.log('✅ Cache mis à jour');
+
+const clientIndex = posAllClients.findIndex(c => c.id === clientId);
+if (clientIndex !== -1) {
+posAllClients[clientIndex].ca = nouveauCA;
+posAllClients[clientIndex].profit = nouveauProfit;
+console.log('✅ posAllClients mis à jour');
+}
+
+const filteredIndex = posFilteredClients.findIndex(c => c.id === clientId);
+if (filteredIndex !== -1) {
+posFilteredClients[filteredIndex].ca = nouveauCA;
+posFilteredClients[filteredIndex].profit = nouveauProfit;
+}
+
+if (posCurrentClient && posCurrentClient.id === clientId) {
+posCurrentClient.ca = nouveauCA;
+posCurrentClient.profit = nouveauProfit;
+console.log('✅ posCurrentClient mis à jour');
+}
+
+if (window.allClientsData) {
+const adminIndex = window.allClientsData.findIndex(c => c.id === clientId);
+if (adminIndex !== -1) {
+window.allClientsData[adminIndex].ca = nouveauCA;
+window.allClientsData[adminIndex].profit = nouveauProfit;
+console.log('✅ window.allClientsData mis à jour');
+}
+}
+
+console.log('✅ Client mis à jour avec succès !');
+console.log('📊 NOUVELLES VALEURS - CA:', nouveauCA, 'Profit:', nouveauProfit);
+
+return true;
+
+} catch(e) {
+console.error('❌ Erreur forceUpdateClient:', e);
+return false;
+}
 }
 
 function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g,function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
@@ -164,81 +163,89 @@ btn.style.display = visible ? 'block' : 'none';
 
 // ==================== TOGGLE OUTILS POS - CORRIGÉ ====================
 function posToggleTools() {
-    posToolsVisible = !posToolsVisible;
-    var toolsContainer = document.getElementById('posToolsContainer');
-    var toggleBtn = document.getElementById('posToggleToolsBtn');
-    
-    console.log('🔍 Toggle outils POS - État:', posToolsVisible);
-    console.log('📦 toolsContainer trouvé:', toolsContainer);
-    
-    if (toolsContainer) {
-        if (posToolsVisible) {
-            toolsContainer.style.setProperty('display', 'flex', 'important');
-            toolsContainer.style.setProperty('flex-direction', 'column', 'important');
-            toolsContainer.style.setProperty('gap', '4px', 'important');
-            toolsContainer.style.setProperty('margin-bottom', '4px', 'important');
-            toolsContainer.style.setProperty('padding', '5px 8px', 'important');
-            toolsContainer.style.setProperty('background', 'var(--bg-page)', 'important');
-            toolsContainer.style.setProperty('border-radius', '6px', 'important');
-            toolsContainer.style.setProperty('border', '1px solid var(--border)', 'important');
-            
-            var children = toolsContainer.children;
-            for (var i = 0; i < children.length; i++) {
-                children[i].style.setProperty('display', '', 'important');
-                var grandChildren = children[i].querySelectorAll('*');
-                for (var j = 0; j < grandChildren.length; j++) {
-                    grandChildren[j].style.setProperty('display', '', 'important');
-                }
-            }
-            
-            console.log('✅ Outils affichés');
-        } else {
-            toolsContainer.style.setProperty('display', 'none', 'important');
-            console.log('✅ Outils masqués');
-        }
-    } else {
-        console.warn('⚠️ toolsContainer non trouvé');
-    }
-    
-    if (toggleBtn) {
-        toggleBtn.innerHTML = posToolsVisible ? '✕ Masquer tout' : '🔍 Afficher tout';
-        toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
-    }
-    
-    var searchInput = document.getElementById('posSearchInput');
-    if (searchInput) {
-        if (posToolsVisible) {
-            searchInput.style.setProperty('display', '', 'important');
-            setTimeout(function() { 
-                searchInput.focus(); 
-                console.log('🔍 Focus sur la recherche');
-            }, 200);
-        }
-    }
-    
-    var micBtn = document.getElementById('posMicBtn');
-    if (micBtn) {
-        if (posToolsVisible) {
-            micBtn.style.setProperty('display', '', 'important');
-        }
-    }
-    
-    var categoriesBar = document.querySelector('.pos-categories-bar');
-    if (categoriesBar) {
-        if (posToolsVisible) {
-            categoriesBar.style.setProperty('display', 'flex', 'important');
-        }
-    }
-    
-    var tablesBtn = document.querySelector('button[onclick*="posAfficherCommandesTables"]');
-    if (tablesBtn && posToolsVisible) {
-        tablesBtn.style.setProperty('display', '', 'important');
-    }
-    
-    var enLigneBtn = document.querySelector('button[onclick*="navigateTo(\'commandes\')"]');
-    if (enLigneBtn && posToolsVisible) {
-        enLigneBtn.style.setProperty('display', '', 'important');
-    }
+posToolsVisible = !posToolsVisible;
+var toolsContainer = document.getElementById('posToolsContainer');
+var toggleBtn = document.getElementById('posToggleToolsBtn');
+
+console.log('🔍 Toggle outils POS - État:', posToolsVisible);
+console.log('📦 toolsContainer trouvé:', toolsContainer);
+
+if (toolsContainer) {
+if (posToolsVisible) {
+// ✅ FORCER l'affichage avec display:flex !important
+toolsContainer.style.setProperty('display', 'flex', 'important');
+toolsContainer.style.setProperty('flex-direction', 'column', 'important');
+toolsContainer.style.setProperty('gap', '4px', 'important');
+toolsContainer.style.setProperty('margin-bottom', '4px', 'important');
+toolsContainer.style.setProperty('padding', '5px 8px', 'important');
+toolsContainer.style.setProperty('background', 'var(--bg-page)', 'important');
+toolsContainer.style.setProperty('border-radius', '6px', 'important');
+toolsContainer.style.setProperty('border', '1px solid var(--border)', 'important');
+
+// ✅ Forcer l'affichage de TOUS les enfants directs
+var children = toolsContainer.children;
+for (var i = 0; i < children.length; i++) {
+children[i].style.setProperty('display', '', 'important');
+// Si c'est un div avec des enfants, les afficher aussi
+var grandChildren = children[i].querySelectorAll('*');
+for (var j = 0; j < grandChildren.length; j++) {
+grandChildren[j].style.setProperty('display', '', 'important');
+}
+}
+
+console.log('✅ Outils affichés');
+} else {
+toolsContainer.style.setProperty('display', 'none', 'important');
+console.log('✅ Outils masqués');
+}
+} else {
+console.warn('⚠️ toolsContainer non trouvé');
+}
+
+// Mettre à jour le bouton
+if (toggleBtn) {
+toggleBtn.innerHTML = posToolsVisible ? '✕ Masquer tout' : '🔍 Afficher tout';
+toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
+}
+
+// ✅ FORCER l'affichage de la barre de recherche
+var searchInput = document.getElementById('posSearchInput');
+if (searchInput) {
+if (posToolsVisible) {
+searchInput.style.setProperty('display', '', 'important');
+setTimeout(function() {
+searchInput.focus();
+console.log('🔍 Focus sur la recherche');
+}, 200);
+}
+}
+
+// ✅ FORCER l'affichage du bouton micro
+var micBtn = document.getElementById('posMicBtn');
+if (micBtn) {
+if (posToolsVisible) {
+micBtn.style.setProperty('display', '', 'important');
+}
+}
+
+// ✅ FORCER l'affichage de la barre de catégories
+var categoriesBar = document.querySelector('.pos-categories-bar');
+if (categoriesBar) {
+if (posToolsVisible) {
+categoriesBar.style.setProperty('display', 'flex', 'important');
+}
+}
+
+// ✅ FORCER l'affichage des boutons tables et en ligne
+var tablesBtn = document.querySelector('button[onclick*="posAfficherCommandesTables"]');
+if (tablesBtn && posToolsVisible) {
+tablesBtn.style.setProperty('display', '', 'important');
+}
+
+var enLigneBtn = document.querySelector('button[onclick*="navigateTo(\'commandes\')"]');
+if (enLigneBtn && posToolsVisible) {
+enLigneBtn.style.setProperty('display', '', 'important');
+}
 }
 
 // ==================== APPLIQUER LE SCROLL SUR DYNAMICCONTENT ====================
@@ -388,10 +395,7 @@ filterProductGrid();
 }
 input.focus();
 var clearBtn = document.getElementById('posSearchClearBtn');
-if (clearBtn) {
-    clearBtn.style.display = 'none';
-    clearBtn.classList.remove('show');
-}
+if (clearBtn) clearBtn.style.display = 'none';
 }
 }
 
@@ -1102,14 +1106,11 @@ stepIndicator +
 '<div id="posToolsContainer" style="display:none;flex-direction:column;gap:4px;margin-bottom:4px;padding:5px 8px;background:var(--bg-page);border-radius:6px;border:1px solid var(--border);">' +
 
 '<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">' +
-
-// ✅ BARRE DE RECHERCHE CORRIGÉE AVEC BOUTON X BIEN POSITIONNÉ
-'<div class="pos-search-container" style="flex:1;min-width:80px;display:flex;align-items:center;background:#fff;border:2px solid #e2e8f0;border-radius:40px;padding:2px 10px;position:relative;height:'+(isMobile?'34px':'38px)+';">' +
-'<i class="fas fa-search" style="color:#94a3b8;margin-right:6px;font-size:'+(isMobile?'14px':'16px')+';flex-shrink:0;"></i>' +
-'<input type="text" id="posSearchInput" placeholder="🔍 Rechercher..." value="'+escapeHtml(posSearchQuery)+'" onkeyup="posSearchProducts(this.value); updateClearButtonVisibility();" oninput="updateClearButtonVisibility();" style="border:none;outline:none;padding:0 30px 0 0;width:100%;background:transparent;font-size:'+(isMobile?'14px':'16px')+';height:'+(isMobile?'30px':'34px')+';color:var(--text-primary);">' +
-'<button id="posSearchClearBtn" onclick="clearPosSearch()" class="'+(posSearchQuery ? 'show' : '')+'" style="display:'+(posSearchQuery ? 'flex' : 'none')+';position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:#94a3b8;font-size:'+(isMobile?'16px':'18px')+';align-items:center;justify-content:center;z-index:5;width:28px;height:28px;border-radius:50%;" title="Effacer"><i class="fas fa-times-circle"></i></button>' +
+'<div style="flex:1;min-width:80px;display:flex;align-items:center;background:#fff;border:2px solid #e2e8f0;border-radius:40px;padding:1px 6px;position:relative;height:'+(isMobile?'30px':'34px')+';">' +
+'<i class="fas fa-search" style="color:#94a3b8;margin-right:3px;font-size:'+(isMobile?'12px':'14px')+';"></i>' +
+'<input type="text" id="posSearchInput" placeholder="🔍 Rechercher..." value="'+escapeHtml(posSearchQuery)+'" onkeyup="posSearchProducts(this.value); updateClearButtonVisibility();" oninput="updateClearButtonVisibility();" style="border:none;outline:none;padding:0;width:100%;background:transparent;font-size:'+(isMobile?'12px':'16px')+';padding-right:24px;height:'+(isMobile?'30px':'34px')+';">' +
+'<button id="posSearchClearBtn" onclick="clearPosSearch()" style="display:'+(posSearchQuery ? 'flex' : 'none')+';position:absolute;right:4px;background:none;border:none;cursor:pointer;padding:1px;color:#94a3b8;font-size:'+(isMobile?'14px':'16px')+';align-items:center;justify-content:center;" title="Effacer"><i class="fas fa-times-circle"></i></button>' +
 '</div>' +
-
 '<button id="posMicBtn" title="Micro" style="background:#dcfce7;border:2px solid #14B8A6;border-radius:50%;width:'+(isMobile?'30px':'34px')+';height:'+(isMobile?'30px':'34px')+';cursor:pointer;font-size:'+(isMobile?'12px':'14px')+';" onclick="posToggleVoiceSearch()"><i class="fas fa-microphone"></i></button>' +
 '<div style="display:flex;gap:2px;"><button onclick="posAfficherCommandesTables()" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:2px 6px;font-weight:600;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">🍽️ Tables <span style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 4px;font-size:'+(isMobile?'0.3rem':'0.4rem')+';">'+posCommandesTablesCount+'</span></button><button onclick="navigateTo(\'commandes\')" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:2px 6px;font-weight:600;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">🌐 En ligne <span style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 4px;font-size:'+(isMobile?'0.3rem':'0.4rem')+';">'+posCommandesEnLigneCount+'</span></button></div>' +
 '</div>' +
@@ -1308,26 +1309,11 @@ cd.innerHTML='';
 }
 
 async function updateClientFidelityAsync(clientId, total, profitTotal) {
-    try {
-        return await forceUpdateClient(clientId, total, profitTotal);
-    } catch(e) {
-        console.error('❌ Erreur updateClientFidelityAsync:', e);
-        return false;
-    }
-}
-
-// ==================== updateClearButtonVisibility CORRIGÉ ====================
-function updateClearButtonVisibility() {
-var input = document.getElementById('posSearchInput');
-var btn = document.getElementById('posSearchClearBtn');
-if (input && btn) {
-    if (input.value && input.value.length > 0) {
-        btn.style.display = 'flex';
-        btn.classList.add('show');
-    } else {
-        btn.style.display = 'none';
-        btn.classList.remove('show');
-    }
+try {
+return await forceUpdateClient(clientId, total, profitTotal);
+} catch(e) {
+console.error('❌ Erreur updateClientFidelityAsync:', e);
+return false;
 }
 }
 
@@ -1373,17 +1359,18 @@ if(window.posVenteId){ batch.update(db.collection('ventes').doc(window.posVenteI
 for(var i=0;i<posCart.length;i++){ var it=posCart[i]; batch.update(db.collection('products').doc(it.id), {stock:firebase.firestore.FieldValue.increment(-it.quantite), vendues:firebase.firestore.FieldValue.increment(it.quantite), ca:firebase.firestore.FieldValue.increment(it.prixUnitaire*it.quantite)}); }
 await batch.commit();
 
+// ✅ CORRECTION : Utiliser forceUpdateClient avec await
 if(posCurrentClient && posCurrentClient.id && paid) {
-    try {
-        const success = await forceUpdateClient(posCurrentClient.id, t, profitTotal);
-        if (success) {
-            console.log('✅ Client mis à jour avec succès !');
-        } else {
-            console.warn('⚠️ Échec de la mise à jour client');
-        }
-    } catch(e) {
-        console.warn('⚠️ Erreur mise à jour client:', e);
-    }
+try {
+const success = await forceUpdateClient(posCurrentClient.id, t, profitTotal);
+if (success) {
+console.log('✅ Client mis à jour avec succès !');
+} else {
+console.warn('⚠️ Échec de la mise à jour client');
+}
+} catch(e) {
+console.warn('⚠️ Erreur mise à jour client:', e);
+}
 }
 
 if (posCurrentClient && posCurrentClient.id) {
@@ -1392,50 +1379,50 @@ clientCreditsCache[posCurrentClient.id] = undefined;
 var venteId = ventesRef.id;
 if (typeof window.sendWhatsApp === 'function') {
 var originalCloseModal = window.closeModal;
-window.closeModal = function() { 
-    posResetCart(); 
-    posStep = 1;
-    window.posStep = 1;
-    if(isOnPOSPage()) renderPOS(); 
-    if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500); 
-    window.closeModal = originalCloseModal; 
-    var o = document.getElementById('modalOverlay'); 
-    if (o) o.classList.add('hidden'); 
-    window.editingId = null; 
+window.closeModal = function() {
+posResetCart();
+posStep = 1;
+window.posStep = 1;
+if(isOnPOSPage()) renderPOS();
+if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500);
+window.closeModal = originalCloseModal;
+var o = document.getElementById('modalOverlay');
+if (o) o.classList.add('hidden');
+window.editingId = null;
 };
 var modalHtml = '<p style="text-align:center;">Voulez-vous envoyer la facture par WhatsApp ?</p><div style="display:flex;justify-content:center;gap:10px;margin-top:15px;"><button class="btn-save" id="whatsappYesBtn">✅ Oui</button><button class="btn-cancel" id="whatsappNoBtn">❌ Non</button></div>';
 openModal('📱 Envoyer la facture WhatsApp', modalHtml);
 setTimeout(function() {
 var yesBtn = document.getElementById('whatsappYesBtn'), noBtn = document.getElementById('whatsappNoBtn');
-if (yesBtn) { yesBtn.addEventListener('click', function() { 
-    window.closeModal = originalCloseModal; 
-    closeModal(); 
-    if (typeof window.posStopVoiceSearch === 'function') window.posStopVoiceSearch(); 
-    window.sendWhatsApp(venteId); 
-    setTimeout(function() { 
-        posResetCart(); 
-        posStep = 1;
-        window.posStep = 1;
-        if(isOnPOSPage()) renderPOS(); 
-        if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500); 
-    }, 500); 
+if (yesBtn) { yesBtn.addEventListener('click', function() {
+window.closeModal = originalCloseModal;
+closeModal();
+if (typeof window.posStopVoiceSearch === 'function') window.posStopVoiceSearch();
+window.sendWhatsApp(venteId);
+setTimeout(function() {
+posResetCart();
+posStep = 1;
+window.posStep = 1;
+if(isOnPOSPage()) renderPOS();
+if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500);
+}, 500);
 }); }
-if (noBtn) { noBtn.addEventListener('click', function() { 
-    window.closeModal = originalCloseModal; 
-    closeModal(); 
-    posResetCart(); 
-    posStep = 1;
-    window.posStep = 1;
-    if(isOnPOSPage()) renderPOS(); 
-    if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500); 
+if (noBtn) { noBtn.addEventListener('click', function() {
+window.closeModal = originalCloseModal;
+closeModal();
+posResetCart();
+posStep = 1;
+window.posStep = 1;
+if(isOnPOSPage()) renderPOS();
+if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500);
 }); }
 }, 100);
-} else { 
-    posResetCart(); 
-    posStep = 1;
-    window.posStep = 1;
-    if(isOnPOSPage()) renderPOS(); 
-    if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500); 
+} else {
+posResetCart();
+posStep = 1;
+window.posStep = 1;
+if(isOnPOSPage()) renderPOS();
+if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500);
 }
 }catch(e){ alert('Erreur: '+e.message); }
 finally { isFinalizing=false; if(fb){ fb.disabled=false; fb.innerHTML='<i class="fas fa-check-circle"></i> Finaliser'; } }
@@ -1479,6 +1466,14 @@ alert('Fonction de recherche vocale non disponible');
 }
 }
 
+function updateClearButtonVisibility() {
+var input = document.getElementById('posSearchInput');
+var btn = document.getElementById('posSearchClearBtn');
+if (input && btn) {
+btn.style.display = (input.value && input.value.length > 0) ? 'flex' : 'none';
+}
+}
+
 function goBackToPOS(){ if(window.currentUserData&&(window.currentUserData.userData.role==='caissier'||window.currentUserData.userData.role==='admin')){ if(posCart.length>0&&posStep===1){ if(!confirm('⚠️ '+posCart.length+' article(s) dans le panier. Garder ?')) posResetCart(); } navigateTo('pos'); } }
 
 window.posCart=posCart; window.posStep=posStep; window.posProductsList=posProductsList; window.posAllClients=posAllClients; window.posCurrentClient=posCurrentClient; window.posCurrentTable=posCurrentTable; window.posDiscountMAD=posDiscountMAD; window.posAmountGiven=posAmountGiven; window.posPaymentMethod=posPaymentMethod; window.posResetCart=posResetCart; window.posAddToCartOrOpenOptions=posAddToCartOrOpenOptions; window.posSetPaymentMethod=posSetPaymentMethod; window.posCalculateTotal=posCalculateTotal; window.posFinalizeSale=posFinalizeSale; window.posGoToStep2=posGoToStep2; window.posGoToStep1=posGoToStep1; window.posSearchProducts=posSearchProducts; window.clearPosSearch=clearPosSearch; window.clearClientSearch=clearClientSearch; window.updateClearButtonVisibility=updateClearButtonVisibility; window.updateCartOnly=updateCartOnly; window.renderPOS=renderPOS; window.updatePaymentButtons=updatePaymentButtons; window.loadMoreProducts=loadMoreProducts; window.loadClientCredits=loadClientCredits; window.updateClientCreditDisplay=updateClientCreditDisplay; window.posCalculateChange=posCalculateChange; window.onProductAdded=window.onProductAdded||function(pid){ console.log('Produit ajouté:',pid); };
@@ -1499,4 +1494,3 @@ window.forceUpdateClient = forceUpdateClient;
 console.log('🚀 E-SOLUTION - POS chargé avec corrections');
 console.log('✅ forceUpdateClient disponible');
 console.log('✅ Bouton "Afficher tout" corrigé');
-console.log('✅ Bouton X (effacer) corrigé');
