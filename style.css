@@ -509,7 +509,7 @@ color: var(--text-primary);
 .hidden { display: none !important; }
 
 /* ============================================================
-   ✅ POS SYSTEM - 80% HAUTEUR + IMAGES COMPLÈTES
+   ✅ POS SYSTEM - 70% HAUTEUR + IMAGES COMPLÈTES
    ============================================================ */
 
 /* ✅ DYNAMIC CONTENT - PAGE PLUS HAUTE */
@@ -537,7 +537,7 @@ overflow-y: visible !important;
 overflow-x: hidden !important;
 }
 
-/* ✅ INDICATEUR D'ÉTAPE - HAUTEUR RÉDUITE (au plafond) */
+/* ✅ INDICATEUR D'ÉTAPE - HAUTEUR RÉDUITE */
 .pos-steps-nav {
 display: flex !important;
 justify-content: center !important;
@@ -611,7 +611,7 @@ width: 100% !important;
 height: auto !important;
 }
 
-/* ✅ PRODUITS - 80% DE LA HAUTEUR (même vide) */
+/* ✅ PRODUITS - 70% DE LA HAUTEUR (même vide) */
 .pos-products-panel {
 width: 100% !important;
 min-width: 0 !important;
@@ -623,9 +623,9 @@ box-shadow: var(--shadow-xs) !important;
 border: 1px solid var(--border) !important;
 display: flex !important;
 flex-direction: column !important;
-height: 80vh !important;
-min-height: 400px !important;
-max-height: 85vh !important;
+height: 70vh !important;
+min-height: 350px !important;
+max-height: 75vh !important;
 flex: none !important;
 transition: background 0.3s ease, border-color 0.3s ease;
 }
@@ -665,11 +665,11 @@ transition: background 0.3s ease, border-color 0.3s ease;
     flex: 1 !important;
 }
 
-/* ✅ CARTES PRODUITS - IMAGE COMPLÈTE */
+/* ✅ CARTES PRODUITS - MARGES RÉDUITES */
 .pos-product-card {
-    min-height: 140px !important;
-    max-height: 165px !important;
-    padding: 4px 3px !important;
+    min-height: 130px !important;
+    max-height: 155px !important;
+    padding: 3px 2px !important;
     border-radius: 8px !important;
     border: 2px solid var(--border) !important;
     display: flex !important;
@@ -689,10 +689,10 @@ transition: background 0.3s ease, border-color 0.3s ease;
     box-shadow: var(--shadow-md) !important;
 }
 
-/* ✅ IMAGE PRODUIT - CONTENEUR AGRANDI */
+/* ✅ IMAGE PRODUIT - COMPLÈTE ET APPARENTE */
 .pos-product-img {
-    height: 60px !important;
-    width: 80% !important;
+    height: 65px !important;
+    width: 85% !important;
     margin-bottom: 2px !important;
     border-radius: 8px !important;
     overflow: hidden !important;
@@ -701,6 +701,7 @@ transition: background 0.3s ease, border-color 0.3s ease;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    border: 2px solid var(--gray-200) !important;
 }
 
 .pos-product-img img {
@@ -759,11 +760,11 @@ transition: background 0.3s ease, border-color 0.3s ease;
     flex: 1 !important;
 }
 
-/* ✅ CARTES CATÉGORIES - IMAGE COMPLÈTE */
+/* ✅ CARTES CATÉGORIES - MARGES RÉDUITES, IMAGE CERCLE */
 .pos-category-card {
-    min-height: 140px !important;
-    max-height: 165px !important;
-    padding: 4px 3px !important;
+    min-height: 130px !important;
+    max-height: 155px !important;
+    padding: 3px 2px !important;
     border-radius: 8px !important;
     border: 2px solid var(--border) !important;
     display: flex !important;
@@ -783,10 +784,10 @@ transition: background 0.3s ease, border-color 0.3s ease;
     box-shadow: var(--shadow-md) !important;
 }
 
-/* ✅ IMAGE CATÉGORIE - CONTENEUR AGRANDI */
+/* ✅ IMAGE CATÉGORIE - CERCLE COMPLET ET APPARENT */
 .pos-category-card .category-image {
-    width: 60px !important;
-    height: 60px !important;
+    width: 65px !important;
+    height: 65px !important;
     border-radius: 50% !important;
     overflow: hidden !important;
     flex-shrink: 0 !important;
@@ -795,6 +796,7 @@ transition: background 0.3s ease, border-color 0.3s ease;
     align-items: center !important;
     justify-content: center !important;
     margin-bottom: 2px !important;
+    border: 3px solid var(--gray-200) !important;
 }
 
 .pos-category-card img {
@@ -804,7 +806,7 @@ transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .pos-category-card .fas.fa-folder {
-    font-size: 32px !important;
+    font-size: 34px !important;
     color: var(--accent) !important;
 }
 
@@ -1021,13 +1023,13 @@ object-fit: contain;
 /* ✅ SUR PC (> 1024px) */
 @media(min-width: 1024px) {
     .pos-product-card {
-        min-height: 170px !important;
-        max-height: 200px !important;
-        padding: 6px 4px !important;
+        min-height: 160px !important;
+        max-height: 190px !important;
+        padding: 5px 4px !important;
     }
     .pos-product-img {
-        height: 75px !important;
-        width: 80% !important;
+        height: 80px !important;
+        width: 85% !important;
     }
     .pos-product-name {
         font-size: 14px !important;
@@ -1040,16 +1042,16 @@ object-fit: contain;
     }
     
     .pos-category-card {
-        min-height: 170px !important;
-        max-height: 200px !important;
-        padding: 6px 4px !important;
+        min-height: 160px !important;
+        max-height: 190px !important;
+        padding: 5px 4px !important;
     }
     .pos-category-card .category-image {
-        width: 75px !important;
-        height: 75px !important;
+        width: 80px !important;
+        height: 80px !important;
     }
     .pos-category-card .fas.fa-folder {
-        font-size: 38px !important;
+        font-size: 40px !important;
     }
     .pos-category-card .category-name {
         font-size: 14px !important;
@@ -1077,9 +1079,9 @@ object-fit: contain;
     }
     
     .pos-products-panel {
-        height: 80vh !important;
+        height: 70vh !important;
         min-height: 450px !important;
-        max-height: 85vh !important;
+        max-height: 75vh !important;
     }
     
     .pos-cart-panel {
@@ -1106,13 +1108,13 @@ object-fit: contain;
 /* ✅ SUR ÉCRAN 9.7" (700px - 1024px) - 5 COLONNES */
 @media(min-width: 700px) and (max-width: 1024px) {
     .pos-product-card {
-        min-height: 140px !important;
-        max-height: 165px !important;
-        padding: 4px 3px !important;
+        min-height: 130px !important;
+        max-height: 155px !important;
+        padding: 3px 2px !important;
     }
     .pos-product-img {
-        height: 60px !important;
-        width: 80% !important;
+        height: 65px !important;
+        width: 85% !important;
     }
     .pos-product-name {
         font-size: 11px !important;
@@ -1122,16 +1124,16 @@ object-fit: contain;
     }
     
     .pos-category-card {
-        min-height: 140px !important;
-        max-height: 165px !important;
-        padding: 4px 3px !important;
+        min-height: 130px !important;
+        max-height: 155px !important;
+        padding: 3px 2px !important;
     }
     .pos-category-card .category-image {
-        width: 60px !important;
-        height: 60px !important;
+        width: 65px !important;
+        height: 65px !important;
     }
     .pos-category-card .fas.fa-folder {
-        font-size: 32px !important;
+        font-size: 34px !important;
     }
     .pos-category-card .category-name {
         font-size: 11px !important;
@@ -1159,9 +1161,9 @@ object-fit: contain;
     }
     
     .pos-products-panel {
-        height: 80vh !important;
+        height: 70vh !important;
         min-height: 350px !important;
-        max-height: 85vh !important;
+        max-height: 75vh !important;
     }
     
     .pos-cart-panel {
@@ -1190,14 +1192,14 @@ object-fit: contain;
 /* ✅ SUR MOBILE (< 700px) - 4 COLONNES */
 @media(max-width: 700px) {
     .pos-product-card {
-        min-height: 105px !important;
-        max-height: 130px !important;
+        min-height: 100px !important;
+        max-height: 125px !important;
         padding: 3px 2px !important;
         border-width: 1px !important;
     }
     .pos-product-img {
-        height: 45px !important;
-        width: 75% !important;
+        height: 50px !important;
+        width: 80% !important;
     }
     .pos-product-name {
         font-size: 10px !important;
@@ -1210,16 +1212,16 @@ object-fit: contain;
     }
     
     .pos-category-card {
-        min-height: 105px !important;
-        max-height: 130px !important;
+        min-height: 100px !important;
+        max-height: 125px !important;
         padding: 3px 2px !important;
     }
     .pos-category-card .category-image {
-        width: 45px !important;
-        height: 45px !important;
+        width: 50px !important;
+        height: 50px !important;
     }
     .pos-category-card .fas.fa-folder {
-        font-size: 24px !important;
+        font-size: 26px !important;
     }
     .pos-category-card .category-name {
         font-size: 10px !important;
@@ -1247,9 +1249,9 @@ object-fit: contain;
     }
     
     .pos-products-panel {
-        height: 70vh !important;
+        height: 60vh !important;
         min-height: 250px !important;
-        max-height: 75vh !important;
+        max-height: 65vh !important;
     }
     
     .pos-cart-panel {
@@ -1304,8 +1306,8 @@ object-fit: contain;
         padding: 2px 1px !important;
     }
     .pos-product-img {
-        height: 35px !important;
-        width: 70% !important;
+        height: 40px !important;
+        width: 75% !important;
     }
     .pos-product-name {
         font-size: 9px !important;
@@ -1328,8 +1330,8 @@ object-fit: contain;
         padding: 2px 1px !important;
     }
     .pos-category-card .category-image {
-        width: 35px !important;
-        height: 35px !important;
+        width: 40px !important;
+        height: 40px !important;
     }
 }
 
