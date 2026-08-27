@@ -8,6 +8,7 @@
 // ✅ Scroll sur le titre "Panier" vers le bas
 // ✅ Bouton flèche vers le haut (70x70px, à droite)
 // ✅ Bouton "Afficher tout" fonctionnel
+// ✅ Chiffre d'affaire et profit client mis à jour
 
 var posCart = [];
 var posStep = 1;
@@ -1177,7 +1178,16 @@ if(window.posCommandeId){ batch.update(db.collection('commandes').doc(window.pos
 if(window.posVenteId){ batch.update(db.collection('ventes').doc(window.posVenteId), {paid:true, statutPaiement:'payé', remainingAmount:0, paidAt:firebase.firestore.FieldValue.serverTimestamp()}); delete window.posVenteId; }
 for(var i=0;i<posCart.length;i++){ var it=posCart[i]; batch.update(db.collection('products').doc(it.id), {stock:firebase.firestore.FieldValue.increment(-it.quantite), vendues:firebase.firestore.FieldValue.increment(it.quantite), ca:firebase.firestore.FieldValue.increment(it.prixUnitaire*it.quantite)}); }
 await batch.commit();
-if(posCurrentClient && posCurrentClient.id && paid) updateClientFidelityAsync(posCurrentClient.id, t, profitTotal);
+
+// ✅ CORRECTION : MISE À JOUR DU CLIENT AVEC await
+if(posCurrentClient && posCurrentClient.id && paid) {
+    try {
+        await updateClientFidelityAsync(posCurrentClient.id, t, profitTotal);
+        console.log('✅ Client mis à jour:', posCurrentClient.id, 'CA:', t, 'Profit:', profitTotal);
+    } catch(e) {
+        console.warn('⚠️ Erreur mise à jour client:', e);
+    }
+}
 if (posCurrentClient && posCurrentClient.id) {
 clientCreditsCache[posCurrentClient.id] = undefined;
 }
@@ -1263,3 +1273,4 @@ console.log('🚀 E-SOLUTION - POS chargé avec corrections');
 console.log('✅ Cliquez sur le titre "Panier" pour scroller vers le bas');
 console.log('✅ Cliquez sur le bouton flèche ↑ (en bas à droite) pour remonter en haut');
 console.log('✅ Cliquez sur "🔍 Afficher tout" pour afficher la barre de recherche');
+console.log('✅ Le chiffre d\'affaire et le profit du client sont mis à jour');
