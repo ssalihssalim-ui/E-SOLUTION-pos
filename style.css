@@ -509,7 +509,7 @@ color: var(--text-primary);
 .hidden { display: none !important; }
 
 /* ============================================================
-   ✅ POS SYSTEM - HAUTEUR AUGMENTÉE
+   ✅ POS SYSTEM - ORGANISATION CORRIGÉE
    ============================================================ */
 
 /* ✅ DYNAMIC CONTENT - PAGE PLUS HAUTE */
@@ -522,7 +522,7 @@ color: var(--text-primary);
     position: relative !important;
 }
 
-/* ✅ Conteneur principal du POS - HAUTEUR AUGMENTÉE */
+/* ✅ Conteneur principal du POS */
 .pos-container {
 display: flex !important;
 flex-direction: column !important;
@@ -606,32 +606,32 @@ font-size: 11px !important;
 .pos-row {
 display: flex !important;
 flex-direction: column !important;
-gap: 8px !important;
+gap: 6px !important;
 width: 100% !important;
 height: auto !important;
 }
 
-/* ✅ PRODUITS */
+/* ✅ PRODUITS - 80% DE L'AFFICHAGE */
 .pos-products-panel {
 width: 100% !important;
 min-width: 0 !important;
 max-width: 100% !important;
 background: var(--bg-card) !important;
 border-radius: var(--radius-lg) !important;
-padding: 10px !important;
+padding: 8px !important;
 box-shadow: var(--shadow-xs) !important;
 border: 1px solid var(--border) !important;
 display: flex !important;
 flex-direction: column !important;
 height: auto !important;
 overflow: visible !important;
-min-height: 400px !important;
+min-height: 350px !important;
 max-height: 85vh !important;
 flex: 8 !important;
 transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-/* ✅ PANIER - HAUTEUR 60vh */
+/* ✅ PANIER - 20% DE L'AFFICHAGE */
 .pos-cart-panel {
 position: static !important;
 width: 100% !important;
@@ -640,40 +640,39 @@ max-width: 100% !important;
 height: auto !important;
 background: var(--bg-card) !important;
 border-radius: var(--radius-lg) !important;
-padding: 10px !important;
-padding-top: 10px !important;
+padding: 8px !important;
+padding-top: 8px !important;
 box-shadow: var(--shadow-xs) !important;
 border: 1px solid var(--border) !important;
 display: flex !important;
 flex-direction: column !important;
 overflow: hidden !important;
-margin-top: 6px !important;
+margin-top: 4px !important;
 max-height: 60vh !important;
 flex: 3 !important;
-min-height: 200px !important;
+min-height: 180px !important;
 transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-/* ✅ GRILLE PRODUITS ET CATÉGORIES - MÊME TAILLE */
+/* ✅ GRILLE PRODUITS - ESPACES RÉDUITS */
 .pos-products-grid {
     display: grid !important;
     grid-template-columns: repeat(4, 1fr) !important;
-    gap: 10px !important;
-    padding: 8px !important;
+    gap: 6px !important;
+    padding: 4px !important;
     justify-content: center !important;
     align-content: start !important;
-    overflow-x: auto !important;
+    overflow-x: hidden !important;
     overflow-y: auto !important;
-    flex-wrap: wrap !important;
     flex: 1 !important;
 }
 
-/* ✅ CARTES PRODUITS */
+/* ✅ CARTES PRODUITS - TAILLE OPTIMISÉE */
 .pos-product-card {
-    min-height: 120px !important;
-    max-height: 155px !important;
-    padding: 6px 4px !important;
-    border-radius: 10px !important;
+    min-height: 110px !important;
+    max-height: 140px !important;
+    padding: 4px 3px !important;
+    border-radius: 8px !important;
     border: 2px solid var(--border) !important;
     display: flex !important;
     flex-direction: column !important;
@@ -683,7 +682,7 @@ transition: background 0.3s ease, border-color 0.3s ease;
     background: var(--bg-card) !important;
     cursor: pointer !important;
     transition: var(--transition) !important;
-    gap: 2px !important;
+    gap: 1px !important;
 }
 
 .pos-product-card:hover {
@@ -694,10 +693,10 @@ transition: background 0.3s ease, border-color 0.3s ease;
 
 /* ✅ IMAGE PRODUIT */
 .pos-product-img {
-    height: 50px !important;
-    width: 80% !important;
-    margin-bottom: 3px !important;
-    border-radius: 8px !important;
+    height: 45px !important;
+    width: 70% !important;
+    margin-bottom: 2px !important;
+    border-radius: 6px !important;
     overflow: hidden !important;
     background: var(--gray-100) !important;
     flex-shrink: 0 !important;
@@ -714,7 +713,7 @@ transition: background 0.3s ease, border-color 0.3s ease;
 
 /* ✅ NOM PRODUIT */
 .pos-product-name {
-    font-size: 13px !important;
+    font-size: 11px !important;
     font-weight: 700 !important;
     text-align: center !important;
     overflow: hidden !important;
@@ -729,32 +728,45 @@ transition: background 0.3s ease, border-color 0.3s ease;
 
 /* ✅ PRIX PRODUIT */
 .pos-product-price {
-    font-size: 15px !important;
+    font-size: 13px !important;
     font-weight: 700 !important;
     display: block !important;
     text-align: center !important;
-    margin-top: 2px !important;
+    margin-top: 1px !important;
     color: var(--text-primary) !important;
 }
 
 .pos-old-price {
-    font-size: 10px !important;
+    font-size: 9px !important;
     text-decoration: line-through !important;
     color: var(--text-muted) !important;
-    margin-right: 4px !important;
+    margin-right: 3px !important;
 }
 
 .pos-promo-price {
-    font-size: 15px !important;
+    font-size: 13px !important;
     color: var(--danger) !important;
+}
+
+/* ✅ GRILLE CATÉGORIES - ESPACES RÉDUITS (MÊME QUE PRODUITS) */
+.pos-categories-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 6px !important;
+    padding: 4px !important;
+    justify-content: center !important;
+    align-content: start !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    flex: 1 !important;
 }
 
 /* ✅ CARTES CATÉGORIES - MÊME TAILLE QUE PRODUITS */
 .pos-category-card {
-    min-height: 120px !important;
-    max-height: 155px !important;
-    padding: 6px 4px !important;
-    border-radius: 10px !important;
+    min-height: 110px !important;
+    max-height: 140px !important;
+    padding: 4px 3px !important;
+    border-radius: 8px !important;
     border: 2px solid var(--border) !important;
     display: flex !important;
     flex-direction: column !important;
@@ -764,7 +776,7 @@ transition: background 0.3s ease, border-color 0.3s ease;
     background: var(--bg-card) !important;
     cursor: pointer !important;
     transition: var(--transition) !important;
-    gap: 2px !important;
+    gap: 1px !important;
 }
 
 .pos-category-card:hover {
@@ -774,39 +786,60 @@ transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .pos-category-card img {
-    height: 50px !important;
-    width: 50px !important;
+    height: 45px !important;
+    width: 45px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
-    margin-bottom: 4px !important;
+    margin-bottom: 2px !important;
+    flex-shrink: 0 !important;
 }
 
 .pos-category-card .fas.fa-folder {
-    font-size: 32px !important;
+    font-size: 28px !important;
     color: var(--accent) !important;
+    margin-bottom: 2px !important;
+}
+
+.pos-category-card .category-name {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-align: center !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+    display: block !important;
+    color: var(--text-primary) !important;
+}
+
+.pos-category-card .category-count {
+    font-size: 9px !important;
+    color: var(--text-muted) !important;
+    font-weight: 500 !important;
+    display: block !important;
 }
 
 /* ✅ CATÉGORIES BAR */
 .pos-categories-bar { 
     display: flex; 
-    gap: 6px; 
-    margin-bottom: 8px; 
+    gap: 4px; 
+    margin-bottom: 6px; 
     overflow-x: auto; 
-    padding-bottom: 4px; 
+    padding-bottom: 3px; 
     flex-shrink: 0; 
 }
 
 .pos-cat-btn {
 display: flex;
 align-items: center;
-gap: 6px;
-padding: 6px 14px;
+gap: 4px;
+padding: 4px 10px;
 border: 2px solid var(--border);
 border-radius: var(--radius-full);
 background: var(--bg-card);
 color: var(--text-primary);
 font-weight: 700;
-font-size: 0.75rem;
+font-size: 0.7rem;
 cursor: pointer;
 white-space: nowrap;
 transition: var(--transition);
@@ -815,8 +848,8 @@ transition: var(--transition);
 .pos-cat-btn img {
 width: auto;
 height: auto;
-max-width: 60px;
-max-height: 60px;
+max-width: 40px;
+max-height: 40px;
 border-radius: 6px;
 object-fit: contain;
 }
@@ -831,11 +864,11 @@ object-fit: contain;
     color: #fff !important;
     border: none !important;
     border-radius: 6px !important;
-    padding: 5px 20px !important;
-    font-size: 0.75rem !important;
+    padding: 4px 16px !important;
+    font-size: 0.7rem !important;
     font-weight: 600 !important;
     cursor: pointer !important;
-    gap: 5px !important;
+    gap: 4px !important;
 }
 
 /* ✅ OUTILS MASQUÉS PAR DÉFAUT */
@@ -843,26 +876,26 @@ object-fit: contain;
     display: none !important;
 }
 
-/* ✅ ARTICLES DU PANIER - SCROLL - HAUTEUR AUGMENTÉE */
+/* ✅ ARTICLES DU PANIER - SCROLL */
 .pos-cart-items {
     flex: 1 !important;
     overflow-y: auto !important;
-    padding: 4px 8px !important;
-    min-height: 80px !important;
-    max-height: 300px !important;
+    padding: 4px 6px !important;
+    min-height: 60px !important;
+    max-height: 250px !important;
 }
 
 /* ✅ PAIEMENT - SCROLL */
 .pos-payment-form {
     flex: 1 !important;
     overflow-y: auto !important;
-    max-height: 450px !important;
-    padding: 6px 10px !important;
+    max-height: 400px !important;
+    padding: 4px 8px !important;
 }
 
 /* ✅ BOUTON VALIDER - ESPACE EN DESSOUS */
 .pos-validate-btn {
-    margin-bottom: 15px !important;
+    margin-bottom: 12px !important;
 }
 
 /* ✅ CORRECTION BANDEAU CATÉGORIE */
@@ -871,19 +904,19 @@ object-fit: contain;
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    padding: 8px 12px !important;
-    margin-bottom: 8px !important;
+    padding: 6px 10px !important;
+    margin-bottom: 6px !important;
     background: var(--bg-card) !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
     border: 1px solid var(--border) !important;
     flex-wrap: wrap !important;
-    gap: 6px !important;
+    gap: 4px !important;
 }
 
 .pos-category-header .header-left {
     display: flex !important;
     align-items: center !important;
-    gap: 6px !important;
+    gap: 4px !important;
 }
 
 .pos-category-header .btn-back {
@@ -894,8 +927,8 @@ object-fit: contain;
     color: var(--white) !important;
     border: none !important;
     border-radius: 6px !important;
-    padding: 6px 14px !important;
-    font-size: 0.8rem !important;
+    padding: 4px 10px !important;
+    font-size: 0.7rem !important;
     font-weight: 600 !important;
     cursor: pointer !important;
 }
@@ -903,21 +936,21 @@ object-fit: contain;
 .pos-category-header .header-center {
     display: flex !important;
     align-items: center !important;
-    gap: 8px !important;
+    gap: 6px !important;
     flex-wrap: wrap !important;
 }
 
 .pos-category-header .category-name {
     font-weight: 700 !important;
-    font-size: 1rem !important;
+    font-size: 0.9rem !important;
     color: var(--text-primary) !important;
 }
 
 .pos-category-header .category-count {
-    font-size: 0.75rem !important;
+    font-size: 0.65rem !important;
     color: var(--text-secondary) !important;
     background: var(--gray-100) !important;
-    padding: 2px 12px !important;
+    padding: 2px 10px !important;
     border-radius: 20px !important;
     font-weight: 600 !important;
 }
@@ -980,35 +1013,35 @@ object-fit: contain;
 /* ✅ SUR PC (> 1024px) */
 @media(min-width: 1024px) {
     .pos-product-card {
-        min-height: 160px !important;
-        max-height: 195px !important;
-        padding: 8px 6px !important;
+        min-height: 140px !important;
+        max-height: 175px !important;
+        padding: 6px 4px !important;
     }
     .pos-product-img {
-        height: 70px !important;
-        width: 80% !important;
+        height: 60px !important;
+        width: 75% !important;
     }
     .pos-product-name {
-        font-size: 14px !important;
+        font-size: 13px !important;
     }
     .pos-product-price {
-        font-size: 16px !important;
+        font-size: 15px !important;
     }
     .pos-promo-price {
-        font-size: 16px !important;
+        font-size: 15px !important;
     }
     
     .pos-category-card {
-        min-height: 160px !important;
-        max-height: 195px !important;
-        padding: 8px 6px !important;
+        min-height: 140px !important;
+        max-height: 175px !important;
+        padding: 6px 4px !important;
     }
     .pos-category-card img {
-        height: 60px !important;
-        width: 60px !important;
+        height: 55px !important;
+        width: 55px !important;
     }
     .pos-category-card .fas.fa-folder {
-        font-size: 36px !important;
+        font-size: 32px !important;
     }
     
     .pos-steps-nav {
@@ -1026,40 +1059,45 @@ object-fit: contain;
     }
     
     .pos-cart-panel {
-        padding-top: 10px !important;
+        padding-top: 8px !important;
     }
     
     .pos-products-panel {
         max-height: 80vh !important;
-        min-height: 400px !important;
+        min-height: 380px !important;
     }
     
     .pos-cart-panel {
         max-height: 55vh !important;
-        min-height: 220px !important;
+        min-height: 200px !important;
     }
     
     .pos-products-grid {
-        gap: 12px !important;
-        padding: 10px !important;
+        gap: 8px !important;
+        padding: 6px !important;
+    }
+    
+    .pos-categories-grid {
+        gap: 8px !important;
+        padding: 6px !important;
     }
     
     .pos-cart-items {
-        max-height: 350px !important;
-        min-height: 100px !important;
+        max-height: 300px !important;
+        min-height: 80px !important;
     }
 }
 
 /* ✅ SUR TABLETTE (700px - 1024px) */
 @media(min-width: 700px) and (max-width: 1024px) {
     .pos-product-card {
-        min-height: 130px !important;
-        max-height: 160px !important;
-        padding: 6px 4px !important;
+        min-height: 120px !important;
+        max-height: 150px !important;
+        padding: 4px 3px !important;
     }
     .pos-product-img {
-        height: 55px !important;
-        width: 80% !important;
+        height: 50px !important;
+        width: 75% !important;
     }
     .pos-product-name {
         font-size: 12px !important;
@@ -1069,13 +1107,13 @@ object-fit: contain;
     }
     
     .pos-category-card {
-        min-height: 130px !important;
-        max-height: 160px !important;
-        padding: 6px 4px !important;
+        min-height: 120px !important;
+        max-height: 150px !important;
+        padding: 4px 3px !important;
     }
     .pos-category-card img {
-        height: 50px !important;
-        width: 50px !important;
+        height: 45px !important;
+        width: 45px !important;
     }
     
     .pos-steps-nav {
@@ -1093,64 +1131,74 @@ object-fit: contain;
     }
     
     .pos-cart-panel {
-        padding-top: 10px !important;
+        padding-top: 8px !important;
     }
     
     .pos-products-panel {
         max-height: 60vh !important;
-        min-height: 300px !important;
+        min-height: 280px !important;
     }
     
     .pos-cart-panel {
         max-height: 55vh !important;
-        min-height: 180px !important;
+        min-height: 160px !important;
     }
     
     .pos-products-grid {
-        gap: 8px !important;
-        padding: 6px !important;
+        gap: 6px !important;
+        padding: 4px !important;
+    }
+    
+    .pos-categories-grid {
+        gap: 6px !important;
+        padding: 4px !important;
     }
     
     .pos-cart-items {
-        max-height: 280px !important;
-        min-height: 80px !important;
+        max-height: 220px !important;
+        min-height: 70px !important;
     }
 }
 
 /* ✅ SUR MOBILE (< 700px) */
 @media(max-width: 700px) {
     .pos-product-card {
-        min-height: 100px !important;
-        max-height: 125px !important;
-        padding: 4px 2px !important;
+        min-height: 90px !important;
+        max-height: 115px !important;
+        padding: 3px 2px !important;
         border-width: 1px !important;
     }
     .pos-product-img {
-        height: 40px !important;
+        height: 35px !important;
         width: 70% !important;
     }
     .pos-product-name {
-        font-size: 11px !important;
-        font-weight: 700 !important;
+        font-size: 10px !important;
     }
     .pos-product-price {
-        font-size: 13px !important;
+        font-size: 12px !important;
     }
     .pos-promo-price {
-        font-size: 13px !important;
+        font-size: 12px !important;
     }
     
     .pos-category-card {
-        min-height: 100px !important;
-        max-height: 125px !important;
-        padding: 4px 2px !important;
+        min-height: 90px !important;
+        max-height: 115px !important;
+        padding: 3px 2px !important;
     }
     .pos-category-card img {
-        height: 40px !important;
-        width: 40px !important;
+        height: 35px !important;
+        width: 35px !important;
     }
     .pos-category-card .fas.fa-folder {
-        font-size: 24px !important;
+        font-size: 20px !important;
+    }
+    .pos-category-card .category-name {
+        font-size: 10px !important;
+    }
+    .pos-category-card .category-count {
+        font-size: 8px !important;
     }
     
     .pos-steps-nav {
@@ -1168,26 +1216,36 @@ object-fit: contain;
     }
     
     .pos-cart-panel {
-        padding-top: 8px !important;
+        padding-top: 6px !important;
     }
     
     .pos-products-panel {
         max-height: 50vh !important;
-        min-height: 220px !important;
+        min-height: 200px !important;
     }
     
     .pos-cart-panel {
         max-height: 50vh !important;
-        min-height: 150px !important;
+        min-height: 130px !important;
+    }
+    
+    .pos-products-grid {
+        gap: 4px !important;
+        padding: 3px !important;
+    }
+    
+    .pos-categories-grid {
+        gap: 4px !important;
+        padding: 3px !important;
     }
     
     .pos-cart-items {
-        max-height: 200px !important;
-        min-height: 70px !important;
+        max-height: 150px !important;
+        min-height: 60px !important;
     }
     
     .pos-payment-form {
-        max-height: 320px !important;
+        max-height: 300px !important;
     }
     
     .pos-step {
@@ -1201,46 +1259,41 @@ object-fit: contain;
     .pos-step span:last-child {
         font-size: 10px !important;
     }
-    
-    .pos-products-grid {
-        gap: 6px !important;
-        padding: 4px !important;
-    }
 }
 
 /* ✅ SUR TRÈS PETIT ÉCRAN (< 400px) */
 @media(max-width: 400px) {
     .pos-products-grid {
-        gap: 4px !important;
-        padding: 3px !important;
+        gap: 3px !important;
+        padding: 2px !important;
     }
     .pos-product-card {
-        min-height: 80px !important;
-        max-height: 100px !important;
+        min-height: 75px !important;
+        max-height: 95px !important;
         padding: 2px 1px !important;
     }
     .pos-product-img {
-        height: 30px !important;
+        height: 28px !important;
         width: 60% !important;
     }
     .pos-product-name {
-        font-size: 10px !important;
+        font-size: 9px !important;
     }
     .pos-product-price {
-        font-size: 12px !important;
+        font-size: 11px !important;
     }
     .pos-promo-price {
-        font-size: 12px !important;
+        font-size: 11px !important;
     }
     
     .pos-category-card {
-        min-height: 80px !important;
-        max-height: 100px !important;
+        min-height: 75px !important;
+        max-height: 95px !important;
         padding: 2px 1px !important;
     }
     .pos-category-card img {
-        height: 30px !important;
-        width: 30px !important;
+        height: 28px !important;
+        width: 28px !important;
     }
 }
 
@@ -1294,6 +1347,9 @@ object-fit: contain;
     border-color: #30363D !important;
 }
 [data-theme="dark"] .pos-products-grid {
+    background: #161B22 !important;
+}
+[data-theme="dark"] .pos-categories-grid {
     background: #161B22 !important;
 }
 [data-theme="dark"] .pos-cart-panel {
