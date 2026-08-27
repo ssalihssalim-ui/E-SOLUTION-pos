@@ -1189,7 +1189,7 @@ flex-direction: column !important;
 transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-/* ✅ PANIER - 30% DE LA LARGEUR, POSITION STICKY À DROITE - HAUTEUR MIN 450px */
+/* ✅ PANIER - 30% DE LA LARGEUR, POSITION STICKY À DROITE */
 .pos-cart-panel {
 position: sticky !important;
 top: 30px !important;
@@ -1200,7 +1200,7 @@ max-width: 30% !important;
 flex: 0 0 30% !important;
 height: auto !important;
 max-height: 70vh !important;
-min-height: 450px !important;
+min-height: 350px !important;
 background: var(--bg-card) !important;
 border-radius: var(--radius-lg) !important;
 padding: 8px !important;
@@ -1355,14 +1355,13 @@ padding: 4px !important;
 margin-bottom: 4px !important;
 }
 
-/* ✅ GRILLE PRODUITS - 4 COLONNES */
+/* ✅ GRILLE PRODUITS - 3 COLONNES POUR PLUS D'ESPACE */
 .pos-products-grid {
 gap: 6px !important;
 padding: 4px !important;
-grid-template-columns: repeat(4, 1fr) !important;
+grid-template-columns: repeat(3, 1fr) !important;
 }
 
-/* ✅ GRILLE CATÉGORIES - 3 COLONNES (INCHANGÉ) */
 .pos-categories-grid {
 gap: 8px !important;
 padding: 6px !important;
