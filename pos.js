@@ -1160,7 +1160,73 @@ cd.innerHTML='';
 }
 }
 
-async function updateClientFidelityAsync(clientId,total,profitTotal){ try{ if(!fideliteSettingsCache){ var fDoc=await db.collection('settings').doc('fidelite').get(); fideliteSettingsCache=fDoc.exists?fDoc.data():{active:true,pointsParVente:1}; } if(!fideliteSettingsCache.active) return; var cr=await db.collection('clients').doc(clientId).get(); if(!cr.exists) return; var cd=cr.data(),points=parseInt(fideliteSettingsCache.pointsParVente)||1; await CacheDB.write('clients',clientId,{ca:(cd.ca||0)+total,profit:(cd.profit||0)+profitTotal,pointsFidelite:(cd.pointsFidelite||0)+points,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},'update'); }catch(e){ console.warn(e); } }
+// ✅ FONCTION CORRIGÉE POUR METTRE À JOUR LE CLIENT
+async function updateClientFidelityAsync(clientId, total, profitTotal) {
+    try {
+        console.log('📊 Mise à jour client:', clientId);
+        console.log('  - Total à ajouter (CA):', total);
+        console.log('  - Profit à ajouter:', profitTotal);
+
+        if (!fideliteSettingsCache) {
+            var fDoc = await db.collection('settings').doc('fidelite').get();
+            fideliteSettingsCache = fDoc.exists ? fDoc.data() : { active: true, pointsParVente: 1 };
+        }
+        if (!fideliteSettingsCache.active) return;
+
+        // Récupérer les données actuelles du client
+        var cr = await db.collection('clients').doc(clientId).get();
+        if (!cr.exists) return;
+
+        var cd = cr.data();
+        var points = parseInt(fideliteSettingsCache.pointsParVente) || 1;
+
+        // Calculer les nouveaux totaux
+        var nouveauCA = (cd.ca || 0) + total;
+        var nouveauProfit = (cd.profit || 0) + profitTotal;
+        var nouveauxPoints = (cd.pointsFidelite || 0) + points;
+
+        console.log('  - Ancien CA:', cd.ca || 0, '→ Nouveau CA:', nouveauCA);
+        console.log('  - Ancien Profit:', cd.profit || 0, '→ Nouveau Profit:', nouveauProfit);
+        console.log('  - Anciens Points:', cd.pointsFidelite || 0, '→ Nouveaux Points:', nouveauxPoints);
+
+        // ✅ Mettre à jour dans Firestore directement
+        await db.collection('clients').doc(clientId).update({
+            ca: nouveauCA,
+            profit: nouveauProfit,
+            pointsFidelite: nouveauxPoints,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        // ✅ Mettre à jour le cache
+        var clientData = {
+            ...cd,
+            ca: nouveauCA,
+            profit: nouveauProfit,
+            pointsFidelite: nouveauxPoints,
+            updatedAt: new Date()
+        };
+        await CacheDB.set('clients', clientId, clientData);
+
+        // ✅ Mettre à jour posAllClients si présent
+        var posClient = posAllClients.find(function(c) { return c.id === clientId; });
+        if (posClient) {
+            posClient.ca = nouveauCA;
+            posClient.profit = nouveauProfit;
+            posClient.pointsFidelite = nouveauxPoints;
+        }
+
+        // ✅ Mettre à jour le client courant
+        if (posCurrentClient && posCurrentClient.id === clientId) {
+            posCurrentClient.ca = nouveauCA;
+            posCurrentClient.profit = nouveauProfit;
+        }
+
+        console.log('✅ Client mis à jour avec succès:', clientId);
+
+    } catch(e) {
+        console.error('❌ Erreur mise à jour client:', e);
+    }
+}
 
 async function posFinalizeSale(){
 // ✅ MODIFICATION 3 : Vérifier que le panier n'est pas vide
