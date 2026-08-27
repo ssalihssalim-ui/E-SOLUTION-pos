@@ -509,7 +509,7 @@ color: var(--text-primary);
 .hidden { display: none !important; }
 
 /* ============================================================
-   ✅ POS SYSTEM - ORGANISATION CORRIGÉE
+   ✅ POS SYSTEM - GRILLES 5 COLONNES
    ============================================================ */
 
 /* ✅ DYNAMIC CONTENT - PAGE PLUS HAUTE */
@@ -611,7 +611,7 @@ width: 100% !important;
 height: auto !important;
 }
 
-/* ✅ PRODUITS - 80% DE L'AFFICHAGE */
+/* ✅ PRODUITS */
 .pos-products-panel {
 width: 100% !important;
 min-width: 0 !important;
@@ -631,7 +631,7 @@ flex: 8 !important;
 transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-/* ✅ PANIER - 20% DE L'AFFICHAGE */
+/* ✅ PANIER */
 .pos-cart-panel {
 position: static !important;
 width: 100% !important;
@@ -654,10 +654,10 @@ min-height: 180px !important;
 transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-/* ✅ GRILLE PRODUITS - ESPACES RÉDUITS */
+/* ✅ GRILLE PRODUITS - 5 COLONNES */
 .pos-products-grid {
     display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
+    grid-template-columns: repeat(5, 1fr) !important;
     gap: 6px !important;
     padding: 4px !important;
     justify-content: center !important;
@@ -667,10 +667,10 @@ transition: background 0.3s ease, border-color 0.3s ease;
     flex: 1 !important;
 }
 
-/* ✅ CARTES PRODUITS - TAILLE OPTIMISÉE */
+/* ✅ CARTES PRODUITS - min-height 140px */
 .pos-product-card {
-    min-height: 110px !important;
-    max-height: 140px !important;
+    min-height: 140px !important;
+    max-height: 165px !important;
     padding: 4px 3px !important;
     border-radius: 8px !important;
     border: 2px solid var(--border) !important;
@@ -693,8 +693,8 @@ transition: background 0.3s ease, border-color 0.3s ease;
 
 /* ✅ IMAGE PRODUIT */
 .pos-product-img {
-    height: 45px !important;
-    width: 70% !important;
+    height: 50px !important;
+    width: 75% !important;
     margin-bottom: 2px !important;
     border-radius: 6px !important;
     overflow: hidden !important;
@@ -748,10 +748,10 @@ transition: background 0.3s ease, border-color 0.3s ease;
     color: var(--danger) !important;
 }
 
-/* ✅ GRILLE CATÉGORIES - ESPACES RÉDUITS (MÊME QUE PRODUITS) */
+/* ✅ GRILLE CATÉGORIES - 5 COLONNES */
 .pos-categories-grid {
     display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
+    grid-template-columns: repeat(5, 1fr) !important;
     gap: 6px !important;
     padding: 4px !important;
     justify-content: center !important;
@@ -763,8 +763,8 @@ transition: background 0.3s ease, border-color 0.3s ease;
 
 /* ✅ CARTES CATÉGORIES - MÊME TAILLE QUE PRODUITS */
 .pos-category-card {
-    min-height: 110px !important;
-    max-height: 140px !important;
+    min-height: 140px !important;
+    max-height: 165px !important;
     padding: 4px 3px !important;
     border-radius: 8px !important;
     border: 2px solid var(--border) !important;
@@ -786,8 +786,8 @@ transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .pos-category-card img {
-    height: 45px !important;
-    width: 45px !important;
+    height: 50px !important;
+    width: 50px !important;
     border-radius: 50% !important;
     object-fit: cover !important;
     margin-bottom: 2px !important;
@@ -795,7 +795,7 @@ transition: background 0.3s ease, border-color 0.3s ease;
 }
 
 .pos-category-card .fas.fa-folder {
-    font-size: 28px !important;
+    font-size: 30px !important;
     color: var(--accent) !important;
     margin-bottom: 2px !important;
 }
@@ -1013,12 +1013,12 @@ object-fit: contain;
 /* ✅ SUR PC (> 1024px) */
 @media(min-width: 1024px) {
     .pos-product-card {
-        min-height: 140px !important;
-        max-height: 175px !important;
+        min-height: 160px !important;
+        max-height: 190px !important;
         padding: 6px 4px !important;
     }
     .pos-product-img {
-        height: 60px !important;
+        height: 65px !important;
         width: 75% !important;
     }
     .pos-product-name {
@@ -1032,16 +1032,16 @@ object-fit: contain;
     }
     
     .pos-category-card {
-        min-height: 140px !important;
-        max-height: 175px !important;
+        min-height: 160px !important;
+        max-height: 190px !important;
         padding: 6px 4px !important;
     }
     .pos-category-card img {
-        height: 55px !important;
-        width: 55px !important;
+        height: 60px !important;
+        width: 60px !important;
     }
     .pos-category-card .fas.fa-folder {
-        font-size: 32px !important;
+        font-size: 34px !important;
     }
     
     .pos-steps-nav {
@@ -1088,11 +1088,11 @@ object-fit: contain;
     }
 }
 
-/* ✅ SUR TABLETTE (700px - 1024px) */
+/* ✅ SUR ÉCRAN 9.7" (700px - 1024px) - 5 COLONNES */
 @media(min-width: 700px) and (max-width: 1024px) {
     .pos-product-card {
-        min-height: 120px !important;
-        max-height: 150px !important;
+        min-height: 140px !important;
+        max-height: 165px !important;
         padding: 4px 3px !important;
     }
     .pos-product-img {
@@ -1100,20 +1100,20 @@ object-fit: contain;
         width: 75% !important;
     }
     .pos-product-name {
-        font-size: 12px !important;
+        font-size: 11px !important;
     }
     .pos-product-price {
-        font-size: 14px !important;
+        font-size: 13px !important;
     }
     
     .pos-category-card {
-        min-height: 120px !important;
-        max-height: 150px !important;
+        min-height: 140px !important;
+        max-height: 165px !important;
         padding: 4px 3px !important;
     }
     .pos-category-card img {
-        height: 45px !important;
-        width: 45px !important;
+        height: 50px !important;
+        width: 50px !important;
     }
     
     .pos-steps-nav {
@@ -1147,11 +1147,13 @@ object-fit: contain;
     .pos-products-grid {
         gap: 6px !important;
         padding: 4px !important;
+        grid-template-columns: repeat(5, 1fr) !important;
     }
     
     .pos-categories-grid {
         gap: 6px !important;
         padding: 4px !important;
+        grid-template-columns: repeat(5, 1fr) !important;
     }
     
     .pos-cart-items {
@@ -1160,16 +1162,16 @@ object-fit: contain;
     }
 }
 
-/* ✅ SUR MOBILE (< 700px) */
+/* ✅ SUR MOBILE (< 700px) - 4 COLONNES */
 @media(max-width: 700px) {
     .pos-product-card {
-        min-height: 90px !important;
-        max-height: 115px !important;
+        min-height: 100px !important;
+        max-height: 125px !important;
         padding: 3px 2px !important;
         border-width: 1px !important;
     }
     .pos-product-img {
-        height: 35px !important;
+        height: 40px !important;
         width: 70% !important;
     }
     .pos-product-name {
@@ -1183,16 +1185,16 @@ object-fit: contain;
     }
     
     .pos-category-card {
-        min-height: 90px !important;
-        max-height: 115px !important;
+        min-height: 100px !important;
+        max-height: 125px !important;
         padding: 3px 2px !important;
     }
     .pos-category-card img {
-        height: 35px !important;
-        width: 35px !important;
+        height: 40px !important;
+        width: 40px !important;
     }
     .pos-category-card .fas.fa-folder {
-        font-size: 20px !important;
+        font-size: 22px !important;
     }
     .pos-category-card .category-name {
         font-size: 10px !important;
@@ -1232,11 +1234,13 @@ object-fit: contain;
     .pos-products-grid {
         gap: 4px !important;
         padding: 3px !important;
+        grid-template-columns: repeat(4, 1fr) !important;
     }
     
     .pos-categories-grid {
         gap: 4px !important;
         padding: 3px !important;
+        grid-template-columns: repeat(4, 1fr) !important;
     }
     
     .pos-cart-items {
@@ -1261,19 +1265,20 @@ object-fit: contain;
     }
 }
 
-/* ✅ SUR TRÈS PETIT ÉCRAN (< 400px) */
+/* ✅ SUR TRÈS PETIT ÉCRAN (< 400px) - 3 COLONNES */
 @media(max-width: 400px) {
     .pos-products-grid {
         gap: 3px !important;
         padding: 2px !important;
+        grid-template-columns: repeat(3, 1fr) !important;
     }
     .pos-product-card {
-        min-height: 75px !important;
-        max-height: 95px !important;
+        min-height: 80px !important;
+        max-height: 100px !important;
         padding: 2px 1px !important;
     }
     .pos-product-img {
-        height: 28px !important;
+        height: 32px !important;
         width: 60% !important;
     }
     .pos-product-name {
@@ -1286,14 +1291,19 @@ object-fit: contain;
         font-size: 11px !important;
     }
     
+    .pos-categories-grid {
+        gap: 3px !important;
+        padding: 2px !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
     .pos-category-card {
-        min-height: 75px !important;
-        max-height: 95px !important;
+        min-height: 80px !important;
+        max-height: 100px !important;
         padding: 2px 1px !important;
     }
     .pos-category-card img {
-        height: 28px !important;
-        width: 28px !important;
+        height: 32px !important;
+        width: 32px !important;
     }
 }
 
