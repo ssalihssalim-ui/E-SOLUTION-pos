@@ -73,7 +73,6 @@ async function forceUpdateClient(clientId, total, profitTotal) {
             return false;
         }
         
-        // 1. Récupérer le client depuis Firestore
         const docRef = db.collection('clients').doc(clientId);
         const doc = await docRef.get();
         
@@ -91,7 +90,6 @@ async function forceUpdateClient(clientId, total, profitTotal) {
         console.log('  - Ancien CA:', ancienCA, '→ Nouveau CA:', nouveauCA);
         console.log('  - Ancien Profit:', ancienProfit, '→ Nouveau Profit:', nouveauProfit);
         
-        // 2. Mettre à jour dans Firestore
         await docRef.update({
             ca: nouveauCA,
             profit: nouveauProfit,
@@ -99,7 +97,6 @@ async function forceUpdateClient(clientId, total, profitTotal) {
         });
         console.log('✅ Firestore mis à jour');
         
-        // 3. Mettre à jour le cache
         const updatedData = { 
             ...data, 
             ca: nouveauCA, 
@@ -109,31 +106,25 @@ async function forceUpdateClient(clientId, total, profitTotal) {
         await CacheDB.set('clients', clientId, updatedData);
         console.log('✅ Cache mis à jour');
         
-        // 4. Mettre à jour posAllClients
         const clientIndex = posAllClients.findIndex(c => c.id === clientId);
         if (clientIndex !== -1) {
             posAllClients[clientIndex].ca = nouveauCA;
             posAllClients[clientIndex].profit = nouveauProfit;
-            console.log('✅ posAllClients mis à jour (index:', clientIndex, ')');
-        } else {
-            console.warn('⚠️ Client non trouvé dans posAllClients');
+            console.log('✅ posAllClients mis à jour');
         }
         
-        // 5. Mettre à jour posFilteredClients
         const filteredIndex = posFilteredClients.findIndex(c => c.id === clientId);
         if (filteredIndex !== -1) {
             posFilteredClients[filteredIndex].ca = nouveauCA;
             posFilteredClients[filteredIndex].profit = nouveauProfit;
         }
         
-        // 6. Mettre à jour posCurrentClient
         if (posCurrentClient && posCurrentClient.id === clientId) {
             posCurrentClient.ca = nouveauCA;
             posCurrentClient.profit = nouveauProfit;
             console.log('✅ posCurrentClient mis à jour');
         }
         
-        // 7. Mettre à jour dans window.allClientsData si disponible (admin-crud)
         if (window.allClientsData) {
             const adminIndex = window.allClientsData.findIndex(c => c.id === clientId);
             if (adminIndex !== -1) {
@@ -169,18 +160,57 @@ btn.style.display = visible ? 'block' : 'none';
 }
 }
 
-// ==================== TOGGLE OUTILS POS ====================
+// ==================== TOGGLE OUTILS POS - CORRIGÉ ====================
 function posToggleTools() {
-posToolsVisible = !posToolsVisible;
-var toolsContainer = document.getElementById('posToolsContainer');
-var toggleBtn = document.getElementById('posToggleToolsBtn');
-if (toolsContainer) {
-toolsContainer.style.display = posToolsVisible ? 'flex' : 'none';
-}
-if (toggleBtn) {
-toggleBtn.innerHTML = posToolsVisible ? '✕ Masquer tout' : '🔍 Afficher tout';
-toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
-}
+    posToolsVisible = !posToolsVisible;
+    var toolsContainer = document.getElementById('posToolsContainer');
+    var toggleBtn = document.getElementById('posToggleToolsBtn');
+    
+    console.log('🔍 Toggle outils POS - État:', posToolsVisible);
+    
+    if (toolsContainer) {
+        if (posToolsVisible) {
+            toolsContainer.style.display = 'flex';
+            toolsContainer.style.flexDirection = 'column';
+            toolsContainer.style.gap = '4px';
+            toolsContainer.style.marginBottom = '4px';
+            toolsContainer.style.padding = '5px 8px';
+            toolsContainer.style.background = 'var(--bg-page)';
+            toolsContainer.style.borderRadius = '6px';
+            toolsContainer.style.border = '1px solid var(--border)';
+            // Forcer l'affichage de tous les éléments enfants
+            var children = toolsContainer.querySelectorAll('*');
+            children.forEach(function(child) {
+                child.style.display = '';
+            });
+        } else {
+            toolsContainer.style.display = 'none';
+        }
+    }
+    
+    if (toggleBtn) {
+        toggleBtn.innerHTML = posToolsVisible ? '✕ Masquer tout' : '🔍 Afficher tout';
+        toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
+    }
+    
+    // Vérifier que la barre de recherche est visible
+    var searchInput = document.getElementById('posSearchInput');
+    if (searchInput && posToolsVisible) {
+        searchInput.style.display = '';
+        setTimeout(function() { searchInput.focus(); }, 100);
+    }
+    
+    // Vérifier que les boutons sont visibles
+    var micBtn = document.getElementById('posMicBtn');
+    if (micBtn && posToolsVisible) {
+        micBtn.style.display = '';
+    }
+    
+    // Vérifier que la barre de catégories est visible
+    var categoriesBar = document.querySelector('.pos-categories-bar');
+    if (categoriesBar && posToolsVisible) {
+        categoriesBar.style.display = '';
+    }
 }
 
 // ==================== APPLIQUER LE SCROLL SUR DYNAMICCONTENT ====================
@@ -1243,7 +1273,6 @@ cd.innerHTML='';
 }
 }
 
-// ✅ FONCTION DE MISE À JOUR SIMPLIFIÉE
 async function updateClientFidelityAsync(clientId, total, profitTotal) {
     try {
         return await forceUpdateClient(clientId, total, profitTotal);
@@ -1429,3 +1458,4 @@ window.forceUpdateClient = forceUpdateClient;
 
 console.log('🚀 E-SOLUTION - POS chargé avec corrections');
 console.log('✅ forceUpdateClient disponible');
+console.log('✅ Bouton "Afficher tout" corrigé');
