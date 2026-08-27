@@ -9,6 +9,7 @@
 // ✅ Bouton flèche ↑ scroll vers le haut
 // ✅ Vente impossible si panier vide
 // ✅ Retour automatique à l'étape 1 après finalisation
+// ✅ CA et Profit client mis à jour
 
 var posCart = [];
 var posStep = 1;
@@ -1203,7 +1204,17 @@ if(window.posCommandeId){ batch.update(db.collection('commandes').doc(window.pos
 if(window.posVenteId){ batch.update(db.collection('ventes').doc(window.posVenteId), {paid:true, statutPaiement:'payé', remainingAmount:0, paidAt:firebase.firestore.FieldValue.serverTimestamp()}); delete window.posVenteId; }
 for(var i=0;i<posCart.length;i++){ var it=posCart[i]; batch.update(db.collection('products').doc(it.id), {stock:firebase.firestore.FieldValue.increment(-it.quantite), vendues:firebase.firestore.FieldValue.increment(it.quantite), ca:firebase.firestore.FieldValue.increment(it.prixUnitaire*it.quantite)}); }
 await batch.commit();
-if(posCurrentClient && posCurrentClient.id && paid) updateClientFidelityAsync(posCurrentClient.id, t, profitTotal);
+
+// ✅ CORRECTION UNIQUE : AWAIT pour mettre à jour le CA et Profit du client
+if(posCurrentClient && posCurrentClient.id && paid) {
+    try {
+        await updateClientFidelityAsync(posCurrentClient.id, t, profitTotal);
+        console.log('✅ Client mis à jour:', posCurrentClient.id, 'CA:', t, 'Profit:', profitTotal);
+    } catch(e) {
+        console.warn('⚠️ Erreur mise à jour client:', e);
+    }
+}
+
 if (posCurrentClient && posCurrentClient.id) {
 clientCreditsCache[posCurrentClient.id] = undefined;
 }
