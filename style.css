@@ -1107,43 +1107,46 @@ object-fit: contain;
     }
 }
 
-/* ✅ SUR ÉCRAN 9.7" (700px - 1024px) */
+/* ✅ SUR ÉCRAN 9.7" (700px - 1024px) - IMAGES AGRANDIES */
 @media(min-width: 700px) and (max-width: 1024px) {
     .pos-product-card {
-        min-height: 150px !important;
-        max-height: 180px !important;
-        padding: 3px 2px !important;
+        min-height: 180px !important;
+        max-height: 210px !important;
+        padding: 5px 4px !important;
     }
     /* ✅ CONTENEUR IMAGE PRODUIT 9.7" AGRANDI */
     .pos-product-img {
-        height: 85px !important;
-        width: 85% !important;
+        height: 110px !important;
+        width: 90% !important;
     }
     .pos-product-name {
-        font-size: 11px !important;
+        font-size: 13px !important;
     }
     .pos-product-price {
-        font-size: 13px !important;
+        font-size: 15px !important;
+    }
+    .pos-promo-price {
+        font-size: 15px !important;
     }
     
     .pos-category-card {
-        min-height: 150px !important;
-        max-height: 180px !important;
-        padding: 3px 2px !important;
+        min-height: 180px !important;
+        max-height: 210px !important;
+        padding: 5px 4px !important;
     }
     /* ✅ CONTENEUR IMAGE CATÉGORIE 9.7" AGRANDI */
     .pos-category-card .category-image {
-        width: 85px !important;
-        height: 85px !important;
+        width: 110px !important;
+        height: 110px !important;
     }
     .pos-category-card .fas.fa-folder {
-        font-size: 42px !important;
+        font-size: 50px !important;
     }
     .pos-category-card .category-name {
-        font-size: 11px !important;
+        font-size: 13px !important;
     }
     .pos-category-card .category-count {
-        font-size: 9px !important;
+        font-size: 11px !important;
     }
     
     .pos-steps-nav {
