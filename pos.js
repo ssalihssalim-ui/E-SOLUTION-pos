@@ -6,7 +6,7 @@
 // ✅ Panier 20% - Produits 80% en hauteur
 // ✅ Espace en dessous du bouton Valider
 // ✅ Scroll sur le titre "Panier" vers le bas
-// ✅ Bouton "⬆ Remonter" pour remonter en haut
+// ✅ Bouton flèche vers le haut (70x70px, à droite)
 
 var posCart = [];
 var posStep = 1;
@@ -1016,11 +1016,11 @@ h+='<div class="pos-cart-item" style="display:flex;align-items:center;justify-co
 }
 h+='</div><div style="padding:2px 0;display:flex;gap:3px;align-items:center;flex-shrink:0;"><label style="font-size:'+(isMobile?'12px':'0.7rem')+';">Remise:</label><input type="number" id="posDiscountMAD" value="'+posDiscountMAD+'" min="0" step="0.01" onchange="posUpdateDiscountMAD(this.value)" style="width:50px;padding:2px;border:2px solid #e2e8f0;border-radius:4px;font-size:'+(isMobile?'12px':'0.7rem')+';"></div><div class="pos-cart-footer" style="padding:2px 0;flex-shrink:0;">'+(posDiscountMAD>0?'<div style="display:flex;justify-content:space-between;font-size:'+(isMobile?'12px':'0.8rem')+';"><span>Sous-total</span><span>'+st.toFixed(2)+'</span></div><div style="display:flex;justify-content:space-between;color:#ef4444;font-size:'+(isMobile?'12px':'0.8rem')+';"><span>Remise</span><span>-'+posDiscountMAD.toFixed(2)+'</span></div>':'')+'<div class="pos-cart-total-row" style="display:flex;justify-content:space-between;font-size:'+(isMobile?'18px':'20px')+';font-weight:700;padding:3px 0;border-top:2px solid var(--border);"><span>Total</span><span>'+t.toFixed(2)+' MAD</span></div>' +
 
-// ✅ ESPACE EN DESSOUS DU BOUTON VALIDER
+// ✅ BOUTON VALIDER
 '<button class="pos-validate-btn" onclick="posGoToStep2()" '+(posCart.length===0?'disabled':'')+' style="width:100%;padding:10px;background:#14B8A6;color:#fff;border:none;border-radius:8px;font-size:18px;font-weight:700;height:40px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:12px;"><i class="fas fa-check-circle"></i> Valider</button>' +
 
-// ✅ BOUTON REMONTER EN HAUT
-'<button onclick="document.querySelector(\'.pos-steps-nav\').scrollIntoView({behavior:\'smooth\',block:\'start\'})" style="width:100%;padding:8px;background:#f1f5f9;color:#333;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;"><i class="fas fa-arrow-up"></i> ⬆ Remonter</button></div>';
+// ✅ BOUTON FLÈCHE VERS LE HAUT (70x70px, à droite)
+'<button onclick="document.querySelector(\'.pos-steps-nav\').scrollIntoView({behavior:\'smooth\',block:\'start\'})" style="position:fixed;bottom:20px;right:20px;width:70px;height:70px;border-radius:50%;background:#14B8A6;color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.25);z-index:9999;display:flex;align-items:center;justify-content:center;transition:all 0.3s;" onmouseover="this.style.transform=\'scale(1.1)\';this.style.boxShadow=\'0 6px 25px rgba(0,0,0,0.35)\';" onmouseout="this.style.transform=\'scale(1)\';this.style.boxShadow=\'0 4px 15px rgba(0,0,0,0.25)\';"><i class="fas fa-arrow-up"></i></button></div>';
 }else{
 // ÉTAPE PAIEMENT AVEC SCROLL
 var canCredit=posCurrentClient&&posCurrentClient.id;
@@ -1046,8 +1046,8 @@ h+='<div style="margin-bottom:3px;"><label style="font-size:'+(isMobile?'12px':'
 }
 h+='<button class="pos-finalize-btn" onclick="posFinalizeSale()" style="width:100%;padding:8px;margin-top:4px;background:#14B8A6;color:#fff;border:none;border-radius:8px;font-size:16px !important;font-weight:700 !important;min-height:40px;margin-bottom:12px;"><i class="fas fa-check-circle"></i> Finaliser</button>' +
 
-// ✅ BOUTON REMONTER EN HAUT
-'<button onclick="document.querySelector(\'.pos-steps-nav\').scrollIntoView({behavior:\'smooth\',block:\'start\'})" style="width:100%;padding:8px;background:#f1f5f9;color:#333;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;"><i class="fas fa-arrow-up"></i> ⬆ Remonter</button></div>';
+// ✅ BOUTON FLÈCHE VERS LE HAUT (70x70px, à droite)
+'<button onclick="document.querySelector(\'.pos-steps-nav\').scrollIntoView({behavior:\'smooth\',block:\'start\'})" style="position:fixed;bottom:20px;right:20px;width:70px;height:70px;border-radius:50%;background:#14B8A6;color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.25);z-index:9999;display:flex;align-items:center;justify-content:center;transition:all 0.3s;" onmouseover="this.style.transform=\'scale(1.1)\';this.style.boxShadow=\'0 6px 25px rgba(0,0,0,0.35)\';" onmouseout="this.style.transform=\'scale(1)\';this.style.boxShadow=\'0 4px 15px rgba(0,0,0,0.25)\';"><i class="fas fa-arrow-up"></i></button></div>';
 }
 h+='</div></div></div></div>'; c.innerHTML=h;
 
@@ -1276,4 +1276,4 @@ window.applyDynamicContentScroll = applyDynamicContentScroll;
 
 console.log('🚀 E-SOLUTION - POS chargé avec corrections');
 console.log('✅ Cliquez sur le titre "Panier" pour scroller vers le bas');
-console.log('✅ Cliquez sur "⬆ Remonter" pour remonter en haut');
+console.log('✅ Cliquez sur le bouton flèche ↑ (en bas à droite) pour remonter en haut');
