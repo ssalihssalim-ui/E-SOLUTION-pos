@@ -526,7 +526,7 @@ color: var(--text-primary);
 .pos-container {
 display: flex !important;
 flex-direction: column !important;
-gap: 8px !important;
+gap: 4px !important;
 height: auto !important;
 min-height: 120vh !important;
 max-height: none !important;
@@ -537,21 +537,21 @@ overflow-y: visible !important;
 overflow-x: hidden !important;
 }
 
-/* ✅ INDICATEUR D'ÉTAPE - TOUJOURS EN HAUT */
+/* ✅ INDICATEUR D'ÉTAPE - HAUTEUR RÉDUITE (au plafond) */
 .pos-steps-nav {
 display: flex !important;
 justify-content: center !important;
 align-items: center !important;
-gap: 12px !important;
-padding: 4px 10px !important;
+gap: 10px !important;
+padding: 2px 8px !important;
 background: var(--bg-page) !important;
 border-radius: var(--radius) !important;
 width: 100% !important;
 flex-shrink: 0 !important;
 flex-wrap: wrap !important;
-min-height: 28px !important;
-max-height: 36px !important;
-margin-bottom: 6px !important;
+min-height: 22px !important;
+max-height: 28px !important;
+margin-bottom: 4px !important;
 position: sticky !important;
 top: 0 !important;
 z-index: 100 !important;
@@ -562,11 +562,11 @@ border-bottom: 1px solid var(--border) !important;
 .pos-step {
 display: flex !important;
 align-items: center !important;
-gap: 3px !important;
-font-size: 14px !important;
+gap: 2px !important;
+font-size: 12px !important;
 font-weight: 600 !important;
 cursor: pointer !important;
-padding: 2px 8px !important;
+padding: 1px 6px !important;
 border-radius: var(--radius) !important;
 transition: var(--transition) !important;
 color: var(--text-muted) !important;
@@ -583,10 +583,10 @@ background: var(--bg-page) !important;
 display: inline-flex !important;
 align-items: center !important;
 justify-content: center !important;
-width: 20px !important;
-height: 20px !important;
+width: 18px !important;
+height: 18px !important;
 border-radius: 50% !important;
-font-size: 12px !important;
+font-size: 10px !important;
 font-weight: 700 !important;
 background: var(--gray-200) !important;
 color: var(--text-muted) !important;
@@ -599,14 +599,14 @@ color: #fff !important;
 }
 
 .pos-step span:last-child {
-font-size: 13px !important;
+font-size: 11px !important;
 }
 
 /* ✅ ROW CONTENT - PANIER EN DESSOUS */
 .pos-row {
 display: flex !important;
 flex-direction: column !important;
-gap: 10px !important;
+gap: 8px !important;
 width: 100% !important;
 height: auto !important;
 }
@@ -648,9 +648,9 @@ display: flex !important;
 flex-direction: column !important;
 overflow: hidden !important;
 margin-top: 6px !important;
-max-height: 40vh !important;
+max-height: 45vh !important;
 flex: 3 !important;
-min-height: 150px !important;
+min-height: 180px !important;
 transition: background 0.3s ease, border-color 0.3s ease;
 }
 
@@ -668,7 +668,7 @@ transition: background 0.3s ease, border-color 0.3s ease;
     flex: 1 !important;
 }
 
-/* ✅ CARTES PRODUITS - BIEN ESPACÉES */
+/* ✅ CARTES PRODUITS */
 .pos-product-card {
     min-height: 120px !important;
     max-height: 155px !important;
@@ -843,13 +843,13 @@ object-fit: contain;
     display: none !important;
 }
 
-/* ✅ ARTICLES DU PANIER - SCROLL */
+/* ✅ ARTICLES DU PANIER - SCROLL - HAUTEUR AUGMENTÉE */
 .pos-cart-items {
     flex: 1 !important;
     overflow-y: auto !important;
     padding: 4px 8px !important;
-    min-height: 60px !important;
-    max-height: 200px !important;
+    min-height: 80px !important;
+    max-height: 250px !important;
 }
 
 /* ✅ PAIEMENT - SCROLL */
@@ -1013,11 +1013,13 @@ object-fit: contain;
         top: 0 !important;
         z-index: 100 !important;
         background: var(--bg-page) !important;
-        padding: 4px 12px !important;
+        padding: 2px 10px !important;
         border-radius: var(--radius) !important;
         flex-shrink: 0 !important;
-        margin-bottom: 6px !important;
+        margin-bottom: 4px !important;
         border-bottom: 1px solid var(--border) !important;
+        min-height: 22px !important;
+        max-height: 28px !important;
     }
     
     .pos-cart-panel {
@@ -1030,13 +1032,18 @@ object-fit: contain;
     }
     
     .pos-cart-panel {
-        max-height: 35vh !important;
-        min-height: 160px !important;
+        max-height: 40vh !important;
+        min-height: 180px !important;
     }
     
     .pos-products-grid {
         gap: 12px !important;
         padding: 10px !important;
+    }
+    
+    .pos-cart-items {
+        max-height: 280px !important;
+        min-height: 80px !important;
     }
 }
 
@@ -1073,11 +1080,13 @@ object-fit: contain;
         top: 0 !important;
         z-index: 100 !important;
         background: var(--bg-page) !important;
-        padding: 4px 10px !important;
-        margin-bottom: 6px !important;
+        padding: 2px 8px !important;
+        margin-bottom: 4px !important;
         border-radius: var(--radius) !important;
         flex-shrink: 0 !important;
         border-bottom: 1px solid var(--border) !important;
+        min-height: 22px !important;
+        max-height: 28px !important;
     }
     
     .pos-cart-panel {
@@ -1090,13 +1099,18 @@ object-fit: contain;
     }
     
     .pos-cart-panel {
-        max-height: 38vh !important;
-        min-height: 130px !important;
+        max-height: 40vh !important;
+        min-height: 150px !important;
     }
     
     .pos-products-grid {
         gap: 8px !important;
         padding: 6px !important;
+    }
+    
+    .pos-cart-items {
+        max-height: 220px !important;
+        min-height: 70px !important;
     }
 }
 
@@ -1141,11 +1155,13 @@ object-fit: contain;
         top: 0 !important;
         z-index: 100 !important;
         background: var(--bg-page) !important;
-        padding: 4px 8px !important;
+        padding: 2px 6px !important;
         border-radius: var(--radius) !important;
         flex-shrink: 0 !important;
         margin-bottom: 4px !important;
         border-bottom: 1px solid var(--border) !important;
+        min-height: 20px !important;
+        max-height: 24px !important;
     }
     
     .pos-cart-panel {
@@ -1159,11 +1175,12 @@ object-fit: contain;
     
     .pos-cart-panel {
         max-height: 45vh !important;
-        min-height: 100px !important;
+        min-height: 120px !important;
     }
     
     .pos-cart-items {
-        max-height: 130px !important;
+        max-height: 150px !important;
+        min-height: 60px !important;
     }
     
     .pos-payment-form {
@@ -1171,15 +1188,15 @@ object-fit: contain;
     }
     
     .pos-step {
-        font-size: 12px !important;
-    }
-    .step-number {
-        width: 18px !important;
-        height: 18px !important;
         font-size: 10px !important;
     }
+    .step-number {
+        width: 16px !important;
+        height: 16px !important;
+        font-size: 9px !important;
+    }
     .pos-step span:last-child {
-        font-size: 11px !important;
+        font-size: 10px !important;
     }
     
     .pos-products-grid {
