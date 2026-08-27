@@ -168,83 +168,49 @@ var toolsContainer = document.getElementById('posToolsContainer');
 var toggleBtn = document.getElementById('posToggleToolsBtn');
 
 console.log('🔍 Toggle outils POS - État:', posToolsVisible);
-console.log('📦 toolsContainer trouvé:', toolsContainer);
 
 if (toolsContainer) {
 if (posToolsVisible) {
-// ✅ FORCER l'affichage avec display:flex !important
-toolsContainer.style.setProperty('display', 'flex', 'important');
-toolsContainer.style.setProperty('flex-direction', 'column', 'important');
-toolsContainer.style.setProperty('gap', '4px', 'important');
-toolsContainer.style.setProperty('margin-bottom', '4px', 'important');
-toolsContainer.style.setProperty('padding', '5px 8px', 'important');
-toolsContainer.style.setProperty('background', 'var(--bg-page)', 'important');
-toolsContainer.style.setProperty('border-radius', '6px', 'important');
-toolsContainer.style.setProperty('border', '1px solid var(--border)', 'important');
-
-// ✅ Forcer l'affichage de TOUS les enfants directs
-var children = toolsContainer.children;
-for (var i = 0; i < children.length; i++) {
-children[i].style.setProperty('display', '', 'important');
-// Si c'est un div avec des enfants, les afficher aussi
-var grandChildren = children[i].querySelectorAll('*');
-for (var j = 0; j < grandChildren.length; j++) {
-grandChildren[j].style.setProperty('display', '', 'important');
-}
-}
-
-console.log('✅ Outils affichés');
+toolsContainer.style.display = 'flex';
+toolsContainer.style.flexDirection = 'column';
+toolsContainer.style.gap = '4px';
+toolsContainer.style.marginBottom = '4px';
+toolsContainer.style.padding = '5px 8px';
+toolsContainer.style.background = 'var(--bg-page)';
+toolsContainer.style.borderRadius = '6px';
+toolsContainer.style.border = '1px solid var(--border)';
+// Forcer l'affichage de tous les éléments enfants
+var children = toolsContainer.querySelectorAll('*');
+children.forEach(function(child) {
+child.style.display = '';
+});
 } else {
-toolsContainer.style.setProperty('display', 'none', 'important');
-console.log('✅ Outils masqués');
+toolsContainer.style.display = 'none';
 }
-} else {
-console.warn('⚠️ toolsContainer non trouvé');
 }
 
-// Mettre à jour le bouton
 if (toggleBtn) {
 toggleBtn.innerHTML = posToolsVisible ? '✕ Masquer tout' : '🔍 Afficher tout';
 toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
 }
 
-// ✅ FORCER l'affichage de la barre de recherche
+// Vérifier que la barre de recherche est visible
 var searchInput = document.getElementById('posSearchInput');
-if (searchInput) {
-if (posToolsVisible) {
-searchInput.style.setProperty('display', '', 'important');
-setTimeout(function() {
-searchInput.focus();
-console.log('🔍 Focus sur la recherche');
-}, 200);
-}
+if (searchInput && posToolsVisible) {
+searchInput.style.display = '';
+setTimeout(function() { searchInput.focus(); }, 100);
 }
 
-// ✅ FORCER l'affichage du bouton micro
+// Vérifier que les boutons sont visibles
 var micBtn = document.getElementById('posMicBtn');
-if (micBtn) {
-if (posToolsVisible) {
-micBtn.style.setProperty('display', '', 'important');
-}
+if (micBtn && posToolsVisible) {
+micBtn.style.display = '';
 }
 
-// ✅ FORCER l'affichage de la barre de catégories
+// Vérifier que la barre de catégories est visible
 var categoriesBar = document.querySelector('.pos-categories-bar');
-if (categoriesBar) {
-if (posToolsVisible) {
-categoriesBar.style.setProperty('display', 'flex', 'important');
-}
-}
-
-// ✅ FORCER l'affichage des boutons tables et en ligne
-var tablesBtn = document.querySelector('button[onclick*="posAfficherCommandesTables"]');
-if (tablesBtn && posToolsVisible) {
-tablesBtn.style.setProperty('display', '', 'important');
-}
-
-var enLigneBtn = document.querySelector('button[onclick*="navigateTo(\'commandes\')"]');
-if (enLigneBtn && posToolsVisible) {
-enLigneBtn.style.setProperty('display', '', 'important');
+if (categoriesBar && posToolsVisible) {
+categoriesBar.style.display = '';
 }
 }
 
