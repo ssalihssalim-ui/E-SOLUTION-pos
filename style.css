@@ -1189,6 +1189,147 @@ object-fit: contain;
         max-height: 220px !important;
         min-height: 70px !important;
     }
+
+    /* ✅ CORRECTION POUR LA BARRE DE RECHERCHE ET BOUTONS SUR 9.7" */
+    /* AFFICHAGE DES OUTILS */
+    #posToolsContainer {
+        display: none !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+        margin-bottom: 6px !important;
+        padding: 8px 10px !important;
+        background: var(--bg-page) !important;
+        border-radius: 8px !important;
+        border: 1px solid var(--border) !important;
+        width: 100% !important;
+    }
+
+    #posToolsContainer.show {
+        display: flex !important;
+    }
+
+    #posToolsContainer > div:first-child {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        flex-wrap: wrap !important;
+        width: 100% !important;
+    }
+
+    /* ✅ RECHERCHE AGRANDIE SUR 9.7" */
+    #posSearchInput {
+        font-size: 18px !important;
+        height: 40px !important;
+        padding: 0 8px !important;
+    }
+
+    #posSearchInput::placeholder {
+        font-size: 16px !important;
+    }
+
+    /* ✅ BOUTONS AGRANDIS SUR 9.7" */
+    #posMicBtn {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 18px !important;
+    }
+
+    #posToggleToolsBtn {
+        font-size: 16px !important;
+        padding: 8px 24px !important;
+    }
+
+    /* ✅ BARRE DE RECHERCHE CONTENEUR */
+    .pos-search-container {
+        flex: 1 !important;
+        min-width: 120px !important;
+        display: flex !important;
+        align-items: center !important;
+        background: #fff !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 40px !important;
+        padding: 2px 10px !important;
+        position: relative !important;
+        height: 40px !important;
+    }
+
+    .pos-search-container i {
+        font-size: 16px !important;
+        color: #94a3b8 !important;
+        margin-right: 6px !important;
+    }
+
+    .pos-search-container input {
+        border: none !important;
+        outline: none !important;
+        padding: 0 !important;
+        width: 100% !important;
+        background: transparent !important;
+        font-size: 18px !important;
+        height: 38px !important;
+    }
+
+    /* ✅ BOUTONS TABLES ET EN LIGNE */
+    .pos-tools-buttons {
+        display: flex !important;
+        gap: 4px !important;
+        flex-wrap: wrap !important;
+    }
+
+    .pos-tools-buttons button {
+        font-size: 14px !important;
+        padding: 6px 12px !important;
+        border-radius: 50px !important;
+        border: 2px solid #e2e8f0 !important;
+        background: #fff !important;
+        font-weight: 600 !important;
+        cursor: pointer !important;
+        white-space: nowrap !important;
+    }
+
+    .pos-tools-buttons button span {
+        background: #ef4444 !important;
+        color: #fff !important;
+        border-radius: 20px !important;
+        padding: 1px 6px !important;
+        font-size: 12px !important;
+        margin-left: 2px !important;
+    }
+
+    /* ✅ CATÉGORIES BAR SUR 9.7" */
+    .pos-categories-bar {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 4px !important;
+        width: 100% !important;
+        margin-top: 4px !important;
+    }
+
+    .pos-cat-btn {
+        font-size: 13px !important;
+        padding: 6px 14px !important;
+        border-radius: 20px !important;
+        border: 2px solid #e2e8f0 !important;
+        background: #fff !important;
+        cursor: pointer !important;
+        font-weight: 600 !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        white-space: nowrap !important;
+    }
+
+    .pos-cat-btn.active {
+        background: var(--black) !important;
+        color: var(--white) !important;
+        border-color: var(--black) !important;
+    }
+
+    .pos-cat-btn img {
+        max-width: 24px !important;
+        max-height: 24px !important;
+        border-radius: 4px !important;
+    }
 }
 
 /* ✅ SUR MOBILE (< 700px) - CATÉGORIES AGRANDIES */
