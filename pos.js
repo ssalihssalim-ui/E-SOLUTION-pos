@@ -7,6 +7,8 @@
 // ✅ Espace en dessous du bouton Valider
 // ✅ Clic sur "Panier" scroll vers le bas
 // ✅ Bouton flèche ↑ scroll vers le haut
+// ✅ Vente impossible si panier vide
+// ✅ Retour automatique à l'étape 1 après finalisation
 
 var posCart = [];
 var posStep = 1;
@@ -1160,6 +1162,12 @@ cd.innerHTML='';
 async function updateClientFidelityAsync(clientId,total,profitTotal){ try{ if(!fideliteSettingsCache){ var fDoc=await db.collection('settings').doc('fidelite').get(); fideliteSettingsCache=fDoc.exists?fDoc.data():{active:true,pointsParVente:1}; } if(!fideliteSettingsCache.active) return; var cr=await db.collection('clients').doc(clientId).get(); if(!cr.exists) return; var cd=cr.data(),points=parseInt(fideliteSettingsCache.pointsParVente)||1; await CacheDB.write('clients',clientId,{ca:(cd.ca||0)+total,profit:(cd.profit||0)+profitTotal,pointsFidelite:(cd.pointsFidelite||0)+points,updatedAt:firebase.firestore.FieldValue.serverTimestamp()},'update'); }catch(e){ console.warn(e); } }
 
 async function posFinalizeSale(){
+// ✅ MODIFICATION 3 : Vérifier que le panier n'est pas vide
+if(posCart.length === 0){
+alert('❌ Le panier est vide. Ajoutez des articles avant de finaliser.');
+return;
+}
+
 if(isFinalizing) return;
 var st=posCalculateTotal(), t=st-posDiscountMAD;
 if(!posCurrentClient && !posCurrentTable){ posCurrentClient = { id: null, name: 'Passager' }; }
@@ -1202,15 +1210,55 @@ clientCreditsCache[posCurrentClient.id] = undefined;
 var venteId = ventesRef.id;
 if (typeof window.sendWhatsApp === 'function') {
 var originalCloseModal = window.closeModal;
-window.closeModal = function() { posResetCart(); if(isOnPOSPage()) renderPOS(); if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500); window.closeModal = originalCloseModal; var o = document.getElementById('modalOverlay'); if (o) o.classList.add('hidden'); window.editingId = null; };
+window.closeModal = function() { 
+    // ✅ MODIFICATION 4 : Retour à l'étape 1 après finalisation
+    posResetCart(); 
+    posStep = 1;
+    window.posStep = 1;
+    if(isOnPOSPage()) renderPOS(); 
+    if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500); 
+    window.closeModal = originalCloseModal; 
+    var o = document.getElementById('modalOverlay'); 
+    if (o) o.classList.add('hidden'); 
+    window.editingId = null; 
+};
 var modalHtml = '<p style="text-align:center;">Voulez-vous envoyer la facture par WhatsApp ?</p><div style="display:flex;justify-content:center;gap:10px;margin-top:15px;"><button class="btn-save" id="whatsappYesBtn">✅ Oui</button><button class="btn-cancel" id="whatsappNoBtn">❌ Non</button></div>';
 openModal('📱 Envoyer la facture WhatsApp', modalHtml);
 setTimeout(function() {
 var yesBtn = document.getElementById('whatsappYesBtn'), noBtn = document.getElementById('whatsappNoBtn');
-if (yesBtn) { yesBtn.addEventListener('click', function() { window.closeModal = originalCloseModal; closeModal(); if (typeof window.posStopVoiceSearch === 'function') window.posStopVoiceSearch(); window.sendWhatsApp(venteId); setTimeout(function() { posResetCart(); if(isOnPOSPage()) renderPOS(); if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500); }, 500); }); }
-if (noBtn) { noBtn.addEventListener('click', function() { window.closeModal = originalCloseModal; closeModal(); posResetCart(); if(isOnPOSPage()) renderPOS(); if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500); }); }
+if (yesBtn) { yesBtn.addEventListener('click', function() { 
+    window.closeModal = originalCloseModal; 
+    closeModal(); 
+    if (typeof window.posStopVoiceSearch === 'function') window.posStopVoiceSearch(); 
+    window.sendWhatsApp(venteId); 
+    setTimeout(function() { 
+        // ✅ MODIFICATION 4 : Retour à l'étape 1 après finalisation
+        posResetCart(); 
+        posStep = 1;
+        window.posStep = 1;
+        if(isOnPOSPage()) renderPOS(); 
+        if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500); 
+    }, 500); 
+}); }
+if (noBtn) { noBtn.addEventListener('click', function() { 
+    window.closeModal = originalCloseModal; 
+    closeModal(); 
+    // ✅ MODIFICATION 4 : Retour à l'étape 1 après finalisation
+    posResetCart(); 
+    posStep = 1;
+    window.posStep = 1;
+    if(isOnPOSPage()) renderPOS(); 
+    if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500); 
+}); }
 }, 100);
-} else { posResetCart(); if(isOnPOSPage()) renderPOS(); if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500); }
+} else { 
+    // ✅ MODIFICATION 4 : Retour à l'étape 1 après finalisation
+    posResetCart(); 
+    posStep = 1;
+    window.posStep = 1;
+    if(isOnPOSPage()) renderPOS(); 
+    if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500); 
+}
 }catch(e){ alert('Erreur: '+e.message); }
 finally { isFinalizing=false; if(fb){ fb.disabled=false; fb.innerHTML='<i class="fas fa-check-circle"></i> Finaliser'; } }
 }
