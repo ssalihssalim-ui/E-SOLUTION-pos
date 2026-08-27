@@ -9,7 +9,7 @@
 // ✅ Bouton flèche ↑ scroll vers le haut
 // ✅ Vente impossible si panier vide
 // ✅ Retour automatique à l'étape 1 après finalisation
-// ✅ CA et Profit client mis à jour
+// ✅ CA et Profit client mis à jour (FORCE UPDATE)
 
 var posCart = [];
 var posStep = 1;
@@ -58,6 +58,101 @@ var clientSearchTimeout = null;
 // ✅ MODE CATÉGORIES / PRODUITS
 var posViewMode = 'categories';
 var posSelectedCategoryForView = null;
+
+// ======================================================
+// ✅ FONCTION DE FORCE POUR METTRE À JOUR LE CLIENT
+// ======================================================
+async function forceUpdateClient(clientId, total, profitTotal) {
+    try {
+        console.log('🔥 FORCE UPDATE CLIENT:', clientId);
+        console.log('  - CA à ajouter:', total);
+        console.log('  - Profit à ajouter:', profitTotal);
+        
+        if (!clientId) {
+            console.warn('⚠️ Client ID manquant');
+            return false;
+        }
+        
+        // 1. Récupérer le client depuis Firestore
+        const docRef = db.collection('clients').doc(clientId);
+        const doc = await docRef.get();
+        
+        if (!doc.exists) {
+            console.error('❌ Client non trouvé:', clientId);
+            return false;
+        }
+        
+        const data = doc.data();
+        const ancienCA = data.ca || 0;
+        const ancienProfit = data.profit || 0;
+        const nouveauCA = ancienCA + total;
+        const nouveauProfit = ancienProfit + profitTotal;
+        
+        console.log('  - Ancien CA:', ancienCA, '→ Nouveau CA:', nouveauCA);
+        console.log('  - Ancien Profit:', ancienProfit, '→ Nouveau Profit:', nouveauProfit);
+        
+        // 2. Mettre à jour dans Firestore
+        await docRef.update({
+            ca: nouveauCA,
+            profit: nouveauProfit,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        console.log('✅ Firestore mis à jour');
+        
+        // 3. Mettre à jour le cache
+        const updatedData = { 
+            ...data, 
+            ca: nouveauCA, 
+            profit: nouveauProfit,
+            updatedAt: new Date()
+        };
+        await CacheDB.set('clients', clientId, updatedData);
+        console.log('✅ Cache mis à jour');
+        
+        // 4. Mettre à jour posAllClients
+        const clientIndex = posAllClients.findIndex(c => c.id === clientId);
+        if (clientIndex !== -1) {
+            posAllClients[clientIndex].ca = nouveauCA;
+            posAllClients[clientIndex].profit = nouveauProfit;
+            console.log('✅ posAllClients mis à jour (index:', clientIndex, ')');
+        } else {
+            console.warn('⚠️ Client non trouvé dans posAllClients');
+        }
+        
+        // 5. Mettre à jour posFilteredClients
+        const filteredIndex = posFilteredClients.findIndex(c => c.id === clientId);
+        if (filteredIndex !== -1) {
+            posFilteredClients[filteredIndex].ca = nouveauCA;
+            posFilteredClients[filteredIndex].profit = nouveauProfit;
+        }
+        
+        // 6. Mettre à jour posCurrentClient
+        if (posCurrentClient && posCurrentClient.id === clientId) {
+            posCurrentClient.ca = nouveauCA;
+            posCurrentClient.profit = nouveauProfit;
+            console.log('✅ posCurrentClient mis à jour');
+        }
+        
+        // 7. Mettre à jour dans window.allClientsData si disponible (admin-crud)
+        if (window.allClientsData) {
+            const adminIndex = window.allClientsData.findIndex(c => c.id === clientId);
+            if (adminIndex !== -1) {
+                window.allClientsData[adminIndex].ca = nouveauCA;
+                window.allClientsData[adminIndex].profit = nouveauProfit;
+                console.log('✅ window.allClientsData mis à jour');
+            }
+        }
+        
+        console.log('✅ Client mis à jour avec succès !');
+        console.log('📊 NOUVELLES VALEURS - CA:', nouveauCA, 'Profit:', nouveauProfit);
+        
+        return true;
+        
+    } catch(e) {
+        console.error('❌ Erreur forceUpdateClient:', e);
+        return false;
+    }
+}
 
 function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g,function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m; }); }
 function toDate(val) { if(!val) return null; if(val.toDate) return val.toDate(); if(val.seconds) return new Date(val.seconds*1000); if(typeof val==='string') return new Date(val); if(val instanceof Date) return val; return null; }
@@ -907,7 +1002,6 @@ var st=posCalculateTotal(),t=st-posDiscountMAD;
 var isMobile = window.innerWidth < 700;
 var productPanelStyle = posStep===2 ? ' style="display:none;"' : '';
 
-// ✅ TAILLE RÉDUITE POUR "1 - Panier" et "2 - Paiement"
 var stepSize = isMobile ? '16px' : '18px';
 var stepNumberSize = isMobile ? '16px' : '18px';
 var stepNumberSize2 = isMobile ? '22px' : '26px';
@@ -926,7 +1020,6 @@ var stepIndicator = '<div class="pos-steps-nav" style="display:flex; justify-con
 
 var productPanelDisplay = (posStep === 2) ? 'display:none;' : '';
 
-// ✅ SUPPRESSION max-height pour permettre le scroll
 var productsPanelMaxHeight = 'none';
 
 var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(110px, 1fr))';
@@ -938,19 +1031,15 @@ var h='<div class="pos-container' + (posStep===2 ? ' pos-container-full' : '') +
 stepIndicator +
 '<div class="pos-row" style="display:flex;flex-direction:column;gap:8px;width:100%;height:auto;">' +
 
-// ✅ PRODUITS 80% DE LA HAUTEUR
 '<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; width:100%; background:var(--bg-card); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; height:auto; overflow:visible; min-height:350px; max-height:80vh; flex:8;">' +
 
-// ===== BOUTON AFFICHER TOUT CENTRÉ =====
 '<div style="display:flex;flex-direction:column;gap:4px;margin-bottom:6px;">' +
 '<div style="display:flex;justify-content:center;align-items:center;margin-bottom:2px;">' +
 '<button id="posToggleToolsBtn" onclick="posToggleTools()" style="background:#14B8A6;color:#fff;border:none;border-radius:6px;padding:5px 20px;font-size:0.75rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;margin:0 auto;">🔍 Afficher tout</button>' +
 '</div>' +
 
-// ===== OUTILS MASQUÉS PAR DÉFAUT =====
 '<div id="posToolsContainer" style="display:none;flex-direction:column;gap:4px;margin-bottom:4px;padding:5px 8px;background:var(--bg-page);border-radius:6px;border:1px solid var(--border);">' +
 
-// Barre de recherche + boutons
 '<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">' +
 '<div style="flex:1;min-width:80px;display:flex;align-items:center;background:#fff;border:2px solid #e2e8f0;border-radius:40px;padding:1px 6px;position:relative;height:'+(isMobile?'30px':'34px')+';">' +
 '<i class="fas fa-search" style="color:#94a3b8;margin-right:3px;font-size:'+(isMobile?'12px':'14px')+';"></i>' +
@@ -961,7 +1050,6 @@ stepIndicator +
 '<div style="display:flex;gap:2px;"><button onclick="posAfficherCommandesTables()" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:2px 6px;font-weight:600;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">🍽️ Tables <span style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 4px;font-size:'+(isMobile?'0.3rem':'0.4rem')+';">'+posCommandesTablesCount+'</span></button><button onclick="navigateTo(\'commandes\')" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:2px 6px;font-weight:600;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">🌐 En ligne <span style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 4px;font-size:'+(isMobile?'0.3rem':'0.4rem')+';">'+posCommandesEnLigneCount+'</span></button></div>' +
 '</div>' +
 
-// Catégories
 '<div class="pos-categories-bar" style="display:flex;flex-wrap:wrap;gap:3px;">' +
 '<button class="pos-cat-btn '+(posSelectedCategory==='all'?'active':'')+'" onclick="posFilterCategory(\'all\')" style="padding:'+(isMobile?'3px 6px':'4px 10px')+';font-size:'+(isMobile?'9px':'0.65rem')+';gap:'+(isMobile?'2px':'4px')+';border-radius:16px;border:2px solid '+(posSelectedCategory==='all'?'#14B8A6':'#e2e8f0')+';background:'+(posSelectedCategory==='all'?'#f0fdf4':'#fff')+';cursor:pointer;font-weight:600;transition:all 0.2s;">📋 Tous</button>';
 var sortedCategories = posCategoriesList.slice().sort(function(a, b) {
@@ -983,11 +1071,9 @@ h+='</div>' +
 '<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:hidden;overflow-y:auto;flex-wrap:wrap;align-content:start;flex:1;"></div>' +
 '</div>' +
 
-// ✅ PANIER 20% DE LA HAUTEUR
 '<div class="pos-cart-panel" style="width:100%;background:var(--bg-card);border-radius:var(--radius-xl);box-shadow:var(--shadow-xs);border:1px solid var(--border);display:flex;flex-direction:column;margin-top:4px;max-height:35vh;flex:2;min-height:120px;">';
 
 if(posStep===1){
-// ✅ MODIFICATION 1 : Clic sur "Panier" → scroll vers le bas
 h+='<div class="pos-cart-header" style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid var(--border);flex-shrink:0;"><h3 style="font-size:'+(isMobile?'18px':'0.9rem')+';cursor:pointer;" onclick="document.querySelector(\'.pos-cart-panel\').scrollIntoView({behavior:\'smooth\',block:\'start\'})"><i class="fas fa-shopping-cart"></i> Panier <span class="pos-cart-badge" style="background:#14B8A6;color:#fff;border-radius:50%;padding:1px 6px;font-size:'+(isMobile?'12px':'0.6rem')+';">'+posCart.length+'</span></h3><button class="pos-clear-btn" onclick="posResetCart()" style="font-size:'+(isMobile?'12px':'0.7rem')+';background:#ef4444;color:#fff;border:none;border-radius:4px;padding:'+(isMobile?'3px 8px':'4px 10px')+';cursor:pointer;"><i class="fas fa-trash-alt"></i> Vider</button></div><div class="pos-cart-items" style="flex:1;overflow-y:auto;padding:4px 8px;min-height:60px;max-height:180px;">';
 if(posCart.length===0){ h+='<div class="pos-cart-empty" style="text-align:center;padding:15px 8px;color:#94a3b8;"><i class="fas fa-shopping-basket" style="font-size:'+(isMobile?'22px':'28px')+';"></i><p style="font-size:'+(isMobile?'12px':'0.8rem')+';">Panier vide</p></div>'; }
 else{
@@ -1021,12 +1107,10 @@ h+='</div><div style="padding:2px 0;display:flex;gap:3px;align-items:center;flex
 
 '<button class="pos-validate-btn" onclick="posGoToStep2()" '+(posCart.length===0?'disabled':'')+' style="width:100%;padding:10px;background:#14B8A6;color:#fff;border:none;border-radius:8px;font-size:18px;font-weight:700;height:40px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:12px;"><i class="fas fa-check-circle"></i> Valider</button>' +
 
-// ✅ MODIFICATION 2 : Bouton flèche vers le haut en bas à droite (70x70px)
 '<button onclick="document.querySelector(\'.pos-steps-nav\').scrollIntoView({behavior:\'smooth\',block:\'start\'})" style="position:fixed;bottom:20px;right:20px;width:70px;height:70px;border-radius:50%;background:#14B8A6;color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.25);z-index:9999;display:flex;align-items:center;justify-content:center;transition:all 0.3s;" onmouseover="this.style.transform=\'scale(1.1)\';this.style.boxShadow=\'0 6px 25px rgba(0,0,0,0.35)\';" onmouseout="this.style.transform=\'scale(1)\';this.style.boxShadow=\'0 4px 15px rgba(0,0,0,0.25)\';"><i class="fas fa-arrow-up"></i></button>' +
 
 '</div>';
 }else{
-// ÉTAPE PAIEMENT AVEC SCROLL
 var canCredit=posCurrentClient&&posCurrentClient.id;
 var creditDisplay = '';
 if (posCurrentClient && posCurrentClient.id) {
@@ -1050,7 +1134,6 @@ h+='<div style="margin-bottom:3px;"><label style="font-size:'+(isMobile?'12px':'
 }
 h+='<button class="pos-finalize-btn" onclick="posFinalizeSale()" style="width:100%;padding:8px;margin-top:4px;background:#14B8A6;color:#fff;border:none;border-radius:8px;font-size:16px !important;font-weight:700 !important;min-height:40px;margin-bottom:12px;"><i class="fas fa-check-circle"></i> Finaliser</button>' +
 
-// ✅ MODIFICATION 2 : Bouton flèche vers le haut en bas à droite (70x70px) - aussi sur la page paiement
 '<button onclick="document.querySelector(\'.pos-steps-nav\').scrollIntoView({behavior:\'smooth\',block:\'start\'})" style="position:fixed;bottom:20px;right:20px;width:70px;height:70px;border-radius:50%;background:#14B8A6;color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.25);z-index:9999;display:flex;align-items:center;justify-content:center;transition:all 0.3s;" onmouseover="this.style.transform=\'scale(1.1)\';this.style.boxShadow=\'0 6px 25px rgba(0,0,0,0.35)\';" onmouseout="this.style.transform=\'scale(1)\';this.style.boxShadow=\'0 4px 15px rgba(0,0,0,0.25)\';"><i class="fas fa-arrow-up"></i></button>' +
 
 '</div>';
@@ -1160,76 +1243,17 @@ cd.innerHTML='';
 }
 }
 
-// ✅ FONCTION CORRIGÉE POUR METTRE À JOUR LE CLIENT
+// ✅ FONCTION DE MISE À JOUR SIMPLIFIÉE
 async function updateClientFidelityAsync(clientId, total, profitTotal) {
     try {
-        console.log('📊 Mise à jour client:', clientId);
-        console.log('  - Total à ajouter (CA):', total);
-        console.log('  - Profit à ajouter:', profitTotal);
-
-        if (!fideliteSettingsCache) {
-            var fDoc = await db.collection('settings').doc('fidelite').get();
-            fideliteSettingsCache = fDoc.exists ? fDoc.data() : { active: true, pointsParVente: 1 };
-        }
-        if (!fideliteSettingsCache.active) return;
-
-        // Récupérer les données actuelles du client
-        var cr = await db.collection('clients').doc(clientId).get();
-        if (!cr.exists) return;
-
-        var cd = cr.data();
-        var points = parseInt(fideliteSettingsCache.pointsParVente) || 1;
-
-        // Calculer les nouveaux totaux
-        var nouveauCA = (cd.ca || 0) + total;
-        var nouveauProfit = (cd.profit || 0) + profitTotal;
-        var nouveauxPoints = (cd.pointsFidelite || 0) + points;
-
-        console.log('  - Ancien CA:', cd.ca || 0, '→ Nouveau CA:', nouveauCA);
-        console.log('  - Ancien Profit:', cd.profit || 0, '→ Nouveau Profit:', nouveauProfit);
-        console.log('  - Anciens Points:', cd.pointsFidelite || 0, '→ Nouveaux Points:', nouveauxPoints);
-
-        // ✅ Mettre à jour dans Firestore directement
-        await db.collection('clients').doc(clientId).update({
-            ca: nouveauCA,
-            profit: nouveauProfit,
-            pointsFidelite: nouveauxPoints,
-            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-        });
-
-        // ✅ Mettre à jour le cache
-        var clientData = {
-            ...cd,
-            ca: nouveauCA,
-            profit: nouveauProfit,
-            pointsFidelite: nouveauxPoints,
-            updatedAt: new Date()
-        };
-        await CacheDB.set('clients', clientId, clientData);
-
-        // ✅ Mettre à jour posAllClients si présent
-        var posClient = posAllClients.find(function(c) { return c.id === clientId; });
-        if (posClient) {
-            posClient.ca = nouveauCA;
-            posClient.profit = nouveauProfit;
-            posClient.pointsFidelite = nouveauxPoints;
-        }
-
-        // ✅ Mettre à jour le client courant
-        if (posCurrentClient && posCurrentClient.id === clientId) {
-            posCurrentClient.ca = nouveauCA;
-            posCurrentClient.profit = nouveauProfit;
-        }
-
-        console.log('✅ Client mis à jour avec succès:', clientId);
-
+        return await forceUpdateClient(clientId, total, profitTotal);
     } catch(e) {
-        console.error('❌ Erreur mise à jour client:', e);
+        console.error('❌ Erreur updateClientFidelityAsync:', e);
+        return false;
     }
 }
 
 async function posFinalizeSale(){
-// ✅ MODIFICATION 3 : Vérifier que le panier n'est pas vide
 if(posCart.length === 0){
 alert('❌ Le panier est vide. Ajoutez des articles avant de finaliser.');
 return;
@@ -1271,11 +1295,15 @@ if(window.posVenteId){ batch.update(db.collection('ventes').doc(window.posVenteI
 for(var i=0;i<posCart.length;i++){ var it=posCart[i]; batch.update(db.collection('products').doc(it.id), {stock:firebase.firestore.FieldValue.increment(-it.quantite), vendues:firebase.firestore.FieldValue.increment(it.quantite), ca:firebase.firestore.FieldValue.increment(it.prixUnitaire*it.quantite)}); }
 await batch.commit();
 
-// ✅ CORRECTION UNIQUE : AWAIT pour mettre à jour le CA et Profit du client
+// ✅ CORRECTION : Utiliser forceUpdateClient avec await
 if(posCurrentClient && posCurrentClient.id && paid) {
     try {
-        await updateClientFidelityAsync(posCurrentClient.id, t, profitTotal);
-        console.log('✅ Client mis à jour:', posCurrentClient.id, 'CA:', t, 'Profit:', profitTotal);
+        const success = await forceUpdateClient(posCurrentClient.id, t, profitTotal);
+        if (success) {
+            console.log('✅ Client mis à jour avec succès !');
+        } else {
+            console.warn('⚠️ Échec de la mise à jour client');
+        }
     } catch(e) {
         console.warn('⚠️ Erreur mise à jour client:', e);
     }
@@ -1288,7 +1316,6 @@ var venteId = ventesRef.id;
 if (typeof window.sendWhatsApp === 'function') {
 var originalCloseModal = window.closeModal;
 window.closeModal = function() { 
-    // ✅ MODIFICATION 4 : Retour à l'étape 1 après finalisation
     posResetCart(); 
     posStep = 1;
     window.posStep = 1;
@@ -1309,7 +1336,6 @@ if (yesBtn) { yesBtn.addEventListener('click', function() {
     if (typeof window.posStopVoiceSearch === 'function') window.posStopVoiceSearch(); 
     window.sendWhatsApp(venteId); 
     setTimeout(function() { 
-        // ✅ MODIFICATION 4 : Retour à l'étape 1 après finalisation
         posResetCart(); 
         posStep = 1;
         window.posStep = 1;
@@ -1320,7 +1346,6 @@ if (yesBtn) { yesBtn.addEventListener('click', function() {
 if (noBtn) { noBtn.addEventListener('click', function() { 
     window.closeModal = originalCloseModal; 
     closeModal(); 
-    // ✅ MODIFICATION 4 : Retour à l'étape 1 après finalisation
     posResetCart(); 
     posStep = 1;
     window.posStep = 1;
@@ -1329,7 +1354,6 @@ if (noBtn) { noBtn.addEventListener('click', function() {
 }); }
 }, 100);
 } else { 
-    // ✅ MODIFICATION 4 : Retour à l'étape 1 après finalisation
     posResetCart(); 
     posStep = 1;
     window.posStep = 1;
@@ -1401,5 +1425,7 @@ window.posSelectedCategoryForView = posSelectedCategoryForView;
 window.posToggleTools = posToggleTools;
 window.posToolsVisible = posToolsVisible;
 window.applyDynamicContentScroll = applyDynamicContentScroll;
+window.forceUpdateClient = forceUpdateClient;
 
 console.log('🚀 E-SOLUTION - POS chargé avec corrections');
+console.log('✅ forceUpdateClient disponible');
