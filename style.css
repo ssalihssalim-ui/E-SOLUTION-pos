@@ -509,7 +509,7 @@ color: var(--text-primary);
 .hidden { display: none !important; }
 
 /* ============================================================
-   ✅ POS SYSTEM - IMAGES AGRANDIES
+   ✅ POS SYSTEM - CONTENEUR IMAGE AGRANDI
    ============================================================ */
 
 /* ✅ DYNAMIC CONTENT */
@@ -689,7 +689,7 @@ transition: background 0.3s ease, border-color 0.3s ease;
     box-shadow: var(--shadow-md) !important;
 }
 
-/* ✅ IMAGE PRODUIT - AGRANDIE */
+/* ✅ CONTENEUR IMAGE PRODUIT - AGRANDI */
 .pos-product-img {
     height: 85px !important;
     width: 85% !important;
@@ -785,7 +785,7 @@ transition: background 0.3s ease, border-color 0.3s ease;
     box-shadow: var(--shadow-md) !important;
 }
 
-/* ✅ IMAGE CATÉGORIE - AGRANDIE */
+/* ✅ CONTENEUR IMAGE CATÉGORIE - AGRANDI */
 .pos-category-card .category-image {
     width: 85px !important;
     height: 85px !important;
@@ -1031,6 +1031,7 @@ object-fit: contain;
         max-height: 210px !important;
         padding: 5px 4px !important;
     }
+    /* ✅ CONTENEUR IMAGE PRODUIT PC AGRANDI */
     .pos-product-img {
         height: 100px !important;
         width: 85% !important;
@@ -1050,6 +1051,7 @@ object-fit: contain;
         max-height: 210px !important;
         padding: 5px 4px !important;
     }
+    /* ✅ CONTENEUR IMAGE CATÉGORIE PC AGRANDI */
     .pos-category-card .category-image {
         width: 100px !important;
         height: 100px !important;
@@ -1112,6 +1114,7 @@ object-fit: contain;
         max-height: 180px !important;
         padding: 3px 2px !important;
     }
+    /* ✅ CONTENEUR IMAGE PRODUIT 9.7" AGRANDI */
     .pos-product-img {
         height: 85px !important;
         width: 85% !important;
@@ -1128,6 +1131,7 @@ object-fit: contain;
         max-height: 180px !important;
         padding: 3px 2px !important;
     }
+    /* ✅ CONTENEUR IMAGE CATÉGORIE 9.7" AGRANDI */
     .pos-category-card .category-image {
         width: 85px !important;
         height: 85px !important;
@@ -1193,6 +1197,7 @@ object-fit: contain;
         padding: 3px 2px !important;
         border-width: 1px !important;
     }
+    /* ✅ CONTENEUR IMAGE PRODUIT MOBILE AGRANDI */
     .pos-product-img {
         height: 60px !important;
         width: 80% !important;
@@ -1212,6 +1217,7 @@ object-fit: contain;
         max-height: 140px !important;
         padding: 3px 2px !important;
     }
+    /* ✅ CONTENEUR IMAGE CATÉGORIE MOBILE AGRANDI */
     .pos-category-card .category-image {
         width: 60px !important;
         height: 60px !important;
