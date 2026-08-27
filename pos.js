@@ -11,6 +11,7 @@
 // ✅ Retour automatique à l'étape 1 après finalisation
 // ✅ CA et Profit client mis à jour (FORCE UPDATE)
 // ✅ Bouton "Afficher tout" corrigé
+// ✅ Bouton X (effacer) corrigé
 
 var posCart = [];
 var posStep = 1;
@@ -172,7 +173,6 @@ function posToggleTools() {
     
     if (toolsContainer) {
         if (posToolsVisible) {
-            // ✅ FORCER l'affichage avec display:flex !important
             toolsContainer.style.setProperty('display', 'flex', 'important');
             toolsContainer.style.setProperty('flex-direction', 'column', 'important');
             toolsContainer.style.setProperty('gap', '4px', 'important');
@@ -182,11 +182,9 @@ function posToggleTools() {
             toolsContainer.style.setProperty('border-radius', '6px', 'important');
             toolsContainer.style.setProperty('border', '1px solid var(--border)', 'important');
             
-            // ✅ Forcer l'affichage de TOUS les enfants directs
             var children = toolsContainer.children;
             for (var i = 0; i < children.length; i++) {
                 children[i].style.setProperty('display', '', 'important');
-                // Si c'est un div avec des enfants, les afficher aussi
                 var grandChildren = children[i].querySelectorAll('*');
                 for (var j = 0; j < grandChildren.length; j++) {
                     grandChildren[j].style.setProperty('display', '', 'important');
@@ -202,13 +200,11 @@ function posToggleTools() {
         console.warn('⚠️ toolsContainer non trouvé');
     }
     
-    // Mettre à jour le bouton
     if (toggleBtn) {
         toggleBtn.innerHTML = posToolsVisible ? '✕ Masquer tout' : '🔍 Afficher tout';
         toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
     }
     
-    // ✅ FORCER l'affichage de la barre de recherche
     var searchInput = document.getElementById('posSearchInput');
     if (searchInput) {
         if (posToolsVisible) {
@@ -220,7 +216,6 @@ function posToggleTools() {
         }
     }
     
-    // ✅ FORCER l'affichage du bouton micro
     var micBtn = document.getElementById('posMicBtn');
     if (micBtn) {
         if (posToolsVisible) {
@@ -228,7 +223,6 @@ function posToggleTools() {
         }
     }
     
-    // ✅ FORCER l'affichage de la barre de catégories
     var categoriesBar = document.querySelector('.pos-categories-bar');
     if (categoriesBar) {
         if (posToolsVisible) {
@@ -236,7 +230,6 @@ function posToggleTools() {
         }
     }
     
-    // ✅ FORCER l'affichage des boutons tables et en ligne
     var tablesBtn = document.querySelector('button[onclick*="posAfficherCommandesTables"]');
     if (tablesBtn && posToolsVisible) {
         tablesBtn.style.setProperty('display', '', 'important');
@@ -395,7 +388,10 @@ filterProductGrid();
 }
 input.focus();
 var clearBtn = document.getElementById('posSearchClearBtn');
-if (clearBtn) clearBtn.style.display = 'none';
+if (clearBtn) {
+    clearBtn.style.display = 'none';
+    clearBtn.classList.remove('show');
+}
 }
 }
 
@@ -1106,11 +1102,14 @@ stepIndicator +
 '<div id="posToolsContainer" style="display:none;flex-direction:column;gap:4px;margin-bottom:4px;padding:5px 8px;background:var(--bg-page);border-radius:6px;border:1px solid var(--border);">' +
 
 '<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">' +
-'<div style="flex:1;min-width:80px;display:flex;align-items:center;background:#fff;border:2px solid #e2e8f0;border-radius:40px;padding:1px 6px;position:relative;height:'+(isMobile?'30px':'34px')+';">' +
-'<i class="fas fa-search" style="color:#94a3b8;margin-right:3px;font-size:'+(isMobile?'12px':'14px')+';"></i>' +
-'<input type="text" id="posSearchInput" placeholder="🔍 Rechercher..." value="'+escapeHtml(posSearchQuery)+'" onkeyup="posSearchProducts(this.value); updateClearButtonVisibility();" oninput="updateClearButtonVisibility();" style="border:none;outline:none;padding:0;width:100%;background:transparent;font-size:'+(isMobile?'12px':'16px')+';padding-right:24px;height:'+(isMobile?'30px':'34px')+';">' +
-'<button id="posSearchClearBtn" onclick="clearPosSearch()" style="display:'+(posSearchQuery ? 'flex' : 'none')+';position:absolute;right:4px;background:none;border:none;cursor:pointer;padding:1px;color:#94a3b8;font-size:'+(isMobile?'14px':'16px')+';align-items:center;justify-content:center;" title="Effacer"><i class="fas fa-times-circle"></i></button>' +
+
+// ✅ BARRE DE RECHERCHE CORRIGÉE AVEC BOUTON X BIEN POSITIONNÉ
+'<div class="pos-search-container" style="flex:1;min-width:80px;display:flex;align-items:center;background:#fff;border:2px solid #e2e8f0;border-radius:40px;padding:2px 10px;position:relative;height:'+(isMobile?'34px':'38px)+';">' +
+'<i class="fas fa-search" style="color:#94a3b8;margin-right:6px;font-size:'+(isMobile?'14px':'16px')+';flex-shrink:0;"></i>' +
+'<input type="text" id="posSearchInput" placeholder="🔍 Rechercher..." value="'+escapeHtml(posSearchQuery)+'" onkeyup="posSearchProducts(this.value); updateClearButtonVisibility();" oninput="updateClearButtonVisibility();" style="border:none;outline:none;padding:0 30px 0 0;width:100%;background:transparent;font-size:'+(isMobile?'14px':'16px')+';height:'+(isMobile?'30px':'34px')+';color:var(--text-primary);">' +
+'<button id="posSearchClearBtn" onclick="clearPosSearch()" class="'+(posSearchQuery ? 'show' : '')+'" style="display:'+(posSearchQuery ? 'flex' : 'none')+';position:absolute;right:6px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:#94a3b8;font-size:'+(isMobile?'16px':'18px')+';align-items:center;justify-content:center;z-index:5;width:28px;height:28px;border-radius:50%;" title="Effacer"><i class="fas fa-times-circle"></i></button>' +
 '</div>' +
+
 '<button id="posMicBtn" title="Micro" style="background:#dcfce7;border:2px solid #14B8A6;border-radius:50%;width:'+(isMobile?'30px':'34px')+';height:'+(isMobile?'30px':'34px')+';cursor:pointer;font-size:'+(isMobile?'12px':'14px')+';" onclick="posToggleVoiceSearch()"><i class="fas fa-microphone"></i></button>' +
 '<div style="display:flex;gap:2px;"><button onclick="posAfficherCommandesTables()" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:2px 6px;font-weight:600;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">🍽️ Tables <span style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 4px;font-size:'+(isMobile?'0.3rem':'0.4rem')+';">'+posCommandesTablesCount+'</span></button><button onclick="navigateTo(\'commandes\')" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:2px 6px;font-weight:600;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">🌐 En ligne <span style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 4px;font-size:'+(isMobile?'0.3rem':'0.4rem')+';">'+posCommandesEnLigneCount+'</span></button></div>' +
 '</div>' +
@@ -1317,6 +1316,21 @@ async function updateClientFidelityAsync(clientId, total, profitTotal) {
     }
 }
 
+// ==================== updateClearButtonVisibility CORRIGÉ ====================
+function updateClearButtonVisibility() {
+var input = document.getElementById('posSearchInput');
+var btn = document.getElementById('posSearchClearBtn');
+if (input && btn) {
+    if (input.value && input.value.length > 0) {
+        btn.style.display = 'flex';
+        btn.classList.add('show');
+    } else {
+        btn.style.display = 'none';
+        btn.classList.remove('show');
+    }
+}
+}
+
 async function posFinalizeSale(){
 if(posCart.length === 0){
 alert('❌ Le panier est vide. Ajoutez des articles avant de finaliser.');
@@ -1359,7 +1373,6 @@ if(window.posVenteId){ batch.update(db.collection('ventes').doc(window.posVenteI
 for(var i=0;i<posCart.length;i++){ var it=posCart[i]; batch.update(db.collection('products').doc(it.id), {stock:firebase.firestore.FieldValue.increment(-it.quantite), vendues:firebase.firestore.FieldValue.increment(it.quantite), ca:firebase.firestore.FieldValue.increment(it.prixUnitaire*it.quantite)}); }
 await batch.commit();
 
-// ✅ CORRECTION : Utiliser forceUpdateClient avec await
 if(posCurrentClient && posCurrentClient.id && paid) {
     try {
         const success = await forceUpdateClient(posCurrentClient.id, t, profitTotal);
@@ -1466,14 +1479,6 @@ alert('Fonction de recherche vocale non disponible');
 }
 }
 
-function updateClearButtonVisibility() {
-var input = document.getElementById('posSearchInput');
-var btn = document.getElementById('posSearchClearBtn');
-if (input && btn) {
-btn.style.display = (input.value && input.value.length > 0) ? 'flex' : 'none';
-}
-}
-
 function goBackToPOS(){ if(window.currentUserData&&(window.currentUserData.userData.role==='caissier'||window.currentUserData.userData.role==='admin')){ if(posCart.length>0&&posStep===1){ if(!confirm('⚠️ '+posCart.length+' article(s) dans le panier. Garder ?')) posResetCart(); } navigateTo('pos'); } }
 
 window.posCart=posCart; window.posStep=posStep; window.posProductsList=posProductsList; window.posAllClients=posAllClients; window.posCurrentClient=posCurrentClient; window.posCurrentTable=posCurrentTable; window.posDiscountMAD=posDiscountMAD; window.posAmountGiven=posAmountGiven; window.posPaymentMethod=posPaymentMethod; window.posResetCart=posResetCart; window.posAddToCartOrOpenOptions=posAddToCartOrOpenOptions; window.posSetPaymentMethod=posSetPaymentMethod; window.posCalculateTotal=posCalculateTotal; window.posFinalizeSale=posFinalizeSale; window.posGoToStep2=posGoToStep2; window.posGoToStep1=posGoToStep1; window.posSearchProducts=posSearchProducts; window.clearPosSearch=clearPosSearch; window.clearClientSearch=clearClientSearch; window.updateClearButtonVisibility=updateClearButtonVisibility; window.updateCartOnly=updateCartOnly; window.renderPOS=renderPOS; window.updatePaymentButtons=updatePaymentButtons; window.loadMoreProducts=loadMoreProducts; window.loadClientCredits=loadClientCredits; window.updateClientCreditDisplay=updateClientCreditDisplay; window.posCalculateChange=posCalculateChange; window.onProductAdded=window.onProductAdded||function(pid){ console.log('Produit ajouté:',pid); };
@@ -1494,3 +1499,4 @@ window.forceUpdateClient = forceUpdateClient;
 console.log('🚀 E-SOLUTION - POS chargé avec corrections');
 console.log('✅ forceUpdateClient disponible');
 console.log('✅ Bouton "Afficher tout" corrigé');
+console.log('✅ Bouton X (effacer) corrigé');
