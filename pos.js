@@ -1,10 +1,10 @@
-// ==================== POS.JS - E-SOLUTION (VERSION FINALE ÉCRAN POS 9.7") ====================
+// ==================== POS.JS - E-SOLUTION (VERSION FINALE POS 9.7") ====================
 // Point de vente complet avec mode catégories
-// ✅ Adapté pour écran POS 9.7" (1024x768)
-// ✅ Panier 30% HAUTEUR - Produits/Catégories 70% HAUTEUR
-// ✅ Cartes catégories = même style que cartes produits
-// ✅ Scroll fonctionnel
-// ✅ Outils masqués par défaut
+// ✅ Adapté pour écran POS 9.7"
+// ✅ Panier sans scroll - tous les articles visibles
+// ✅ Hauteur de page augmentée
+// ✅ Cartes catégories padding top 10px
+// ✅ Bouton "Afficher tout" centré
 
 var posCart = [];
 var posStep = 1;
@@ -50,7 +50,6 @@ var posHasMoreProducts = false;
 var clientCreditsCache = {};
 var clientSearchTimeout = null;
 
-// ✅ MODE CATÉGORIES / PRODUITS
 var posViewMode = 'categories';
 var posSelectedCategoryForView = null;
 
@@ -69,7 +68,6 @@ btn.style.display = visible ? 'block' : 'none';
 }
 }
 
-// ==================== TOGGLE OUTILS POS ====================
 function posToggleTools() {
     posToolsVisible = !posToolsVisible;
     var toolsContainer = document.getElementById('posToolsContainer');
@@ -83,7 +81,6 @@ function posToggleTools() {
     }
 }
 
-// ==================== APPLIQUER LE SCROLL SUR DYNAMICCONTENT ====================
 function applyDynamicContentScroll() {
     var container = document.getElementById('dynamicContent');
     if (container) {
@@ -254,7 +251,6 @@ if (clearBtn) clearBtn.style.display = 'none';
 
 function loadMoreProducts(){ posProductOffset+=posProductBatchSize; filterProductGrid(); }
 
-// ==================== FILTER PRODUCT GRID ====================
 function filterProductGrid(){
     if(!isOnPOSPage() || posStep !== 1) return;
     
@@ -380,10 +376,9 @@ function filterProductGrid(){
     updateClearButtonVisibility();
 }
 
-// ==================== AFFICHER LES CATÉGORIES (MÊME STYLE QUE PRODUITS) ====================
+// ==================== AFFICHER LES CATÉGORIES (PADDING TOP 10px) ====================
 function afficherCategories(grid) {
     var isMobile = window.innerWidth < 700;
-    // ✅ MÊME STYLE QUE LES CARTES PRODUITS
     var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(100px, 1fr))';
     grid.style.gridTemplateColumns = gridCols;
     grid.style.overflowX = 'hidden';
@@ -415,10 +410,10 @@ function afficherCategories(grid) {
         for (var i = 0; i < sortedCategories.length; i++) {
             var cat = sortedCategories[i];
             
-            // ✅ MÊME STYLE QUE LES CARTES PRODUITS
+            // ✅ CARTES CATÉGORIES AVEC PADDING TOP 10px
             var cardStyle = isMobile ? 
-                'padding:3px 2px;min-height:85px;max-height:110px;aspect-ratio:1/1;border-radius:6px;border-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;' : 
-                'padding:4px 4px;min-height:100px;max-height:130px;aspect-ratio:1/1;border-radius:8px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;';
+                'padding:10px 2px 3px 2px;min-height:85px;max-height:110px;aspect-ratio:1/1;border-radius:6px;border-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:100%;' : 
+                'padding:10px 4px 4px 4px;min-height:100px;max-height:130px;aspect-ratio:1/1;border-radius:8px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:100%;';
             
             var imgSize = isMobile ? '40px' : '55px';
             var imgStyle = 'width:'+imgSize+';height:'+imgSize+';border-radius:50%;margin-bottom:3px;overflow:hidden;flex-shrink:0;background:var(--gray-100);display:flex;align-items:center;justify-content:center;';
@@ -454,7 +449,6 @@ function afficherCategories(grid) {
     grid.innerHTML = html;
 }
 
-// ==================== SÉLECTIONNER UNE CATÉGORIE ====================
 function selectionnerCategorie(catName) {
     posSelectedCategoryForView = catName;
     posViewMode = 'products';
@@ -481,7 +475,6 @@ function selectionnerCategorie(catName) {
     }
 }
 
-// ==================== RETOURNER AUX CATÉGORIES ====================
 function retournerCategories() {
     posViewMode = 'categories';
     posSelectedCategoryForView = null;
@@ -837,18 +830,18 @@ if(it.interdits&&it.interdits.length) opts+=' <span style="color:#ef4444;font-si
 if(it.epice&&it.epice!=='Normal') opts+=' <span style="color:#d97706;font-size:0.35rem;">🌶️'+escapeHtml(it.epice)+'</span>';
 if(it.sel&&it.sel!=='Normal') opts+=' <span style="color:#4f46e5;font-size:0.35rem;">🧂'+escapeHtml(it.sel)+'</span>';
 
-html+='<div class="pos-cart-item" style="display:flex;align-items:center;justify-content:space-between;padding:3px 2px;border-bottom:1px solid var(--border);gap:3px;">' +
+html+='<div class="pos-cart-item" style="display:flex;align-items:center;justify-content:space-between;padding:2px 2px;border-bottom:1px solid var(--border);gap:2px;">' +
 '<div class="pos-cart-item-info" style="flex:1;min-width:0;">' +
-'<span class="pos-cart-item-name" style="font-size:'+nameSize+';font-weight:600;display:block;margin-right:4px;word-break:break-word;">'+escapeHtml(it.nom)+opts+'</span>' +
+'<span class="pos-cart-item-name" style="font-size:'+nameSize+';font-weight:600;display:block;margin-right:3px;word-break:break-word;">'+escapeHtml(it.nom)+opts+'</span>' +
 '<span class="pos-cart-item-price" style="font-size:'+priceSize+';color:var(--text-secondary);">'+it.prixUnitaire.toFixed(2)+' MAD</span>' +
 '</div>' +
 '<div class="pos-cart-item-actions" style="display:flex;align-items:center;gap:2px;flex-shrink:0;">' +
 '<button class="pos-qty-btn" onclick="posUpdateQty('+k+',-1)" style="width:'+btnSize+';height:'+btnSize+';border-radius:50%;border:2px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:'+fontSize+';transition:all 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.05);"><i class="fas fa-minus"></i></button>' +
-'<span class="pos-qty-value" style="font-size:'+qtySize+';font-weight:700;min-width:20px;text-align:center;">'+it.quantite+'</span>' +
+'<span class="pos-qty-value" style="font-size:'+qtySize+';font-weight:700;min-width:18px;text-align:center;">'+it.quantite+'</span>' +
 '<button class="pos-qty-btn" onclick="posUpdateQty('+k+',1)" style="width:'+btnSize+';height:'+btnSize+';border-radius:50%;border:2px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:'+fontSize+';transition:all 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.05);"><i class="fas fa-plus"></i></button>' +
-'<button class="pos-remove-btn" onclick="posRemoveItem('+k+')" style="background:none;border:none;color:#ef4444;cursor:pointer;padding:1px;font-size:0.7rem;transition:all 0.2s;"><i class="fas fa-times"></i></button>' +
+'<button class="pos-remove-btn" onclick="posRemoveItem('+k+')" style="background:none;border:none;color:#ef4444;cursor:pointer;padding:1px;font-size:0.6rem;transition:all 0.2s;"><i class="fas fa-times"></i></button>' +
 '</div>' +
-'<span class="pos-cart-item-total" style="font-size:'+totalSize+';font-weight:700;min-width:45px;text-align:right;flex-shrink:0;">'+(it.prixUnitaire*it.quantite).toFixed(2)+' MAD</span>' +
+'<span class="pos-cart-item-total" style="font-size:'+totalSize+';font-weight:700;min-width:40px;text-align:right;flex-shrink:0;">'+(it.prixUnitaire*it.quantite).toFixed(2)+' MAD</span>' +
 '</div>';
 }
 }
@@ -897,20 +890,20 @@ function renderPOS(){
     buildFullPOS(c);
 }
 
-// ==================== buildFullPOS ADAPTÉ POUR ÉCRAN POS 9.7" ====================
+// ==================== buildFullPOS - PANIER SANS SCROLL, HAUTEUR AUGMENTÉE ====================
 function buildFullPOS(c){
 if(posProductsList.length===0&&posCategoriesList.length===0){ c.innerHTML='<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:#14B8A6;"></i><p>Chargement...</p></div>'; return; }
 var st=posCalculateTotal(),t=st-posDiscountMAD;
 var isMobile = window.innerWidth < 700;
 var productPanelStyle = posStep===2 ? ' style="display:none;"' : '';
 
-// ✅ ESPACE EN HAUT RÉDUIT POUR ÉCRAN 9.7"
+// ✅ HAUTEUR DE PAGE AUGMENTÉE
 var stepSize = isMobile ? '16px' : '18px';
 var stepNumberSize = isMobile ? '16px' : '18px';
 var stepNumberSize2 = isMobile ? '20px' : '24px';
 var stepGap = isMobile ? '6px' : '10px';
 
-var stepIndicator = '<div class="pos-steps-nav" style="display:flex; justify-content:center; gap:'+stepGap+'; margin-bottom:2px; padding:2px 6px; background:var(--bg-page); border-radius:var(--radius); cursor:default;">' +
+var stepIndicator = '<div class="pos-steps-nav" style="display:flex; justify-content:center; gap:'+stepGap+'; margin-bottom:4px; padding:3px 8px; background:var(--bg-page); border-radius:var(--radius); cursor:default;">' +
 '<div class="pos-step ' + (posStep === 1 ? 'active' : '') + '" style="display:flex; align-items:center; gap:3px; font-size:'+stepSize+'; font-weight:600; color:' + (posStep === 1 ? 'var(--black)' : 'var(--text-muted)') + '; cursor:pointer;" onclick="posNaviguerEtape(1)">' +
 '<span class="step-number" style="display:inline-flex; align-items:center; justify-content:center; width:'+stepNumberSize2+'; height:'+stepNumberSize2+'; border-radius:50%; background:' + (posStep === 1 ? 'var(--black)' : 'var(--gray-200)') + '; color:' + (posStep === 1 ? 'var(--white)' : 'var(--text-muted)') + '; font-size:'+stepNumberSize+';">1</span>' +
 '<span style="font-size:'+stepSize+';">🛒</span> Panier' +
@@ -923,23 +916,22 @@ var stepIndicator = '<div class="pos-steps-nav" style="display:flex; justify-con
 
 var productPanelDisplay = (posStep === 2) ? 'display:none;' : '';
 
-// ✅ PANEL PRODUITS 70% HAUTEUR - PANIER 30% HAUTEUR
 var productsPanelMaxHeight = 'none';
 var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(95px, 1fr))';
 var gridGap = isMobile ? '3px' : '4px';
 var gridPadding = isMobile ? '2px' : '2px';
 var panelPadding = isMobile ? '4px' : '6px';
 
-var h='<div class="pos-container' + (posStep===2 ? ' pos-container-full' : '') + '" style="display:flex;flex-direction:column;gap:2px;height:100%;">' +
+// ✅ HAUTEUR AUGMENTÉE ET PANIER SANS SCROLL
+var h='<div class="pos-container' + (posStep===2 ? ' pos-container-full' : '') + '" style="display:flex;flex-direction:column;gap:3px;height:100%;">' +
 stepIndicator +
-'<div class="pos-row" style="display:flex;flex-direction:row;gap:6px;width:100%;height:calc(100% - 40px);flex:1;">' +
-'<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; width:70%; height:100%; background:var(--bg-card); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden;">' +
+'<div class="pos-row" style="display:flex;flex-direction:row;gap:6px;width:100%;height:calc(100% - 35px);flex:1;">' +
+'<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; width:68%; height:100%; background:var(--bg-card); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden;">' +
 
-// ===== BOUTON AFFICHER TOUT =====
+// ===== BOUTON AFFICHER TOUT CENTRÉ =====
 '<div style="display:flex;flex-direction:column;gap:3px;margin-bottom:3px;flex-shrink:0;">' +
-'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1px;">' +
-'<button id="posToggleToolsBtn" onclick="posToggleTools()" style="background:#14B8A6;color:#fff;border:none;border-radius:4px;padding:3px 8px;font-size:0.6rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:3px;">🔍 Afficher tout</button>' +
-'<span style="font-size:0.55rem;color:#94a3b8;">' + posProductsList.length + ' produits</span>' +
+'<div style="display:flex;justify-content:center;align-items:center;margin-bottom:2px;">' +
+'<button id="posToggleToolsBtn" onclick="posToggleTools()" style="background:#14B8A6;color:#fff;border:none;border-radius:4px;padding:4px 16px;font-size:0.65rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;margin:0 auto;">🔍 Afficher tout</button>' +
 '</div>' +
 
 // ===== OUTILS MASQUÉS =====
@@ -978,11 +970,14 @@ h+='</div>' +
 '<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:hidden;overflow-y:auto;flex-wrap:wrap;align-content:start;flex:1;"></div>' +
 '</div>' +
 
-// ===== PANIER 30% HAUTEUR À DROITE =====
-'<div class="pos-cart-panel" style="width:30%;height:100%;background:var(--bg-card);border-radius:var(--radius-xl);box-shadow:var(--shadow-xs);border:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;">';
+// ===== PANIER SANS SCROLL - TOUS LES ARTICLES VISIBLES =====
+'<div class="pos-cart-panel" style="width:32%;height:100%;background:var(--bg-card);border-radius:var(--radius-xl);box-shadow:var(--shadow-xs);border:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;">';
 
 if(posStep===1){
-h+='<div class="pos-cart-header" style="display:flex;justify-content:space-between;align-items:center;padding:3px 6px;border-bottom:1px solid var(--border);flex-shrink:0;"><h3 style="font-size:'+(isMobile?'14px':'0.75rem')+';"><i class="fas fa-shopping-cart"></i> Panier <span class="pos-cart-badge" style="background:#14B8A6;color:#fff;border-radius:50%;padding:1px 5px;font-size:'+(isMobile?'10px':'0.5rem')+';">'+posCart.length+'</span></h3><button class="pos-clear-btn" onclick="posResetCart()" style="font-size:'+(isMobile?'10px':'0.6rem')+';background:#ef4444;color:#fff;border:none;border-radius:4px;padding:'+(isMobile?'2px 6px':'3px 8px')+';cursor:pointer;"><i class="fas fa-trash-alt"></i> Vider</button></div><div class="pos-cart-items" style="flex:1;overflow-y:auto;padding:2px 4px;min-height:40px;">';
+h+='<div class="pos-cart-header" style="display:flex;justify-content:space-between;align-items:center;padding:3px 6px;border-bottom:1px solid var(--border);flex-shrink:0;"><h3 style="font-size:'+(isMobile?'14px':'0.75rem')+';"><i class="fas fa-shopping-cart"></i> Panier <span class="pos-cart-badge" style="background:#14B8A6;color:#fff;border-radius:50%;padding:1px 5px;font-size:'+(isMobile?'10px':'0.5rem')+';">'+posCart.length+'</span></h3><button class="pos-clear-btn" onclick="posResetCart()" style="font-size:'+(isMobile?'10px':'0.6rem')+';background:#ef4444;color:#fff;border:none;border-radius:4px;padding:'+(isMobile?'2px 6px':'3px 8px')+';cursor:pointer;"><i class="fas fa-trash-alt"></i> Vider</button></div>' +
+
+// ✅ PANIER SANS SCROLL - hauteur automatique
+'<div class="pos-cart-items" style="flex:1;overflow-y:visible;padding:2px 4px;min-height:30px;max-height:none;">';
 if(posCart.length===0){ h+='<div class="pos-cart-empty" style="text-align:center;padding:12px 6px;color:#94a3b8;"><i class="fas fa-shopping-basket" style="font-size:'+(isMobile?'18px':'22px')+';"></i><p style="font-size:'+(isMobile?'10px':'0.65rem')+';">Panier vide</p></div>'; }
 else{
 for(var k=0;k<posCart.length;k++){
@@ -1263,4 +1258,4 @@ window.posToggleTools = posToggleTools;
 window.posToolsVisible = posToolsVisible;
 window.applyDynamicContentScroll = applyDynamicContentScroll;
 
-console.log('🚀 E-SOLUTION - POS chargé - Adapté pour écran 9.7"');
+console.log('🚀 E-SOLUTION - POS chargé - Version finale POS 9.7"');
