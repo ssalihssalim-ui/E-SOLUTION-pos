@@ -1190,8 +1190,7 @@ object-fit: contain;
         min-height: 70px !important;
     }
 
-    /* ✅ CORRECTION POUR LA BARRE DE RECHERCHE ET BOUTONS SUR 9.7" */
-    /* AFFICHAGE DES OUTILS */
+    /* ✅ CORRECTION POUR LA BARRE DE RECHERCHE SUR 9.7" */
     #posToolsContainer {
         display: none !important;
         flex-direction: column !important;
@@ -1216,33 +1215,10 @@ object-fit: contain;
         width: 100% !important;
     }
 
-    /* ✅ RECHERCHE AGRANDIE SUR 9.7" */
-    #posSearchInput {
-        font-size: 18px !important;
-        height: 40px !important;
-        padding: 0 8px !important;
-    }
-
-    #posSearchInput::placeholder {
-        font-size: 16px !important;
-    }
-
-    /* ✅ BOUTONS AGRANDIS SUR 9.7" */
-    #posMicBtn {
-        width: 40px !important;
-        height: 40px !important;
-        font-size: 18px !important;
-    }
-
-    #posToggleToolsBtn {
-        font-size: 16px !important;
-        padding: 8px 24px !important;
-    }
-
-    /* ✅ BARRE DE RECHERCHE CONTENEUR */
+    /* ✅ BARRE DE RECHERCHE - CORRIGÉE AVEC BOUTON X BIEN POSITIONNÉ */
     .pos-search-container {
         flex: 1 !important;
-        min-width: 120px !important;
+        min-width: 150px !important;
         display: flex !important;
         align-items: center !important;
         background: #fff !important;
@@ -1250,23 +1226,80 @@ object-fit: contain;
         border-radius: 40px !important;
         padding: 2px 10px !important;
         position: relative !important;
-        height: 40px !important;
+        height: 44px !important;
     }
 
     .pos-search-container i {
         font-size: 16px !important;
         color: #94a3b8 !important;
         margin-right: 6px !important;
+        flex-shrink: 0 !important;
     }
 
     .pos-search-container input {
         border: none !important;
         outline: none !important;
-        padding: 0 !important;
+        padding: 0 34px 0 0 !important;
         width: 100% !important;
         background: transparent !important;
         font-size: 18px !important;
-        height: 38px !important;
+        height: 40px !important;
+        color: var(--text-primary) !important;
+    }
+
+    .pos-search-container input::placeholder {
+        font-size: 16px !important;
+        color: #94a3b8 !important;
+    }
+
+    /* ✅ BOUTON EFFACER (X) - BIEN POSITIONNÉ DANS LE TEXT BOX */
+    #posSearchClearBtn {
+        position: absolute !important;
+        right: 6px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        background: none !important;
+        border: none !important;
+        cursor: pointer !important;
+        padding: 4px !important;
+        color: #94a3b8 !important;
+        font-size: 18px !important;
+        display: none !important;
+        align-items: center !important;
+        justify-content: center !important;
+        z-index: 5 !important;
+        width: 28px !important;
+        height: 28px !important;
+        border-radius: 50% !important;
+    }
+
+    #posSearchClearBtn:hover {
+        background: var(--gray-100) !important;
+        color: var(--text-primary) !important;
+    }
+
+    #posSearchClearBtn.show {
+        display: flex !important;
+    }
+
+    /* ✅ BOUTON MICRO */
+    #posMicBtn {
+        width: 44px !important;
+        height: 44px !important;
+        font-size: 18px !important;
+        flex-shrink: 0 !important;
+        border-radius: 50% !important;
+        border: 2px solid #14B8A6 !important;
+        background: #dcfce7 !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    #posToggleToolsBtn {
+        font-size: 16px !important;
+        padding: 8px 24px !important;
     }
 
     /* ✅ BOUTONS TABLES ET EN LIGNE */
