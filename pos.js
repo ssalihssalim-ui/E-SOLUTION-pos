@@ -5,6 +5,8 @@
 // ✅ Pas de scroll horizontal
 // ✅ Panier 20% - Produits 80% en hauteur
 // ✅ Espace en dessous du bouton Valider
+// ✅ Clic sur "Panier" scroll vers le bas
+// ✅ Bouton flèche ↑ scroll vers le haut
 
 var posCart = [];
 var posStep = 1;
@@ -982,7 +984,8 @@ h+='</div>' +
 '<div class="pos-cart-panel" style="width:100%;background:var(--bg-card);border-radius:var(--radius-xl);box-shadow:var(--shadow-xs);border:1px solid var(--border);display:flex;flex-direction:column;margin-top:4px;max-height:35vh;flex:2;min-height:120px;">';
 
 if(posStep===1){
-h+='<div class="pos-cart-header" style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid var(--border);flex-shrink:0;"><h3 style="font-size:'+(isMobile?'18px':'0.9rem')+';"><i class="fas fa-shopping-cart"></i> Panier <span class="pos-cart-badge" style="background:#14B8A6;color:#fff;border-radius:50%;padding:1px 6px;font-size:'+(isMobile?'12px':'0.6rem')+';">'+posCart.length+'</span></h3><button class="pos-clear-btn" onclick="posResetCart()" style="font-size:'+(isMobile?'12px':'0.7rem')+';background:#ef4444;color:#fff;border:none;border-radius:4px;padding:'+(isMobile?'3px 8px':'4px 10px')+';cursor:pointer;"><i class="fas fa-trash-alt"></i> Vider</button></div><div class="pos-cart-items" style="flex:1;overflow-y:auto;padding:4px 8px;min-height:60px;max-height:180px;">';
+// ✅ MODIFICATION 1 : Clic sur "Panier" → scroll vers le bas
+h+='<div class="pos-cart-header" style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid var(--border);flex-shrink:0;"><h3 style="font-size:'+(isMobile?'18px':'0.9rem')+';cursor:pointer;" onclick="document.querySelector(\'.pos-cart-panel\').scrollIntoView({behavior:\'smooth\',block:\'start\'})"><i class="fas fa-shopping-cart"></i> Panier <span class="pos-cart-badge" style="background:#14B8A6;color:#fff;border-radius:50%;padding:1px 6px;font-size:'+(isMobile?'12px':'0.6rem')+';">'+posCart.length+'</span></h3><button class="pos-clear-btn" onclick="posResetCart()" style="font-size:'+(isMobile?'12px':'0.7rem')+';background:#ef4444;color:#fff;border:none;border-radius:4px;padding:'+(isMobile?'3px 8px':'4px 10px')+';cursor:pointer;"><i class="fas fa-trash-alt"></i> Vider</button></div><div class="pos-cart-items" style="flex:1;overflow-y:auto;padding:4px 8px;min-height:60px;max-height:180px;">';
 if(posCart.length===0){ h+='<div class="pos-cart-empty" style="text-align:center;padding:15px 8px;color:#94a3b8;"><i class="fas fa-shopping-basket" style="font-size:'+(isMobile?'22px':'28px')+';"></i><p style="font-size:'+(isMobile?'12px':'0.8rem')+';">Panier vide</p></div>'; }
 else{
 for(var k=0;k<posCart.length;k++){
@@ -1013,8 +1016,12 @@ h+='<div class="pos-cart-item" style="display:flex;align-items:center;justify-co
 }
 h+='</div><div style="padding:2px 0;display:flex;gap:3px;align-items:center;flex-shrink:0;"><label style="font-size:'+(isMobile?'12px':'0.7rem')+';">Remise:</label><input type="number" id="posDiscountMAD" value="'+posDiscountMAD+'" min="0" step="0.01" onchange="posUpdateDiscountMAD(this.value)" style="width:50px;padding:2px;border:2px solid #e2e8f0;border-radius:4px;font-size:'+(isMobile?'12px':'0.7rem')+';"></div><div class="pos-cart-footer" style="padding:2px 0;flex-shrink:0;">'+(posDiscountMAD>0?'<div style="display:flex;justify-content:space-between;font-size:'+(isMobile?'12px':'0.8rem')+';"><span>Sous-total</span><span>'+st.toFixed(2)+'</span></div><div style="display:flex;justify-content:space-between;color:#ef4444;font-size:'+(isMobile?'12px':'0.8rem')+';"><span>Remise</span><span>-'+posDiscountMAD.toFixed(2)+'</span></div>':'')+'<div class="pos-cart-total-row" style="display:flex;justify-content:space-between;font-size:'+(isMobile?'18px':'20px')+';font-weight:700;padding:3px 0;border-top:2px solid var(--border);"><span>Total</span><span>'+t.toFixed(2)+' MAD</span></div>' +
 
-// ✅ ESPACE EN DESSOUS DU BOUTON VALIDER
-'<button class="pos-validate-btn" onclick="posGoToStep2()" '+(posCart.length===0?'disabled':'')+' style="width:100%;padding:10px;background:#14B8A6;color:#fff;border:none;border-radius:8px;font-size:18px;font-weight:700;height:40px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:12px;"><i class="fas fa-check-circle"></i> Valider</button></div>';
+'<button class="pos-validate-btn" onclick="posGoToStep2()" '+(posCart.length===0?'disabled':'')+' style="width:100%;padding:10px;background:#14B8A6;color:#fff;border:none;border-radius:8px;font-size:18px;font-weight:700;height:40px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:12px;"><i class="fas fa-check-circle"></i> Valider</button>' +
+
+// ✅ MODIFICATION 2 : Bouton flèche vers le haut en bas à droite (70x70px)
+'<button onclick="document.querySelector(\'.pos-steps-nav\').scrollIntoView({behavior:\'smooth\',block:\'start\'})" style="position:fixed;bottom:20px;right:20px;width:70px;height:70px;border-radius:50%;background:#14B8A6;color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.25);z-index:9999;display:flex;align-items:center;justify-content:center;transition:all 0.3s;" onmouseover="this.style.transform=\'scale(1.1)\';this.style.boxShadow=\'0 6px 25px rgba(0,0,0,0.35)\';" onmouseout="this.style.transform=\'scale(1)\';this.style.boxShadow=\'0 4px 15px rgba(0,0,0,0.25)\';"><i class="fas fa-arrow-up"></i></button>' +
+
+'</div>';
 }else{
 // ÉTAPE PAIEMENT AVEC SCROLL
 var canCredit=posCurrentClient&&posCurrentClient.id;
@@ -1038,7 +1045,12 @@ h+='<div class="pos-cart-header" style="padding:6px 10px;border-bottom:1px solid
 if(posPaymentMethod==='espece'||posPaymentMethod==='partiel') {
 h+='<div style="margin-bottom:3px;"><label style="font-size:'+(isMobile?'12px':'0.7rem')+';font-weight:600;">Montant donné</label><input type="number" id="posAmountGiven" placeholder="0.00" value="'+(posAmountGiven>0?posAmountGiven:'')+'" onkeyup="posCalculateChange()" style="width:100%;padding:6px;border:2px solid #e2e8f0;border-radius:4px;font-size:24px !important;font-weight:700 !important;"><div id="posChangeDisplay" style="font-size:22px;font-weight:700;padding:2px 0;margin-right:6px;"></div></div>';
 }
-h+='<button class="pos-finalize-btn" onclick="posFinalizeSale()" style="width:100%;padding:8px;margin-top:4px;background:#14B8A6;color:#fff;border:none;border-radius:8px;font-size:16px !important;font-weight:700 !important;min-height:40px;margin-bottom:12px;"><i class="fas fa-check-circle"></i> Finaliser</button></div>';
+h+='<button class="pos-finalize-btn" onclick="posFinalizeSale()" style="width:100%;padding:8px;margin-top:4px;background:#14B8A6;color:#fff;border:none;border-radius:8px;font-size:16px !important;font-weight:700 !important;min-height:40px;margin-bottom:12px;"><i class="fas fa-check-circle"></i> Finaliser</button>' +
+
+// ✅ MODIFICATION 2 : Bouton flèche vers le haut en bas à droite (70x70px) - aussi sur la page paiement
+'<button onclick="document.querySelector(\'.pos-steps-nav\').scrollIntoView({behavior:\'smooth\',block:\'start\'})" style="position:fixed;bottom:20px;right:20px;width:70px;height:70px;border-radius:50%;background:#14B8A6;color:#fff;border:none;font-size:28px;cursor:pointer;box-shadow:0 4px 15px rgba(0,0,0,0.25);z-index:9999;display:flex;align-items:center;justify-content:center;transition:all 0.3s;" onmouseover="this.style.transform=\'scale(1.1)\';this.style.boxShadow=\'0 6px 25px rgba(0,0,0,0.35)\';" onmouseout="this.style.transform=\'scale(1)\';this.style.boxShadow=\'0 4px 15px rgba(0,0,0,0.25)\';"><i class="fas fa-arrow-up"></i></button>' +
+
+'</div>';
 }
 h+='</div></div></div></div>'; c.innerHTML=h;
 
