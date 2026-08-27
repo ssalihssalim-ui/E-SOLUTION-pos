@@ -5,7 +5,7 @@
 // ✅ Pas de scroll horizontal
 // ✅ Catégories avec espacement corrigé sur tablette et PC
 // ✅ Barre recherche + boutons masqués par défaut
-// ✅ Scroll corrigé sur tablette
+// ✅ Scroll corrigé sur tablette et POS
 
 var posCart = [];
 var posStep = 1;
@@ -878,13 +878,11 @@ return;
 buildFullPOS(c);
 }
 
-// ==================== buildFullPOS AVEC SCROLL CORRIGÉ POUR TABLETTE ====================
+// ==================== buildFullPOS AVEC SCROLL CORRIGÉ POUR TABLETTE/POS ====================
 function buildFullPOS(c){
 if(posProductsList.length===0&&posCategoriesList.length===0){ c.innerHTML='<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:#14B8A6;"></i><p>Chargement...</p></div>'; return; }
 var st=posCalculateTotal(),t=st-posDiscountMAD;
 var isMobile = window.innerWidth < 700;
-// ✅ TABLETTE : on considère tablette si largeur < 1024px
-var isTablet = window.innerWidth >= 700 && window.innerWidth < 1024;
 
 var stepSize = isMobile ? '22px' : '28px';
 var stepNumberSize = isMobile ? '22px' : '28px';
@@ -904,10 +902,12 @@ var stepIndicator = '<div class="pos-steps-nav" style="display:flex; justify-con
 
 var productPanelDisplay = (posStep === 2) ? 'display:none;' : '';
 
-// ✅ CORRECTION SCROLL TABLETTE : on retire le max-height qui bloque le scroll
-var productsPanelMaxHeight = isMobile ? 'calc(100vh - 200px)' : 'calc(100vh - 180px)';
-if (isTablet) {
-    productsPanelMaxHeight = 'none'; // ✅ Pas de limite sur tablette
+// ✅ CORRECTION : Supprimer max-height sur tablette/POS pour permettre le scroll
+var productsPanelMaxHeight = 'none'; // ✅ PLUS DE LIMITE !
+
+// ✅ Sur mobile seulement, on garde une hauteur limitée
+if (isMobile) {
+    productsPanelMaxHeight = 'calc(100vh - 200px)';
 }
 
 var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(110px, 1fr))';
@@ -915,10 +915,11 @@ var gridGap = isMobile ? '4px' : '8px';
 var gridPadding = isMobile ? '2px' : '4px';
 var panelPadding = isMobile ? '8px' : '12px';
 
-var h='<div class="pos-container' + (posStep===2 ? ' pos-container-full' : '') + '" style="' + (isMobile ? '' : 'display:flex;flex-direction:row;gap:12px;align-items:flex-start;') + '">' +
+// ✅ Layout : sur tablette/POS, tout en colonne pour voir le panier en bas
+var h='<div class="pos-container' + (posStep===2 ? ' pos-container-full' : '') + '" style="display:flex;flex-direction:column;gap:8px;">' +
 stepIndicator +
-'<div class="pos-row" style="' + (isMobile ? '' : 'display:flex;flex:1;gap:12px;width:100%;') + '">' +
-'<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; flex:1; min-width:200px; background:var(--bg-card); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; height:100%; overflow:hidden; min-height:400px; max-height:'+productsPanelMaxHeight+';' + (isTablet ? 'overflow-y:visible;' : '') + '">' +
+'<div class="pos-row" style="display:flex;flex-direction:column;gap:8px;width:100%;">' +
+'<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; width:100%; background:var(--bg-card); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; height:auto; overflow:visible; min-height:300px; max-height:'+productsPanelMaxHeight+';">' +
 '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">' +
 
 // ===== BOUTON AFFICHER TOUT =====
@@ -963,8 +964,8 @@ h += '</div>'; // Fin tools container
 h += '<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:hidden;overflow-y:auto;flex-wrap:wrap;align-content:start;flex:1;"></div>';
 h += '</div>' +
 
-// ===== PANIER =====
-'<div class="pos-cart-panel" style="' + (isMobile ? 'width:100%;margin-top:8px;' : 'width:340px;flex-shrink:0;order:2;') + 'background:var(--bg-card);border-radius:var(--radius-xl);box-shadow:var(--shadow-xs);border:1px solid var(--border);display:flex;flex-direction:column;max-height:' + (isMobile ? '400px' : 'calc(100vh - 200px)') + ';">';
+// ===== PANIER (EN DESSOUS SUR TOUS LES ÉCRANS) =====
+'<div class="pos-cart-panel" style="width:100%;background:var(--bg-card);border-radius:var(--radius-xl);box-shadow:var(--shadow-xs);border:1px solid var(--border);display:flex;flex-direction:column;max-height:400px;">';
 
 if(posStep===1){
 h+='<div class="pos-cart-header" style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid var(--border);flex-shrink:0;"><h3 style="font-size:'+(isMobile?'20px':'1rem')+';"><i class="fas fa-shopping-cart"></i> Panier <span class="pos-cart-badge" style="background:#14B8A6;color:#fff;border-radius:50%;padding:1px 8px;font-size:'+(isMobile?'16px':'0.7rem')+';">'+posCart.length+'</span></h3><button class="pos-clear-btn" onclick="posResetCart()" style="font-size:'+(isMobile?'14px':'0.85rem')+';background:#ef4444;color:#fff;border:none;border-radius:6px;padding:'+(isMobile?'4px 10px':'6px 14px')+';cursor:pointer;"><i class="fas fa-trash-alt"></i> Vider</button></div><div class="pos-cart-items" style="flex:1;overflow-y:auto;padding:4px 8px;min-height:80px;">';
@@ -1000,7 +1001,6 @@ h+='</div><div class="pos-cart-total-row" style="display:flex;justify-content:sp
 h+='<button class="pos-validate-btn" onclick="posGoToStep2()" style="width:100%;height:60px;background:#14B8A6;color:#fff;border:none;border-radius:0 0 12px 12px;font-size:26px;font-weight:700;padding:16px;cursor:'+(posCart.length>0?'pointer':'not-allowed')+';opacity:'+(posCart.length>0?'1':'0.5')+';flex-shrink:0;"><i class="fas fa-arrow-right"></i> Valider le panier</button>';
 }
 else if(posStep===2){
-// ✅ ÉTAPE PAIEMENT - INCHANGÉE
 var canCredit=posCurrentClient&&posCurrentClient.id;
 var creditDisplay = '';
 if (posCurrentClient && posCurrentClient.id) {
@@ -1054,8 +1054,6 @@ if (clearBtn) clearBtn.style.display = 'flex';
 }, 200);
 }
 }
-
-// ==================== LE RESTE DES FONCTIONS (INCHANGÉ) ====================
 
 function posNaviguerEtape(etape) {
 console.log('🔄 Navigation vers étape', etape);
