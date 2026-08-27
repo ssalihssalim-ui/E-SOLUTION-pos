@@ -890,7 +890,7 @@ gap: 4px !important;
 display: none !important;
 }
 
-/* ✅ ARTICLES DU PANIER - HAUTEUR MODIFIÉE À 350px */
+/* ✅ ARTICLES DU PANIER */
 .pos-cart-items {
 flex: 1 !important;
 overflow-y: auto !important;
@@ -1101,9 +1101,10 @@ gap: 10px !important;
 padding: 8px !important;
 }
 
+/* ✅ PC - CART ITEMS MIN 450px MAX 600px */
 .pos-cart-items {
-max-height: 350px !important;
-min-height: 80px !important;
+min-height: 450px !important;
+max-height: 600px !important;
 }
 }
 
@@ -1239,13 +1240,13 @@ font-size: 0.55rem !important;
 padding: 2px 6px !important;
 }
 
-/* ✅ ARTICLES DU PANIER - HAUTEUR MODIFIÉE À 450px */
+/* ✅ ARTICLES DU PANIER - TABLETTE MIN 450px MAX 600px */
 .pos-cart-items {
 flex: 1 !important;
 overflow-y: auto !important;
 padding: 4px 4px !important;
-max-height: 450px !important;
-min-height: 60px !important;
+min-height: 450px !important;
+max-height: 600px !important;
 }
 
 .pos-cart-item {
@@ -1623,7 +1624,7 @@ grid-template-columns: repeat(3, 1fr) !important;
 }
 
 .pos-cart-items {
-max-height: 450px !important;
+max-height: 350px !important;
 min-height: 60px !important;
 }
 
