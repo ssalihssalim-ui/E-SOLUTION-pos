@@ -3,6 +3,8 @@
 // ✅ Nom produit peut sauter à la ligne
 // ✅ Image taille fixe et conteneur agrandi
 // ✅ Pas de scroll horizontal
+// ✅ Barre recherche + boutons + catégories masqués par défaut sur TOUS les écrans
+// ✅ Cartes catégories dimensions réduites
 
 var posCart = [];
 var posStep = 1;
@@ -18,6 +20,7 @@ var posAllClients = [];
 var posFilteredClients = [];
 var posCurrentProductId = null;
 var posSearchQuery = '';
+var posToolsVisible = false;
 
 var productNameIndex = {};
 var productIndexBuilt = false;
@@ -66,6 +69,20 @@ btn.style.display = visible ? 'block' : 'none';
 }
 }
 
+// ==================== TOGGLE OUTILS POS ====================
+function posToggleTools() {
+    posToolsVisible = !posToolsVisible;
+    var toolsContainer = document.getElementById('posToolsContainer');
+    var toggleBtn = document.getElementById('posToggleToolsBtn');
+    if (toolsContainer) {
+        toolsContainer.style.display = posToolsVisible ? 'flex' : 'none';
+    }
+    if (toggleBtn) {
+        toggleBtn.innerHTML = posToolsVisible ? '✕ Masquer tout' : '🔍 Afficher tout';
+        toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
+    }
+}
+
 async function loadClientCredits(clientId) {
 if (!clientId) return 0;
 if (clientCreditsCache[clientId] !== undefined) return clientCreditsCache[clientId];
@@ -112,7 +129,7 @@ displayEl.style.fontSize = '28px';
 }
 
 async function loadPosPage(c){
-posResetCart(); posStep=1; posCommandesFilterText=''; posCommandesSortField='createdAt'; posCommandesSortOrder='desc'; posSearchQuery=''; productIndexBuilt=false; posProductOffset=0;
+posResetCart(); posStep=1; posCommandesFilterText=''; posCommandesSortField='createdAt'; posCommandesSortOrder='desc'; posSearchQuery=''; productIndexBuilt=false; posProductOffset=0; posToolsVisible=false;
 posCategoriesList=[]; posProductsList=[]; posAllClients=[]; posFilteredClients=[];
 c.innerHTML='<div style="text-align:center;padding:60px;"><i class="fas fa-spinner fa-spin" style="font-size:2.5rem;color:#14B8A6;"></i><p style="margin-top:15px;color:#64748b;">Chargement du POS...</p></div>';
 setStaticBackButtonVisibility(false);
@@ -304,17 +321,14 @@ function filterProductGrid(){
 
             var isMobile = window.innerWidth < 700;
             
-            // ✅ Carte produit avec nom sur plusieurs lignes et image conteneur agrandi
             var cardStyle = isMobile ? 
                 'padding:4px 2px;min-height:110px;max-height:140px;aspect-ratio:1/1;border-radius:6px;border-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;' : 
                 'padding:6px 8px;min-height:150px;max-height:190px;aspect-ratio:1/1;border-radius:8px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;';
             
-            // ✅ Image - conteneur agrandi (hauteur augmentée)
             var imgStyle = isMobile ? 
                 'height:55px;width:55px;margin-bottom:4px;border-radius:6px;overflow:hidden;flex-shrink:0;background:var(--gray-200);display:flex;align-items:center;justify-content:center;' : 
                 'height:75px;width:75px;margin-bottom:6px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--gray-200);display:flex;align-items:center;justify-content:center;';
             
-            // ✅ Nom produit - peut sauter à la ligne
             var nameStyle = isMobile ? 
                 'font-size:9px !important;font-weight:600 !important;line-height:1.3;text-align:center;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:var(--text-primary);margin:1px 0;' : 
                 'font-size:0.75rem !important;font-weight:600 !important;line-height:1.3;text-align:center;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:var(--text-primary);margin:2px 0;';
@@ -351,26 +365,29 @@ function filterProductGrid(){
     updateClearButtonVisibility();
 }
 
-// ==================== AFFICHER LES CATÉGORIES ====================
+// ==================== AFFICHER LES CATÉGORIES (CARTES RÉDUITES) ====================
 function afficherCategories(grid) {
     var isMobile = window.innerWidth < 700;
-    var gridCols = isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fill, minmax(130px, 1fr))';
+    // ✅ CARTES CATÉGORIES RÉDUITES
+    var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(100px, 1fr))';
     grid.style.gridTemplateColumns = gridCols;
     grid.style.overflowX = 'hidden';
     grid.style.overflowY = 'auto';
     grid.style.flexWrap = 'wrap';
     grid.style.alignContent = 'start';
+    grid.style.gap = isMobile ? '4px' : '8px';
+    grid.style.padding = isMobile ? '2px' : '6px';
 
     var html = '';
     
-    html += '<div style="grid-column:1/-1;padding:6px 8px;font-size:0.9rem;font-weight:700;color:var(--text-primary);">';
+    html += '<div style="grid-column:1/-1;padding:4px 6px;font-size:0.8rem;font-weight:700;color:var(--text-primary);">';
     html += '📂 Choisissez une catégorie';
     html += '</div>';
 
     if (posCategoriesList.length === 0) {
-        html += '<div style="grid-column:1/-1;text-align:center;padding:40px 10px;">';
-        html += '<i class="fas fa-folder-open" style="font-size:2.5rem;color:#94a3b8;"></i>';
-        html += '<p style="color:#94a3b8;margin-top:10px;">Aucune catégorie disponible</p>';
+        html += '<div style="grid-column:1/-1;text-align:center;padding:30px 10px;">';
+        html += '<i class="fas fa-folder-open" style="font-size:2rem;color:#94a3b8;"></i>';
+        html += '<p style="color:#94a3b8;margin-top:8px;">Aucune catégorie disponible</p>';
         html += '</div>';
     } else {
         var sortedCategories = posCategoriesList.slice().sort(function(a, b) {
@@ -382,21 +399,20 @@ function afficherCategories(grid) {
 
         for (var i = 0; i < sortedCategories.length; i++) {
             var cat = sortedCategories[i];
+            
+            // ✅ CARTES CATÉGORIES RÉDUITES
             var cardStyle = isMobile ? 
-                'padding:8px 4px;min-height:80px;border-radius:8px;border-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;' : 
-                'padding:12px 8px;min-height:120px;border-radius:12px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;';
+                'padding:4px 2px;min-height:65px;border-radius:6px;border-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;' : 
+                'padding:6px 4px;min-height:85px;max-height:110px;border-radius:10px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;';
             
-            var imgStyle = isMobile ? 
-                'height:50px;width:50px;border-radius:50%;margin-bottom:4px;overflow:hidden;flex-shrink:0;' : 
-                'height:70px;width:70px;border-radius:50%;margin-bottom:6px;overflow:hidden;flex-shrink:0;';
+            var imgSize = isMobile ? '35px' : '45px';
+            var imgStyle = 'width:'+imgSize+';height:'+imgSize+';border-radius:50%;margin-bottom:3px;overflow:hidden;flex-shrink:0;';
             
-            var nameStyle = isMobile ? 
-                'font-size:11px !important;font-weight:600 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--text-primary);' : 
-                'font-size:0.85rem !important;font-weight:600 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--text-primary);';
+            var nameSize = isMobile ? '9px' : '11px';
+            var nameStyle = 'font-size:'+nameSize+' !important;font-weight:600 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--text-primary);margin-top:1px;display:block;';
             
-            var countStyle = isMobile ? 
-                'font-size:8px !important;color:var(--text-muted);' : 
-                'font-size:0.7rem !important;color:var(--text-muted);';
+            var countSize = isMobile ? '7px' : '9px';
+            var countStyle = 'font-size:'+countSize+' !important;color:var(--text-muted);font-weight:500;display:block;margin-top:1px;';
 
             var count = posProductsList.filter(function(p) {
                 if (p.categories && p.categories.length > 0) {
@@ -409,13 +425,13 @@ function afficherCategories(grid) {
             if (cat.imageBase64) {
                 imgContent = '<img src="' + escapeHtml(cat.imageBase64) + '" loading="lazy" alt="' + escapeHtml(cat.nom) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
             } else {
-                imgContent = '<i class="fas fa-folder" style="font-size:' + (isMobile ? '24px' : '36px') + ';color:var(--accent);"></i>';
+                imgContent = '<i class="fas fa-folder" style="font-size:' + (isMobile ? '16px' : '22px') + ';color:var(--accent);"></i>';
             }
 
             html += '<div class="pos-category-card" style="' + cardStyle + 'background:var(--bg-page);border:2px solid var(--border);cursor:pointer;transition:var(--transition);" onclick="selectionnerCategorie(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')">' +
                 '<div style="' + imgStyle + 'display:flex;align-items:center;justify-content:center;background:var(--gray-100);">' + imgContent + '</div>' +
                 '<span style="' + nameStyle + '">' + escapeHtml(cat.nom) + '</span>' +
-                '<span style="' + countStyle + '">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>' +
+                '<span style="' + countStyle + '">' + count + '</span>' +
                 '</div>';
         }
     }
@@ -897,7 +913,18 @@ var h='<div class="pos-container' + (posStep===2 ? ' pos-container-full' : '') +
 stepIndicator +
 '<div class="pos-row">' +
 '<div class="pos-products-panel" style="' + productPanelDisplay + ' padding:'+panelPadding+'; flex:1; min-width:200px; background:var(--bg-card); border-radius:var(--radius-xl); box-shadow:var(--shadow-xs); border:1px solid var(--border); display:flex; flex-direction:column; height:100%; overflow:hidden; min-height:400px; max-height:calc(100vh - 200px);">' +
+
+// ===== BOUTON AFFICHER TOUT + CONTENEUR OUTILS MASQUÉ =====
 '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;">' +
+'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;">' +
+'<button id="posToggleToolsBtn" onclick="posToggleTools()" style="background:#14B8A6;color:#fff;border:none;border-radius:8px;padding:6px 14px;font-size:0.8rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;">🔍 Afficher tout</button>' +
+'<span style="font-size:0.7rem;color:#94a3b8;">' + posProductsList.length + ' produits</span>' +
+'</div>' +
+
+// ===== TOUS LES OUTILS MASQUÉS PAR DÉFAUT =====
+'<div id="posToolsContainer" style="display:none;flex-direction:column;gap:6px;margin-bottom:4px;padding:6px 8px;background:var(--bg-page);border-radius:8px;border:1px solid var(--border);">' +
+
+// Barre de recherche + boutons
 '<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">' +
 '<div style="flex:1;min-width:100px;display:flex;align-items:center;background:#fff;border:2px solid #e2e8f0;border-radius:40px;padding:2px 8px;position:relative;height:'+(isMobile?'34px':'40px')+';">' +
 '<i class="fas fa-search" style="color:#94a3b8;margin-right:4px;font-size:'+(isMobile?'14px':'18px')+';"></i>' +
@@ -907,7 +934,10 @@ stepIndicator +
 '<button id="posMicBtn" title="Micro" style="background:#dcfce7;border:3px solid #14B8A6;border-radius:50%;width:'+(isMobile?'36px':'40px')+';height:'+(isMobile?'36px':'40px')+';cursor:pointer;font-size:'+(isMobile?'14px':'18px')+';" onclick="posToggleVoiceSearch()"><i class="fas fa-microphone"></i></button>' +
 '<div style="display:flex;gap:3px;"><button onclick="posAfficherCommandesTables()" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:3px 8px;font-weight:600;font-size:'+(isMobile?'0.5rem':'0.6rem')+';">🍽️ Tables <span style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 5px;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">'+posCommandesTablesCount+'</span></button><button onclick="navigateTo(\'commandes\')" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:3px 8px;font-weight:600;font-size:'+(isMobile?'0.5rem':'0.6rem')+';">🌐 En ligne <span style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 5px;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">'+posCommandesEnLigneCount+'</span></button></div>' +
 '</div>' +
-'<div class="pos-categories-bar"><button class="pos-cat-btn '+(posSelectedCategory==='all'?'active':'')+'" onclick="posFilterCategory(\'all\')" style="padding:'+(isMobile?'4px 8px':'8px 16px')+';font-size:'+(isMobile?'12px':'0.8rem')+';gap:'+(isMobile?'3px':'6px')+';">📋 Tous</button>';
+
+// Barre des catégories (slider) - également masquée
+'<div class="pos-categories-bar" style="display:flex;flex-wrap:wrap;gap:4px;">' +
+'<button class="pos-cat-btn '+(posSelectedCategory==='all'?'active':'')+'" onclick="posFilterCategory(\'all\')" style="padding:'+(isMobile?'4px 8px':'6px 12px')+';font-size:'+(isMobile?'11px':'0.75rem')+';gap:'+(isMobile?'3px':'6px')+';border-radius:20px;border:2px solid '+(posSelectedCategory==='all'?'#14B8A6':'#e2e8f0')+';background:'+(posSelectedCategory==='all'?'#f0fdf4':'#fff')+';cursor:pointer;font-weight:600;transition:all 0.2s;">📋 Tous</button>';
 var sortedCategories = posCategoriesList.slice().sort(function(a, b) {
 var ordreA = (a.ordre !== undefined && a.ordre !== null) ? parseInt(a.ordre) : 9999;
 var ordreB = (b.ordre !== undefined && b.ordre !== null) ? parseInt(b.ordre) : 9999;
@@ -917,10 +947,13 @@ return (a.nom || '').localeCompare(b.nom || '');
 for(var i=0;i<sortedCategories.length;i++){
 var ca = sortedCategories[i];
 var ac = posSelectedCategory===ca.nom?'active':'';
-var ih = ca.imageBase64?'<img src="'+escapeHtml(ca.imageBase64)+'" loading="lazy" style="max-width:30px;max-height:30px;border-radius:4px;">':'<i class="fas fa-folder" style="font-size:'+(isMobile?'12px':'14px')+';"></i>';
-h+='<button class="pos-cat-btn '+ac+'" onclick="posFilterCategory(\''+escapeHtml(ca.nom).replace(/'/g,"\\'")+'\')" style="padding:'+(isMobile?'4px 8px':'8px 16px')+';font-size:'+(isMobile?'12px':'0.8rem')+';gap:'+(isMobile?'3px':'6px')+';">'+ih+' '+escapeHtml(ca.nom)+'</button>';
+var ih = ca.imageBase64?'<img src="'+escapeHtml(ca.imageBase64)+'" loading="lazy" style="max-width:24px;max-height:24px;border-radius:4px;">':'<i class="fas fa-folder" style="font-size:'+(isMobile?'11px':'13px')+';"></i>';
+h+='<button class="pos-cat-btn '+ac+'" onclick="posFilterCategory(\''+escapeHtml(ca.nom).replace(/'/g,"\\'")+'\')" style="padding:'+(isMobile?'4px 8px':'6px 12px')+';font-size:'+(isMobile?'11px':'0.75rem')+';gap:'+(isMobile?'3px':'6px')+';border-radius:20px;border:2px solid '+(posSelectedCategory===ca.nom?'#14B8A6':'#e2e8f0')+';background:'+(posSelectedCategory===ca.nom?'#f0fdf4':'#fff')+';cursor:pointer;font-weight:600;transition:all 0.2s;display:flex;align-items:center;">'+ih+' '+escapeHtml(ca.nom)+'</button>';
 }
-h+='</div></div>' +
+h+='</div>';
+h+='</div>'; // Fin tools container
+h+='</div>' +
+
 '<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:hidden;overflow-y:auto;flex-wrap:wrap;align-content:start;"></div>' +
 '</div>' +
 '<div class="pos-cart-panel">';
@@ -989,6 +1022,16 @@ if(posStep===1) {
 posViewMode = 'categories';
 posSelectedCategoryForView = null;
 filterProductGrid();
+// Appliquer la visibilité des outils
+var toolsContainer = document.getElementById('posToolsContainer');
+var toggleBtn = document.getElementById('posToggleToolsBtn');
+if (toolsContainer) {
+toolsContainer.style.display = posToolsVisible ? 'flex' : 'none';
+}
+if (toggleBtn) {
+toggleBtn.innerHTML = posToolsVisible ? '✕ Masquer tout' : '🔍 Afficher tout';
+toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
+}
 }
 if(posStep===2) {
 setTimeout(function() {
@@ -1197,5 +1240,7 @@ window.retournerCategories = retournerCategories;
 window.posFilterCategory = posFilterCategory;
 window.posViewMode = posViewMode;
 window.posSelectedCategoryForView = posSelectedCategoryForView;
+window.posToggleTools = posToggleTools;
+window.posToolsVisible = posToolsVisible;
 
 console.log('🚀 E-SOLUTION - POS chargé avec mode Catégories');
