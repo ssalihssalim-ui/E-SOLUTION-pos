@@ -1,8 +1,9 @@
 // ==================== POS.JS - E-SOLUTION (VERSION COMPLÈTE) ====================
+// Point de vente complet avec mode catégories
 // ✅ Nom produit peut sauter à la ligne
 // ✅ Image taille fixe et conteneur agrandi
 // ✅ Pas de scroll horizontal
-// ✅ Catégories avec padding top 5px
+// ✅ Catégories avec espacement corrigé sur tablette et PC
 
 var posCart = [];
 var posStep = 1;
@@ -47,6 +48,7 @@ var posHasMoreProducts = false;
 var clientCreditsCache = {};
 var clientSearchTimeout = null;
 
+// ✅ MODE CATÉGORIES / PRODUITS
 var posViewMode = 'categories';
 var posSelectedCategoryForView = null;
 
@@ -221,6 +223,7 @@ if (clearBtn) clearBtn.style.display = 'none';
 
 function loadMoreProducts(){ posProductOffset+=posProductBatchSize; filterProductGrid(); }
 
+// ==================== FILTER PRODUCT GRID AVEC MODE CATÉGORIES ====================
 function filterProductGrid(){
     if(!isOnPOSPage() || posStep !== 1) return;
     
@@ -346,19 +349,23 @@ function filterProductGrid(){
     updateClearButtonVisibility();
 }
 
-// ==================== AFFICHER LES CATÉGORIES (PADDING TOP 5px) ====================
+// ==================== AFFICHER LES CATÉGORIES (CORRIGÉ AVEC PADDING TOP/BOTTOM 5px) ====================
 function afficherCategories(grid) {
     var isMobile = window.innerWidth < 700;
+    
+    // ✅ CORRECTION : Espacement et padding amélioré pour tablette et PC
     var gridCols = isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fill, minmax(130px, 1fr))';
     grid.style.gridTemplateColumns = gridCols;
     grid.style.overflowX = 'hidden';
     grid.style.overflowY = 'auto';
     grid.style.flexWrap = 'wrap';
     grid.style.alignContent = 'start';
+    grid.style.gap = isMobile ? '6px' : '12px';
+    grid.style.padding = isMobile ? '4px' : '8px';
 
     var html = '';
     
-    html += '<div style="grid-column:1/-1;padding:6px 8px;font-size:0.9rem;font-weight:700;color:var(--text-primary);">';
+    html += '<div style="grid-column:1/-1;padding:4px 8px;font-size:0.85rem;font-weight:700;color:var(--text-primary);">';
     html += '📂 Choisissez une catégorie';
     html += '</div>';
 
@@ -378,22 +385,19 @@ function afficherCategories(grid) {
         for (var i = 0; i < sortedCategories.length; i++) {
             var cat = sortedCategories[i];
             
-            // ✅ CARTES CATÉGORIES AVEC PADDING TOP 5px
+            // ✅ CARTES CORRIGÉES : Padding top/bottom 5px, taille réduite
             var cardStyle = isMobile ? 
-                'padding:8px 4px 4px 4px;min-height:80px;border-radius:8px;border-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;' : 
-                'padding-top:5px !important;padding:12px 8px 8px 8px;min-height:120px;border-radius:12px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;';
+                'padding:5px 4px 5px 4px;min-height:70px;border-radius:8px;border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:var(--bg-card);cursor:pointer;transition:var(--transition);' : 
+                'padding:5px 8px 5px 8px;min-height:110px;max-height:140px;border-radius:12px;border:2px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;background:var(--bg-card);cursor:pointer;transition:var(--transition);';
             
-            var imgStyle = isMobile ? 
-                'height:50px;width:50px;border-radius:50%;margin-bottom:4px;overflow:hidden;flex-shrink:0;' : 
-                'height:70px;width:70px;border-radius:50%;margin-bottom:6px;overflow:hidden;flex-shrink:0;';
+            var imgSize = isMobile ? '45px' : '60px';
+            var imgStyle = 'width:'+imgSize+';height:'+imgSize+';border-radius:50%;margin-bottom:4px;overflow:hidden;flex-shrink:0;background:var(--gray-100);display:flex;align-items:center;justify-content:center;';
             
-            var nameStyle = isMobile ? 
-                'font-size:11px !important;font-weight:600 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--text-primary);' : 
-                'font-size:0.85rem !important;font-weight:600 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--text-primary);';
+            var nameSize = isMobile ? '10px' : '12px';
+            var nameStyle = 'font-size:'+nameSize+' !important;font-weight:600 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--text-primary);margin-top:2px;display:block;';
             
-            var countStyle = isMobile ? 
-                'font-size:8px !important;color:var(--text-muted);' : 
-                'font-size:0.7rem !important;color:var(--text-muted);';
+            var countSize = isMobile ? '8px' : '10px';
+            var countStyle = 'font-size:'+countSize+' !important;color:var(--text-muted);font-weight:500;display:block;margin-top:1px;';
 
             var count = posProductsList.filter(function(p) {
                 if (p.categories && p.categories.length > 0) {
@@ -406,11 +410,11 @@ function afficherCategories(grid) {
             if (cat.imageBase64) {
                 imgContent = '<img src="' + escapeHtml(cat.imageBase64) + '" loading="lazy" alt="' + escapeHtml(cat.nom) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
             } else {
-                imgContent = '<i class="fas fa-folder" style="font-size:' + (isMobile ? '24px' : '36px') + ';color:var(--accent);"></i>';
+                imgContent = '<i class="fas fa-folder" style="font-size:' + (isMobile ? '20px' : '28px') + ';color:var(--accent);"></i>';
             }
 
-            html += '<div class="pos-category-card" style="' + cardStyle + 'background:var(--bg-page);border:2px solid var(--border);cursor:pointer;transition:var(--transition);" onclick="selectionnerCategorie(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')">' +
-                '<div style="' + imgStyle + 'display:flex;align-items:center;justify-content:center;background:var(--gray-100);">' + imgContent + '</div>' +
+            html += '<div class="pos-category-card" style="' + cardStyle + '" onclick="selectionnerCategorie(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')" onmouseover="this.style.borderColor=\'var(--accent)\';this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'var(--shadow-md)\';" onmouseout="this.style.borderColor=\'var(--border)\';this.style.transform=\'none\';this.style.boxShadow=\'none\';">' +
+                '<div style="' + imgStyle + '">' + imgContent + '</div>' +
                 '<span style="' + nameStyle + '">' + escapeHtml(cat.nom) + '</span>' +
                 '<span style="' + countStyle + '">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>' +
                 '</div>';
@@ -420,11 +424,13 @@ function afficherCategories(grid) {
     grid.innerHTML = html;
 }
 
+// ==================== SÉLECTIONNER UNE CATÉGORIE ====================
 function selectionnerCategorie(catName) {
     posSelectedCategoryForView = catName;
     posViewMode = 'products';
     posProductOffset = 0;
     posSearchQuery = '';
+    
     posSelectedCategory = catName;
     
     var catBtns = document.querySelectorAll('.pos-cat-btn');
@@ -445,6 +451,7 @@ function selectionnerCategorie(catName) {
     }
 }
 
+// ==================== RETOURNER AUX CATÉGORIES ====================
 function retournerCategories() {
     posViewMode = 'categories';
     posSelectedCategoryForView = null;
@@ -952,7 +959,6 @@ h+='<div class="pos-cart-item" style="display:flex;align-items:center;justify-co
 h+='</div><div style="padding:4px 0;display:flex;gap:4px;align-items:center;"><label style="font-size:'+(isMobile?'16px':'0.9rem')+';">Remise:</label><input type="number" id="posDiscountMAD" value="'+posDiscountMAD+'" min="0" step="0.01" onchange="posUpdateDiscountMAD(this.value)" style="width:60px;padding:4px;border:2px solid #e2e8f0;border-radius:4px;font-size:'+(isMobile?'16px':'0.9rem')+';"></div><div class="pos-cart-footer" style="padding:4px 0;">'+(posDiscountMAD>0?'<div style="display:flex;justify-content:space-between;font-size:'+(isMobile?'16px':'1rem')+';"><span>Sous-total</span><span>'+st.toFixed(2)+'</span></div><div style="display:flex;justify-content:space-between;color:#ef4444;font-size:'+(isMobile?'16px':'1rem')+';"><span>Remise</span><span>-'+posDiscountMAD.toFixed(2)+'</span></div>':'')+'<div class="pos-cart-total-row" style="display:flex;justify-content:space-between;font-size:'+(isMobile?'24px':'28px')+';font-weight:700;padding:4px 0;border-top:2px solid var(--border);"><span>Total</span><span>'+t.toFixed(2)+' MAD</span></div>' +
 '<button class="pos-validate-btn" onclick="posGoToStep2()" '+(posCart.length===0?'disabled':'')+' style="width:100%;padding:14px;background:#14B8A6;color:#fff;border:none;border-radius:12px;font-size:22px;font-weight:700;height:50px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:6px;"><i class="fas fa-check-circle"></i> Valider</button></div>';
 }else{
-// ✅ ÉTAPE PAIEMENT - INCHANGÉE (garde exactement comme avant)
 var canCredit=posCurrentClient&&posCurrentClient.id;
 var creditDisplay = '';
 if (posCurrentClient && posCurrentClient.id) {
@@ -1130,6 +1136,8 @@ if (noBtn) { noBtn.addEventListener('click', function() { window.closeModal = or
 finally { isFinalizing=false; if(fb){ fb.disabled=false; fb.innerHTML='<i class="fas fa-check-circle"></i> Finaliser'; } }
 }
 
+// ==================== FONCTIONS MANQUANTES AJOUTÉES ====================
+
 function posResetCart() {
     posCart = [];
     posDiscountMAD = 0;
@@ -1177,6 +1185,8 @@ function updateClearButtonVisibility() {
 }
 
 function goBackToPOS(){ if(window.currentUserData&&(window.currentUserData.userData.role==='caissier'||window.currentUserData.userData.role==='admin')){ if(posCart.length>0&&posStep===1){ if(!confirm('⚠️ '+posCart.length+' article(s) dans le panier. Garder ?')) posResetCart(); } navigateTo('pos'); } }
+
+// ==================== EXPOSITION DES FONCTIONS GLOBALES ====================
 
 window.posCart=posCart; window.posStep=posStep; window.posProductsList=posProductsList; window.posAllClients=posAllClients; window.posCurrentClient=posCurrentClient; window.posCurrentTable=posCurrentTable; window.posDiscountMAD=posDiscountMAD; window.posAmountGiven=posAmountGiven; window.posPaymentMethod=posPaymentMethod; window.posResetCart=posResetCart; window.posAddToCartOrOpenOptions=posAddToCartOrOpenOptions; window.posSetPaymentMethod=posSetPaymentMethod; window.posCalculateTotal=posCalculateTotal; window.posFinalizeSale=posFinalizeSale; window.posGoToStep2=posGoToStep2; window.posGoToStep1=posGoToStep1; window.posSearchProducts=posSearchProducts; window.clearPosSearch=clearPosSearch; window.clearClientSearch=clearClientSearch; window.updateClearButtonVisibility=updateClearButtonVisibility; window.updateCartOnly=updateCartOnly; window.renderPOS=renderPOS; window.updatePaymentButtons=updatePaymentButtons; window.loadMoreProducts=loadMoreProducts; window.loadClientCredits=loadClientCredits; window.updateClientCreditDisplay=updateClientCreditDisplay; window.posCalculateChange=posCalculateChange; window.onProductAdded=window.onProductAdded||function(pid){ console.log('Produit ajouté:',pid); };
 window.posNaviguerEtape = posNaviguerEtape;
