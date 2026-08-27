@@ -761,12 +761,12 @@ transition: background 0.3s ease, border-color 0.3s ease;
     flex: 1 !important;
 }
 
-/* ✅ CARTES CATÉGORIES */
+/* ✅ CARTES CATÉGORIES - AGRANDIES */
 .pos-category-card {
-    min-height: 150px !important;
-    max-height: 180px !important;
-    padding: 3px 2px !important;
-    border-radius: 8px !important;
+    min-height: 180px !important;
+    max-height: 220px !important;
+    padding: 8px 4px !important;
+    border-radius: 10px !important;
     border: 2px solid var(--border) !important;
     display: flex !important;
     flex-direction: column !important;
@@ -776,7 +776,7 @@ transition: background 0.3s ease, border-color 0.3s ease;
     background: var(--bg-card) !important;
     cursor: pointer !important;
     transition: var(--transition) !important;
-    gap: 1px !important;
+    gap: 4px !important;
 }
 
 .pos-category-card:hover {
@@ -785,10 +785,10 @@ transition: background 0.3s ease, border-color 0.3s ease;
     box-shadow: var(--shadow-md) !important;
 }
 
-/* ✅ CONTENEUR IMAGE CATÉGORIE - AGRANDI */
+/* ✅ CONTENEUR IMAGE CATÉGORIE - TRÈS AGRANDI */
 .pos-category-card .category-image {
-    width: 85px !important;
-    height: 85px !important;
+    width: 120px !important;
+    height: 120px !important;
     border-radius: 50% !important;
     overflow: hidden !important;
     flex-shrink: 0 !important;
@@ -796,23 +796,23 @@ transition: background 0.3s ease, border-color 0.3s ease;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    margin-bottom: 1px !important;
+    margin-bottom: 4px !important;
     border: 3px solid var(--gray-200) !important;
 }
 
-.pos-category-card img {
+.pos-category-card .category-image img {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
 }
 
 .pos-category-card .fas.fa-folder {
-    font-size: 42px !important;
+    font-size: 55px !important;
     color: var(--accent) !important;
 }
 
 .pos-category-card .category-name {
-    font-size: 11px !important;
+    font-size: 14px !important;
     font-weight: 700 !important;
     text-align: center !important;
     overflow: hidden !important;
@@ -821,12 +821,12 @@ transition: background 0.3s ease, border-color 0.3s ease;
     max-width: 100% !important;
     display: block !important;
     color: var(--text-primary) !important;
-    margin-top: 1px !important;
-    line-height: 1.1 !important;
+    margin-top: 2px !important;
+    line-height: 1.2 !important;
 }
 
 .pos-category-card .category-count {
-    font-size: 9px !important;
+    font-size: 12px !important;
     color: var(--text-muted) !important;
     font-weight: 500 !important;
     display: block !important;
@@ -1024,7 +1024,7 @@ object-fit: contain;
    ✅ RESPONSIVE
    ============================================================ */
 
-/* ✅ SUR PC (> 1024px) */
+/* ✅ SUR PC (> 1024px) - CATÉGORIES AGRANDIES */
 @media(min-width: 1024px) {
     .pos-product-card {
         min-height: 180px !important;
@@ -1046,24 +1046,24 @@ object-fit: contain;
         font-size: 16px !important;
     }
     
+    /* ✅ CATÉGORIES PC AGRANDIES */
     .pos-category-card {
-        min-height: 180px !important;
-        max-height: 210px !important;
-        padding: 5px 4px !important;
+        min-height: 220px !important;
+        max-height: 260px !important;
+        padding: 12px 8px !important;
     }
-    /* ✅ CONTENEUR IMAGE CATÉGORIE PC AGRANDI */
     .pos-category-card .category-image {
-        width: 100px !important;
-        height: 100px !important;
+        width: 150px !important;
+        height: 150px !important;
     }
     .pos-category-card .fas.fa-folder {
-        font-size: 48px !important;
+        font-size: 65px !important;
     }
     .pos-category-card .category-name {
-        font-size: 14px !important;
+        font-size: 18px !important;
     }
     .pos-category-card .category-count {
-        font-size: 11px !important;
+        font-size: 14px !important;
     }
     
     .pos-steps-nav {
@@ -1097,8 +1097,8 @@ object-fit: contain;
     }
     
     .pos-categories-grid {
-        gap: 8px !important;
-        padding: 6px !important;
+        gap: 10px !important;
+        padding: 8px !important;
     }
     
     .pos-cart-items {
@@ -1107,14 +1107,13 @@ object-fit: contain;
     }
 }
 
-/* ✅ SUR ÉCRAN 9.7" (700px - 1024px) - IMAGES AGRANDIES */
+/* ✅ SUR ÉCRAN 9.7" (700px - 1024px) - CATÉGORIES AGRANDIES */
 @media(min-width: 700px) and (max-width: 1024px) {
     .pos-product-card {
         min-height: 180px !important;
         max-height: 210px !important;
         padding: 5px 4px !important;
     }
-    /* ✅ CONTENEUR IMAGE PRODUIT 9.7" AGRANDI */
     .pos-product-img {
         height: 110px !important;
         width: 90% !important;
@@ -1129,24 +1128,24 @@ object-fit: contain;
         font-size: 15px !important;
     }
     
+    /* ✅ CATÉGORIES 9.7" AGRANDIES */
     .pos-category-card {
-        min-height: 180px !important;
-        max-height: 210px !important;
-        padding: 5px 4px !important;
+        min-height: 200px !important;
+        max-height: 240px !important;
+        padding: 10px 6px !important;
     }
-    /* ✅ CONTENEUR IMAGE CATÉGORIE 9.7" AGRANDI */
     .pos-category-card .category-image {
-        width: 110px !important;
-        height: 110px !important;
+        width: 130px !important;
+        height: 130px !important;
     }
     .pos-category-card .fas.fa-folder {
-        font-size: 50px !important;
+        font-size: 60px !important;
     }
     .pos-category-card .category-name {
-        font-size: 13px !important;
+        font-size: 16px !important;
     }
     .pos-category-card .category-count {
-        font-size: 11px !important;
+        font-size: 12px !important;
     }
     
     .pos-steps-nav {
@@ -1181,9 +1180,9 @@ object-fit: contain;
     }
     
     .pos-categories-grid {
-        gap: 6px !important;
-        padding: 4px !important;
-        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 8px !important;
+        padding: 6px !important;
+        grid-template-columns: repeat(4, 1fr) !important;
     }
     
     .pos-cart-items {
@@ -1192,7 +1191,7 @@ object-fit: contain;
     }
 }
 
-/* ✅ SUR MOBILE (< 700px) */
+/* ✅ SUR MOBILE (< 700px) - CATÉGORIES AGRANDIES */
 @media(max-width: 700px) {
     .pos-product-card {
         min-height: 115px !important;
@@ -1200,7 +1199,6 @@ object-fit: contain;
         padding: 3px 2px !important;
         border-width: 1px !important;
     }
-    /* ✅ CONTENEUR IMAGE PRODUIT MOBILE AGRANDI */
     .pos-product-img {
         height: 60px !important;
         width: 80% !important;
@@ -1215,24 +1213,24 @@ object-fit: contain;
         font-size: 12px !important;
     }
     
+    /* ✅ CATÉGORIES MOBILE AGRANDIES */
     .pos-category-card {
-        min-height: 115px !important;
-        max-height: 140px !important;
-        padding: 3px 2px !important;
+        min-height: 150px !important;
+        max-height: 180px !important;
+        padding: 6px 3px !important;
     }
-    /* ✅ CONTENEUR IMAGE CATÉGORIE MOBILE AGRANDI */
     .pos-category-card .category-image {
-        width: 60px !important;
-        height: 60px !important;
+        width: 80px !important;
+        height: 80px !important;
     }
     .pos-category-card .fas.fa-folder {
-        font-size: 30px !important;
+        font-size: 40px !important;
     }
     .pos-category-card .category-name {
-        font-size: 10px !important;
+        font-size: 12px !important;
     }
     .pos-category-card .category-count {
-        font-size: 8px !important;
+        font-size: 10px !important;
     }
     
     .pos-steps-nav {
@@ -1267,9 +1265,9 @@ object-fit: contain;
     }
     
     .pos-categories-grid {
-        gap: 4px !important;
-        padding: 3px !important;
-        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 6px !important;
+        padding: 4px !important;
+        grid-template-columns: repeat(3, 1fr) !important;
     }
     
     .pos-cart-items {
@@ -1321,18 +1319,27 @@ object-fit: contain;
     }
     
     .pos-categories-grid {
-        gap: 3px !important;
+        gap: 4px !important;
         padding: 2px !important;
-        grid-template-columns: repeat(3, 1fr) !important;
+        grid-template-columns: repeat(2, 1fr) !important;
     }
     .pos-category-card {
-        min-height: 95px !important;
-        max-height: 115px !important;
-        padding: 2px 1px !important;
+        min-height: 120px !important;
+        max-height: 145px !important;
+        padding: 4px 2px !important;
     }
     .pos-category-card .category-image {
-        width: 48px !important;
-        height: 48px !important;
+        width: 65px !important;
+        height: 65px !important;
+    }
+    .pos-category-card .fas.fa-folder {
+        font-size: 32px !important;
+    }
+    .pos-category-card .category-name {
+        font-size: 10px !important;
+    }
+    .pos-category-card .category-count {
+        font-size: 8px !important;
     }
 }
 
