@@ -5,7 +5,7 @@
 // ✅ Pas de scroll horizontal
 // ✅ Catégories avec espacement corrigé sur tablette et PC
 // ✅ Barre recherche + boutons masqués par défaut
-// ✅ Scroll corrigé sur tablette et POS
+// ✅ Scroll corrigé sur #dynamicContent
 
 var posCart = [];
 var posStep = 1;
@@ -129,65 +129,80 @@ displayEl.style.fontSize = '28px';
 }
 }
 
+// ✅ FONCTION POUR APPLIQUER LE SCROLL SUR DYNAMICCONTENT
+function applyDynamicContentScroll() {
+    var container = document.getElementById('dynamicContent');
+    if (container) {
+        container.style.overflowY = 'auto';
+        container.style.height = '100vh';
+        container.style.maxHeight = '100vh';
+        container.style.paddingBottom = '30px';
+        container.style.overflowX = 'hidden';
+    }
+}
+
 async function loadPosPage(c){
-posResetCart(); posStep=1; posCommandesFilterText=''; posCommandesSortField='createdAt'; posCommandesSortOrder='desc'; posSearchQuery=''; productIndexBuilt=false; posProductOffset=0; posToolsVisible=false;
-posCategoriesList=[]; posProductsList=[]; posAllClients=[]; posFilteredClients=[];
-c.innerHTML='<div style="text-align:center;padding:60px;"><i class="fas fa-spinner fa-spin" style="font-size:2.5rem;color:#14B8A6;"></i><p style="margin-top:15px;color:#64748b;">Chargement du POS...</p></div>';
-setStaticBackButtonVisibility(false);
-try{
-let cc=await CacheDB.getAll('categories'),cp=await CacheDB.getAll('products'),cl=await CacheDB.getAll('clients');
-if(cc.length){ posCategoriesList=cc.map(x=>({id:x.id,nom:x.nom,imageBase64:x.imageBase64,recette:x.recette||false,ordre:x.ordre||0})); }
-if(cp.length){ posProductsList=cp.filter(x=>x.disponible!==false).map(x=>({...x,description:x.description||''})); productIndexBuilt=false; }
-if(cl.length){ posAllClients=cl.map(x=>({id:x.id,nom:x.nom,prenom:x.prenom,telephone:x.telephone,description:x.description||''})); posFilteredClients=[...posAllClients]; }
-if(isOnPOSPage()) renderPOS();
-if (typeof window.buildClientIndex === 'function') window.buildClientIndex();
-if (typeof window.buildProductIndex === 'function') window.buildProductIndex();
-}catch(e){ console.error(e); }
-setTimeout(async function(){
-try{
-const[cs,ps,cl]=await Promise.all([db.collection('categories').get(),db.collection('products').get(),db.collection('clients').limit(500).get()]);
-posCategoriesList=[]; cs.forEach(d=>{ let cat={id:d.id,nom:d.data().nom,imageBase64:d.data().imageBase64,recette:d.data().recette||false,ordre:d.data().ordre||0}; posCategoriesList.push(cat); CacheDB.set('categories',d.id,cat); });
-posProductsList=[]; ps.forEach(d=>{ let dd=d.data(); if(dd.disponible!==false){ let prod={id:d.id,nom:dd.nom||'',description:dd.description||'',prixVente:dd.prixVente||0,prixPromo:dd.prixPromo||0,prixAchat:dd.prixAchat||0,stock:dd.stock,categorie:dd.categorie||'',categories:dd.categories||[],imageBase64:dd.imageBase64||'',favori:dd.favori||false}; posProductsList.push(prod); CacheDB.set('products',d.id,prod); } }); productIndexBuilt=false;
-posAllClients=[]; cl.forEach(d=>{ let data=d.data(),cli={id:d.id,nom:data.nom,prenom:data.prenom,telephone:data.telephone,description:data.description||''}; posAllClients.push(cli); CacheDB.set('clients',d.id,cli); }); posFilteredClients=[...posAllClients];
-if(isOnPOSPage()) renderPOS();
-if (typeof window.buildClientIndex === 'function') window.buildClientIndex();
-if (typeof window.buildProductIndex === 'function') window.buildProductIndex();
-}catch(e){ console.error(e); }
-},300);
-await posChargerCommandesTables(); await posChargerCommandesEnLigneCount();
-var cmdData=localStorage.getItem('posCommandeData'),payData=localStorage.getItem('posPayerVente');
-var creditData = localStorage.getItem('posPayerCredit');
-if(cmdData){ var cmd=JSON.parse(cmdData); localStorage.removeItem('posCommandeData'); posCart=[]; if(cmd.items){ posEnrichirItemsAvecPrixAchat(cmd.items).forEach(function(item){ posCart.push({id:item.id,nom:item.nom,prixUnitaire:item.prixVente||item.prixUnitaire||0,prixAchat:item.prixAchat||0,prixPromo:item.prixPromo||0,prixVente:item.prixVente||item.prixUnitaire||0,quantite:item.quantite||1,categorie:item.categorie||'',imageBase64:item.imageBase64||'',sauces:item.sauces||[],interdits:item.interdits||[],epice:item.epice||'Normal',sel:item.sel||'Normal'}); }); } if(cmd.clientId&&cmd.clientName) posCurrentClient={id:cmd.clientId,name:cmd.clientName}; posCurrentTable=cmd.table||''; posStep=2; posDiscountMAD=0; posPaymentMethod='espece'; window.posCommandeId=cmd.commandeId; if(isOnPOSPage()) renderPOS(); return; }
-if(payData){ var v=JSON.parse(payData); localStorage.removeItem('posPayerVente'); posCart=[]; if(v.items){ posEnrichirItemsAvecPrixAchat(v.items).forEach(function(item){ posCart.push({id:item.id,nom:item.nom,prixUnitaire:item.prixVente||0,prixAchat:item.prixAchat||0,prixPromo:item.prixPromo||0,prixVente:item.prixVente||0,quantite:item.quantite||1,categorie:'',imageBase64:'',sauces:item.sauces||[],interdits:item.interdits||[],epice:item.epice||'Normal',sel:item.sel||'Normal'}); }); } if(v.clientId&&v.clientName) posCurrentClient={id:v.clientId,name:v.clientName}; posCurrentTable=v.table||''; posStep=2; posDiscountMAD=0; posPaymentMethod='espece'; window.posVenteId=v.venteId; if(isOnPOSPage()) renderPOS(); return; }
-if(creditData){
-try {
-var data = JSON.parse(creditData);
-localStorage.removeItem('posPayerCredit');
-posCart = [];
-if (data.clientName) { posCurrentClient = { id: data.clientId, name: data.clientName }; }
-if (data.items && data.items.length > 0) {
-data.items.forEach(function(item) {
-posCart.push({id: item.id || 'credit-' + Date.now(),nom: item.nom || item.name || 'Produit',prixUnitaire: item.prixVente || item.price || 0,quantite: item.quantite || 1,prixAchat: item.prixAchat || 0,prixPromo: item.prixPromo || 0,prixVente: item.prixVente || item.price || 0,categorie: item.categorie || '',imageBase64: item.imageBase64 || '',sauces: item.sauces || [],interdits: item.interdits || [],epice: item.epice || 'Normal',sel: item.sel || 'Normal'});
-});
-}
-var total = data.total || 0;
-if (total > 0) { posAmountGiven = total; posDiscountMAD = 0; }
-posStep = 2; window.posStep = 2; posPaymentMethod = 'espece';
-if (typeof window.setVoiceMode === 'function') { window.setVoiceMode('payment', '💳 Paiement crédit', null); }
-} catch(e) { console.warn('❌ Erreur chargement crédit:', e); }
-}
-if(isOnPOSPage()) renderPOS();
-if (posStep === 2 && posAmountGiven > 0) {
-setTimeout(function() {
-var input = document.getElementById('posAmountGiven');
-if (input) { input.value = posAmountGiven.toFixed(2); if (typeof posCalculateChange === 'function') posCalculateChange(); }
-if (posCurrentClient && posCurrentClient.id) {
-updateClientCreditDisplay(posCurrentClient.id);
-}
-if (posCurrentClient && posCurrentClient.name) { var ci = document.getElementById('posClientSearchInput'); if (ci) ci.value = posCurrentClient.name; }
-if (typeof window.updatePaymentButtons === 'function') window.updatePaymentButtons();
-}, 500);
-}
+    // ✅ APPLIQUER LE SCROLL SUR DYNAMICCONTENT
+    applyDynamicContentScroll();
+    
+    posResetCart(); posStep=1; posCommandesFilterText=''; posCommandesSortField='createdAt'; posCommandesSortOrder='desc'; posSearchQuery=''; productIndexBuilt=false; posProductOffset=0; posToolsVisible=false;
+    posCategoriesList=[]; posProductsList=[]; posAllClients=[]; posFilteredClients=[];
+    c.innerHTML='<div style="text-align:center;padding:60px;"><i class="fas fa-spinner fa-spin" style="font-size:2.5rem;color:#14B8A6;"></i><p style="margin-top:15px;color:#64748b;">Chargement du POS...</p></div>';
+    setStaticBackButtonVisibility(false);
+    try{
+    let cc=await CacheDB.getAll('categories'),cp=await CacheDB.getAll('products'),cl=await CacheDB.getAll('clients');
+    if(cc.length){ posCategoriesList=cc.map(x=>({id:x.id,nom:x.nom,imageBase64:x.imageBase64,recette:x.recette||false,ordre:x.ordre||0})); }
+    if(cp.length){ posProductsList=cp.filter(x=>x.disponible!==false).map(x=>({...x,description:x.description||''})); productIndexBuilt=false; }
+    if(cl.length){ posAllClients=cl.map(x=>({id:x.id,nom:x.nom,prenom:x.prenom,telephone:x.telephone,description:x.description||''})); posFilteredClients=[...posAllClients]; }
+    if(isOnPOSPage()) renderPOS();
+    if (typeof window.buildClientIndex === 'function') window.buildClientIndex();
+    if (typeof window.buildProductIndex === 'function') window.buildProductIndex();
+    }catch(e){ console.error(e); }
+    setTimeout(async function(){
+    try{
+    const[cs,ps,cl]=await Promise.all([db.collection('categories').get(),db.collection('products').get(),db.collection('clients').limit(500).get()]);
+    posCategoriesList=[]; cs.forEach(d=>{ let cat={id:d.id,nom:d.data().nom,imageBase64:d.data().imageBase64,recette:d.data().recette||false,ordre:d.data().ordre||0}; posCategoriesList.push(cat); CacheDB.set('categories',d.id,cat); });
+    posProductsList=[]; ps.forEach(d=>{ let dd=d.data(); if(dd.disponible!==false){ let prod={id:d.id,nom:dd.nom||'',description:dd.description||'',prixVente:dd.prixVente||0,prixPromo:dd.prixPromo||0,prixAchat:dd.prixAchat||0,stock:dd.stock,categorie:dd.categorie||'',categories:dd.categories||[],imageBase64:dd.imageBase64||'',favori:dd.favori||false}; posProductsList.push(prod); CacheDB.set('products',d.id,prod); } }); productIndexBuilt=false;
+    posAllClients=[]; cl.forEach(d=>{ let data=d.data(),cli={id:d.id,nom:data.nom,prenom:data.prenom,telephone:data.telephone,description:data.description||''}; posAllClients.push(cli); CacheDB.set('clients',d.id,cli); }); posFilteredClients=[...posAllClients];
+    if(isOnPOSPage()) renderPOS();
+    if (typeof window.buildClientIndex === 'function') window.buildClientIndex();
+    if (typeof window.buildProductIndex === 'function') window.buildProductIndex();
+    }catch(e){ console.error(e); }
+    },300);
+    await posChargerCommandesTables(); await posChargerCommandesEnLigneCount();
+    var cmdData=localStorage.getItem('posCommandeData'),payData=localStorage.getItem('posPayerVente');
+    var creditData = localStorage.getItem('posPayerCredit');
+    if(cmdData){ var cmd=JSON.parse(cmdData); localStorage.removeItem('posCommandeData'); posCart=[]; if(cmd.items){ posEnrichirItemsAvecPrixAchat(cmd.items).forEach(function(item){ posCart.push({id:item.id,nom:item.nom,prixUnitaire:item.prixVente||item.prixUnitaire||0,prixAchat:item.prixAchat||0,prixPromo:item.prixPromo||0,prixVente:item.prixVente||item.prixUnitaire||0,quantite:item.quantite||1,categorie:item.categorie||'',imageBase64:item.imageBase64||'',sauces:item.sauces||[],interdits:item.interdits||[],epice:item.epice||'Normal',sel:item.sel||'Normal'}); }); } if(cmd.clientId&&cmd.clientName) posCurrentClient={id:cmd.clientId,name:cmd.clientName}; posCurrentTable=cmd.table||''; posStep=2; posDiscountMAD=0; posPaymentMethod='espece'; window.posCommandeId=cmd.commandeId; if(isOnPOSPage()) renderPOS(); return; }
+    if(payData){ var v=JSON.parse(payData); localStorage.removeItem('posPayerVente'); posCart=[]; if(v.items){ posEnrichirItemsAvecPrixAchat(v.items).forEach(function(item){ posCart.push({id:item.id,nom:item.nom,prixUnitaire:item.prixVente||0,prixAchat:item.prixAchat||0,prixPromo:item.prixPromo||0,prixVente:item.prixVente||0,quantite:item.quantite||1,categorie:'',imageBase64:'',sauces:item.sauces||[],interdits:item.interdits||[],epice:item.epice||'Normal',sel:item.sel||'Normal'}); }); } if(v.clientId&&v.clientName) posCurrentClient={id:v.clientId,name:v.clientName}; posCurrentTable=v.table||''; posStep=2; posDiscountMAD=0; posPaymentMethod='espece'; window.posVenteId=v.venteId; if(isOnPOSPage()) renderPOS(); return; }
+    if(creditData){
+    try {
+    var data = JSON.parse(creditData);
+    localStorage.removeItem('posPayerCredit');
+    posCart = [];
+    if (data.clientName) { posCurrentClient = { id: data.clientId, name: data.clientName }; }
+    if (data.items && data.items.length > 0) {
+    data.items.forEach(function(item) {
+    posCart.push({id: item.id || 'credit-' + Date.now(),nom: item.nom || item.name || 'Produit',prixUnitaire: item.prixVente || item.price || 0,quantite: item.quantite || 1,prixAchat: item.prixAchat || 0,prixPromo: item.prixPromo || 0,prixVente: item.prixVente || item.price || 0,categorie: item.categorie || '',imageBase64: item.imageBase64 || '',sauces: item.sauces || [],interdits: item.interdits || [],epice: item.epice || 'Normal',sel: item.sel || 'Normal'});
+    });
+    }
+    var total = data.total || 0;
+    if (total > 0) { posAmountGiven = total; posDiscountMAD = 0; }
+    posStep = 2; window.posStep = 2; posPaymentMethod = 'espece';
+    if (typeof window.setVoiceMode === 'function') { window.setVoiceMode('payment', '💳 Paiement crédit', null); }
+    } catch(e) { console.warn('❌ Erreur chargement crédit:', e); }
+    }
+    if(isOnPOSPage()) renderPOS();
+    if (posStep === 2 && posAmountGiven > 0) {
+    setTimeout(function() {
+    var input = document.getElementById('posAmountGiven');
+    if (input) { input.value = posAmountGiven.toFixed(2); if (typeof posCalculateChange === 'function') posCalculateChange(); }
+    if (posCurrentClient && posCurrentClient.id) {
+    updateClientCreditDisplay(posCurrentClient.id);
+    }
+    if (posCurrentClient && posCurrentClient.name) { var ci = document.getElementById('posClientSearchInput'); if (ci) ci.value = posCurrentClient.name; }
+    if (typeof window.updatePaymentButtons === 'function') window.updatePaymentButtons();
+    }, 500);
+    }
 }
 
 function posSearchProducts(query){ 
@@ -862,23 +877,25 @@ vb.style.transition = 'all 0.2s';
 function getNextFactureNum(){ factureCounter=parseInt(localStorage.getItem('factureCounter'))||0; factureCounter++; localStorage.setItem('factureCounter',factureCounter); return 'FACT-'+new Date().getFullYear()+'-'+String(factureCounter).padStart(5,'0'); }
 
 function renderPOS(){
-if(!isOnPOSPage()) return;
-var now=Date.now(); if(now-posLastRenderTime<100&&posCart.length>0) return; posLastRenderTime=now;
-var c=document.getElementById('dynamicContent'); if(!c) return;
-if(posCart.length===0&&posStep===1){ buildFullPOS(c); return; }
-if(document.querySelector('.pos-container')&&posStep===1&&posCart.length>0){
-var productPanel = document.querySelector('.pos-products-panel');
-if (productPanel) productPanel.style.display = 'flex';
-updateCartOnly();
-filterProductGrid();
-var tr=document.querySelector('.pos-cart-total-row span:last-child');
-if(tr){ var st=posCalculateTotal(),t=st-posDiscountMAD; tr.textContent=t.toFixed(2)+' MAD'; }
-return;
-}
-buildFullPOS(c);
+    // ✅ APPLIQUER LE SCROLL SUR DYNAMICCONTENT À CHAQUE RENDU
+    applyDynamicContentScroll();
+    
+    if(!isOnPOSPage()) return;
+    var now=Date.now(); if(now-posLastRenderTime<100&&posCart.length>0) return; posLastRenderTime=now;
+    var c=document.getElementById('dynamicContent'); if(!c) return;
+    if(posCart.length===0&&posStep===1){ buildFullPOS(c); return; }
+    if(document.querySelector('.pos-container')&&posStep===1&&posCart.length>0){
+    var productPanel = document.querySelector('.pos-products-panel');
+    if (productPanel) productPanel.style.display = 'flex';
+    updateCartOnly();
+    filterProductGrid();
+    var tr=document.querySelector('.pos-cart-total-row span:last-child');
+    if(tr){ var st=posCalculateTotal(),t=st-posDiscountMAD; tr.textContent=t.toFixed(2)+' MAD'; }
+    return;
+    }
+    buildFullPOS(c);
 }
 
-// ==================== buildFullPOS AVEC SCROLL CORRIGÉ POUR TABLETTE/POS ====================
 function buildFullPOS(c){
 if(posProductsList.length===0&&posCategoriesList.length===0){ c.innerHTML='<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:#14B8A6;"></i><p>Chargement...</p></div>'; return; }
 var st=posCalculateTotal(),t=st-posDiscountMAD;
@@ -902,10 +919,8 @@ var stepIndicator = '<div class="pos-steps-nav" style="display:flex; justify-con
 
 var productPanelDisplay = (posStep === 2) ? 'display:none;' : '';
 
-// ✅ CORRECTION : Supprimer max-height sur tablette/POS pour permettre le scroll
-var productsPanelMaxHeight = 'none'; // ✅ PLUS DE LIMITE !
-
-// ✅ Sur mobile seulement, on garde une hauteur limitée
+// ✅ PLUS DE max-height limitant le scroll sur tablette/POS
+var productsPanelMaxHeight = 'none';
 if (isMobile) {
     productsPanelMaxHeight = 'calc(100vh - 200px)';
 }
@@ -915,7 +930,6 @@ var gridGap = isMobile ? '4px' : '8px';
 var gridPadding = isMobile ? '2px' : '4px';
 var panelPadding = isMobile ? '8px' : '12px';
 
-// ✅ Layout : sur tablette/POS, tout en colonne pour voir le panier en bas
 var h='<div class="pos-container' + (posStep===2 ? ' pos-container-full' : '') + '" style="display:flex;flex-direction:column;gap:8px;">' +
 stepIndicator +
 '<div class="pos-row" style="display:flex;flex-direction:column;gap:8px;width:100%;">' +
@@ -964,7 +978,7 @@ h += '</div>'; // Fin tools container
 h += '<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:hidden;overflow-y:auto;flex-wrap:wrap;align-content:start;flex:1;"></div>';
 h += '</div>' +
 
-// ===== PANIER (EN DESSOUS SUR TOUS LES ÉCRANS) =====
+// ===== PANIER (EN DESSOUS) =====
 '<div class="pos-cart-panel" style="width:100%;background:var(--bg-card);border-radius:var(--radius-xl);box-shadow:var(--shadow-xs);border:1px solid var(--border);display:flex;flex-direction:column;max-height:400px;">';
 
 if(posStep===1){
@@ -1250,5 +1264,6 @@ window.posViewMode = posViewMode;
 window.posSelectedCategoryForView = posSelectedCategoryForView;
 window.posToggleTools = posToggleTools;
 window.posToolsVisible = posToolsVisible;
+window.applyDynamicContentScroll = applyDynamicContentScroll;
 
-console.log('🚀 E-SOLUTION - POS chargé avec mode Catégories');
+console.log('🚀 E-SOLUTION - POS chargé avec mode Catégories - Scroll corrigé');
