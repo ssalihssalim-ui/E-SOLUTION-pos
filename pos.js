@@ -1083,16 +1083,6 @@ tr.textContent=t.toFixed(2)+' MAD';
 var vb=document.querySelector('.pos-validate-btn');
 if(vb) {
 vb.disabled=posCart.length===0;
-vb.style.height = '60px';
-vb.style.fontSize = '26px';
-vb.style.fontWeight = '700';
-vb.style.padding = '16px';
-vb.style.borderRadius = '12px';
-vb.style.background = '#14B8A6';
-vb.style.color = '#fff';
-vb.style.border = 'none';
-vb.style.cursor = 'pointer';
-vb.style.transition = 'all 0.2s';
 }
 }
 
