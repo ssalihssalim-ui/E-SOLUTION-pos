@@ -1264,32 +1264,74 @@ max-height: 400px !important;
         max-height: 400px !important;
     }
 
-    /* ✅ POS-STEPS-NAV - PADDING ET MARGIN RÉDUITS */
-    .pos-steps-nav {
-        position: sticky !important;
-        top: 0 !important;
-        z-index: 100 !important;
-        padding: 0px 4px !important;
-        min-height: 16px !important;
-        max-height: 20px !important;
+    /* ✅ PAGE HEADER AVEC STEPS NAV INTÉGRÉ */
+    .page-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        margin-top: 0px !important;
         margin-bottom: 2px !important;
+        padding: 2px 8px !important;
+        min-height: 24px !important;
         gap: 4px !important;
-        background: var(--bg-page) !important;
-        border-bottom: 1px solid var(--border) !important;
+        flex-wrap: nowrap !important;
+    }
+    .page-header .header-title {
+        margin-left: 50px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        flex-shrink: 0 !important;
+    }
+    .page-header .header-title i {
+        font-size: 0.9rem !important;
+        padding: 4px !important;
+    }
+    .page-header .header-title h2 {
+        font-size: 0.9rem !important;
+    }
+
+    /* ✅ STEPS NAV INTÉGRÉ DANS PAGE HEADER */
+    .pos-steps-nav {
+        display: flex !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 6px !important;
+        padding: 0px !important;
+        background: transparent !important;
         border-radius: 0 !important;
+        width: auto !important;
+        flex-shrink: 1 !important;
+        flex-wrap: nowrap !important;
+        min-height: auto !important;
+        max-height: none !important;
+        margin-bottom: 0 !important;
+        position: static !important;
+        top: auto !important;
+        z-index: auto !important;
+        border-bottom: none !important;
+        border: none !important;
+        box-shadow: none !important;
     }
     .pos-step {
-        font-size: 9px !important;
-        padding: 0px 3px !important;
-        gap: 1px !important;
+        font-size: 12px !important;
+        padding: 2px 6px !important;
+        gap: 4px !important;
+        background: transparent !important;
+        border-radius: 4px !important;
+    }
+    .pos-step.active {
+        background: #f0fdf4 !important;
+        border-radius: 4px !important;
+        padding: 2px 6px !important;
     }
     .step-number {
-        width: 14px !important;
-        height: 14px !important;
-        font-size: 8px !important;
+        width: 18px !important;
+        height: 18px !important;
+        font-size: 10px !important;
     }
     .pos-step span:last-child {
-        font-size: 8px !important;
+        font-size: 11px !important;
     }
 
     .pos-row {
