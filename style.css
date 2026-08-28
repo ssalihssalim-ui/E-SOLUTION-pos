@@ -1281,17 +1281,19 @@ max-height: 400px !important;
         height: auto !important;
     }
 
+    /* ✅ PRODUITS PANEL - 100vh SUR TABLETTE */
     .pos-products-panel {
         width: 70% !important;
         min-width: 0 !important;
         max-width: 70% !important;
         flex: 0 0 70% !important;
-        height: 75vh !important;
+        height: 100vh !important;
         min-height: 400px !important;
-        max-height: 80vh !important;
+        max-height: 100vh !important;
         padding: 8px !important;
     }
 
+    /* ✅ PANIER - 100vh SUR TABLETTE */
     .pos-cart-panel {
         position: sticky !important;
         top: 30px !important;
@@ -1301,7 +1303,7 @@ max-height: 400px !important;
         max-width: 30% !important;
         flex: 0 0 30% !important;
         height: auto !important;
-        max-height: 80vh !important;
+        max-height: 100vh !important;
         min-height: 400px !important;
         padding: 8px !important;
         padding-top: 8px !important;
