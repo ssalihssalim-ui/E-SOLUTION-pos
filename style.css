@@ -1183,7 +1183,7 @@ max-height: 400px !important;
         background: var(--bg-card) !important;
     }
     .pos-product-img {
-        height: 80px !important;
+        height: 90px !important;
         width: 85% !important;
         border-radius: 6px !important;
         border: 2px solid var(--gray-200) !important;
