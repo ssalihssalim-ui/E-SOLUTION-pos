@@ -1129,23 +1129,34 @@ font-size: 15px !important;
 font-size: 15px !important;
 }
 
+/* ✅ CATÉGORIES IPAD 9.7" - SANS BORDURES + IMAGES AGRANDIES */
 .pos-category-card {
-min-height: 200px !important;
-max-height: 240px !important;
-padding: 10px 6px !important;
+min-height: 240px !important;
+max-height: 280px !important;
+padding: 12px 8px !important;
+border: none !important;
+background: transparent !important;
+box-shadow: none !important;
 }
 .pos-category-card .category-image {
-width: 130px !important;
-height: 130px !important;
+width: 160px !important;
+height: 160px !important;
+border: none !important;
 }
 .pos-category-card .fas.fa-folder {
-font-size: 60px !important;
+font-size: 75px !important;
 }
 .pos-category-card .category-name {
-font-size: 16px !important;
+font-size: 18px !important;
 }
 .pos-category-card .category-count {
-font-size: 12px !important;
+font-size: 14px !important;
+}
+.pos-category-card:hover {
+border: none !important;
+transform: translateY(-3px) !important;
+box-shadow: none !important;
+background: transparent !important;
 }
 
 .pos-steps-nav {
