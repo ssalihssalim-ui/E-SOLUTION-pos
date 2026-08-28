@@ -767,7 +767,7 @@ min-height: 210px !important;
 max-height: 250px !important;
 padding: 8px 4px !important;
 border-radius: 10px !important;
-border: 2px solid transparent !important; /* ✅ SANS BORDURE VISIBLE PAR DÉFAUT */
+border: 2px solid transparent !important;
 display: flex !important;
 flex-direction: column !important;
 align-items: center !important;
@@ -781,7 +781,7 @@ gap: 4px !important;
 
 /* ✅ CARTE CATÉGORIE SÉLECTIONNÉE - BORDURE VERTE */
 .pos-category-card.active {
-border-color: var(--accent) !important; /* ✅ BORDURE VERTE */
+border-color: var(--accent) !important;
 background: var(--bg-card) !important;
 }
 
@@ -1096,16 +1096,16 @@ font-size: 16px !important;
 
 /* ✅ CATÉGORIES PC - IMAGES AGRANDIES ET CARTES RÉDUITES */
 .pos-category-card {
-min-height: 210px !important; /* 240 → 210 */
-max-height: 250px !important; /* 280 → 250 */
+min-height: 210px !important;
+max-height: 250px !important;
 padding: 14px 10px !important;
 }
 .pos-category-card .category-image {
-width: 200px !important; /* 170 → 200 */
-height: 200px !important; /* 170 → 200 */
+width: 200px !important;
+height: 200px !important;
 }
 .pos-category-card .fas.fa-folder {
-font-size: 85px !important; /* 75 → 85 */
+font-size: 85px !important;
 }
 .pos-category-card .category-name {
 font-size: 20px !important;
@@ -1166,180 +1166,190 @@ max-height: 400px !important;
 /* ✅ SUR ÉCRAN 9.7" (700px - 1024px) - IPAD 1024x658 */
 @media(min-width: 700px) and (max-width: 1024px) {
 
-/* --- PRODUITS --- */
-.pos-product-card {
-min-height: 180px !important;
-max-height: 210px !important;
-padding: 5px 4px !important;
-}
-.pos-product-img {
-height: 110px !important;
-width: 90% !important;
-}
-.pos-product-name {
-font-size: 13px !important;
-}
-.pos-product-price {
-font-size: 15px !important;
-}
-.pos-promo-price {
-font-size: 15px !important;
-}
+    /* --- PRODUITS - CARTES RÉDUITES ET SANS BORDURE --- */
+    .pos-product-card {
+        min-height: 140px !important;
+        max-height: 160px !important;
+        padding: 4px 3px !important;
+        border: none !important;
+        border-radius: 6px !important;
+        background: var(--bg-page) !important;
+        box-shadow: none !important;
+    }
+    .pos-product-card:hover {
+        border: none !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+        background: var(--bg-card) !important;
+    }
+    .pos-product-img {
+        height: 80px !important;
+        width: 85% !important;
+        border-radius: 6px !important;
+        border: 2px solid var(--gray-200) !important;
+    }
+    .pos-product-img img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+    .pos-product-name {
+        font-size: 11px !important;
+        font-weight: 600 !important;
+    }
+    .pos-product-price {
+        font-size: 13px !important;
+        font-weight: 700 !important;
+    }
+    .pos-promo-price {
+        font-size: 13px !important;
+    }
+    .pos-old-price {
+        font-size: 8px !important;
+    }
 
-/* ✅ CATÉGORIES IPAD 9.7" - IMAGES TRÈS GRANDES, CARTES RÉDUITES */
-.pos-category-card {
-min-height: 150px !important; /* 170 → 150 */
-max-height: 180px !important; /* 200 → 180 */
-padding: 8px 4px !important;
-border: 2px solid transparent !important;
-background: transparent !important;
-box-shadow: none !important;
-}
-.pos-category-card .category-image {
-width: 280px !important; /* 250 → 280 */
-height: 280px !important; /* 250 → 280 */
-border: none !important;
-}
-.pos-category-card .fas.fa-folder {
-font-size: 100px !important; /* 90 → 100 */
-}
-.pos-category-card .category-name {
-font-size: 16px !important;
-margin-top: 4px !important;
-}
-.pos-category-card .category-count {
-font-size: 13px !important;
-}
-.pos-category-card:hover {
-border: 2px solid transparent !important;
-transform: translateY(-3px) !important;
-box-shadow: none !important;
-background: transparent !important;
-}
-/* ✅ CARTE CATÉGORIE SÉLECTIONNÉE - BORDURE VERTE */
-.pos-category-card.active {
-border-color: var(--accent) !important;
-background: transparent !important;
-}
+    /* ✅ CATÉGORIES IPAD 9.7" - IMAGES TRÈS GRANDES, CARTES RÉDUITES */
+    .pos-category-card {
+        min-height: 150px !important;
+        max-height: 180px !important;
+        padding: 8px 4px !important;
+        border: 2px solid transparent !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+    .pos-category-card .category-image {
+        width: 280px !important;
+        height: 280px !important;
+        border: none !important;
+    }
+    .pos-category-card .fas.fa-folder {
+        font-size: 100px !important;
+    }
+    .pos-category-card .category-name {
+        font-size: 16px !important;
+        margin-top: 4px !important;
+    }
+    .pos-category-card .category-count {
+        font-size: 13px !important;
+    }
+    .pos-category-card:hover {
+        border: 2px solid transparent !important;
+        transform: translateY(-3px) !important;
+        box-shadow: none !important;
+        background: transparent !important;
+    }
+    .pos-category-card.active {
+        border-color: var(--accent) !important;
+        background: transparent !important;
+    }
 
-/* --- GRILLES --- */
-.pos-products-grid {
-gap: 6px !important;
-padding: 4px !important;
-grid-template-columns: repeat(4, 1fr) !important;
-}
-.pos-categories-grid {
-gap: 8px !important;
-padding: 6px !important;
-grid-template-columns: repeat(3, 1fr) !important;
-}
+    .pos-products-grid {
+        gap: 6px !important;
+        padding: 4px !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+    .pos-categories-grid {
+        gap: 8px !important;
+        padding: 6px !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
 
-/* --- PANIER --- */
-.pos-cart-items {
-min-height: 300px !important;
-max-height: 400px !important;
-}
+    .pos-cart-items {
+        min-height: 300px !important;
+        max-height: 400px !important;
+    }
 
-/* --- ÉTAPES --- */
-.pos-steps-nav {
-position: sticky !important;
-top: 0 !important;
-z-index: 100 !important;
-padding: 2px 8px !important;
-min-height: 22px !important;
-max-height: 28px !important;
-}
+    .pos-steps-nav {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 100 !important;
+        padding: 2px 8px !important;
+        min-height: 22px !important;
+        max-height: 28px !important;
+    }
 
-/* --- ROW CONTENT - FLEX ROW --- */
-.pos-row {
-display: flex !important;
-flex-direction: row !important;
-gap: 8px !important;
-width: 100% !important;
-height: auto !important;
-}
+    .pos-row {
+        display: flex !important;
+        flex-direction: row !important;
+        gap: 8px !important;
+        width: 100% !important;
+        height: auto !important;
+    }
 
-/* --- PRODUITS - 70% --- */
-.pos-products-panel {
-width: 70% !important;
-min-width: 0 !important;
-max-width: 70% !important;
-flex: 0 0 70% !important;
-height: 75vh !important;
-min-height: 400px !important;
-max-height: 80vh !important;
-padding: 8px !important;
-}
+    .pos-products-panel {
+        width: 70% !important;
+        min-width: 0 !important;
+        max-width: 70% !important;
+        flex: 0 0 70% !important;
+        height: 75vh !important;
+        min-height: 400px !important;
+        max-height: 80vh !important;
+        padding: 8px !important;
+    }
 
-/* --- PANIER - 30% STICKY --- */
-.pos-cart-panel {
-position: sticky !important;
-top: 30px !important;
-right: 0 !important;
-width: 30% !important;
-min-width: 30% !important;
-max-width: 30% !important;
-flex: 0 0 30% !important;
-height: auto !important;
-max-height: 80vh !important;
-min-height: 400px !important;
-padding: 8px !important;
-padding-top: 8px !important;
-margin-top: 0 !important;
-align-self: flex-start !important;
-}
+    .pos-cart-panel {
+        position: sticky !important;
+        top: 30px !important;
+        right: 0 !important;
+        width: 30% !important;
+        min-width: 30% !important;
+        max-width: 30% !important;
+        flex: 0 0 30% !important;
+        height: auto !important;
+        max-height: 80vh !important;
+        min-height: 400px !important;
+        padding: 8px !important;
+        padding-top: 8px !important;
+        margin-top: 0 !important;
+        align-self: flex-start !important;
+    }
 
-/* --- RECHERCHE --- */
-.pos-search-container {
-height: 34px !important;
-}
-.pos-search-container input {
-font-size: 14px !important;
-height: 30px !important;
-}
-#posMicBtn {
-width: 34px !important;
-height: 34px !important;
-font-size: 14px !important;
-}
+    .pos-search-container {
+        height: 34px !important;
+    }
+    .pos-search-container input {
+        font-size: 14px !important;
+        height: 30px !important;
+    }
+    #posMicBtn {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 14px !important;
+    }
 
-/* --- BOUTONS --- */
-.pos-tools-buttons button {
-font-size: 11px !important;
-padding: 4px 8px !important;
-}
-.pos-cat-btn {
-font-size: 11px !important;
-padding: 4px 10px !important;
-}
+    .pos-tools-buttons button {
+        font-size: 11px !important;
+        padding: 4px 8px !important;
+    }
+    .pos-cat-btn {
+        font-size: 11px !important;
+        padding: 4px 10px !important;
+    }
 }
 
 /* ✅ SUR TABLETTE (1024px - 1200px) - IMAGES CATÉGORIES AGRANDIES */
 @media(min-width: 1024px) and (max-width: 1200px) {
 .pos-category-card {
-min-height: 195px !important; /* 220 → 195 */
-max-height: 230px !important; /* 260 → 230 */
+min-height: 195px !important;
+max-height: 230px !important;
 }
 .pos-category-card .category-image {
-width: 190px !important; /* 160 → 190 */
-height: 190px !important; /* 160 → 190 */
+width: 190px !important;
+height: 190px !important;
 }
 .pos-category-card .fas.fa-folder {
-font-size: 80px !important; /* 70 → 80 */
+font-size: 80px !important;
 }
-/* ✅ CARTE CATÉGORIE SÉLECTIONNÉE - BORDURE VERTE */
 .pos-category-card.active {
 border-color: var(--accent) !important;
 }
 
-/* ✅ PRODUITS PANEL - HAUTEUR AUGMENTÉE SUR TABLETTE */
 .pos-products-panel {
 height: 75vh !important;
 min-height: 400px !important;
 max-height: 80vh !important;
 }
 
-/* ✅ PANIER - MÊME HAUTEUR SUR TABLETTE */
 .pos-cart-panel {
 max-height: 80vh !important;
 min-height: 400px !important;
@@ -1368,18 +1378,17 @@ font-size: 12px !important;
 font-size: 12px !important;
 }
 
-/* ✅ CATÉGORIES MOBILE AGRANDIES */
 .pos-category-card {
-min-height: 120px !important; /* 150 → 120 */
-max-height: 150px !important; /* 180 → 150 */
+min-height: 120px !important;
+max-height: 150px !important;
 padding: 6px 3px !important;
 }
 .pos-category-card .category-image {
-width: 100px !important; /* 85 → 100 */
-height: 100px !important; /* 85 → 100 */
+width: 100px !important;
+height: 100px !important;
 }
 .pos-category-card .fas.fa-folder {
-font-size: 48px !important; /* 42 → 48 */
+font-size: 48px !important;
 }
 .pos-category-card .category-name {
 font-size: 12px !important;
@@ -1388,7 +1397,6 @@ font-size: 12px !important;
 font-size: 10px !important;
 }
 
-/* ✅ CARTE CATÉGORIE SÉLECTIONNÉE - BORDURE VERTE */
 .pos-category-card.active {
 border-color: var(--accent) !important;
 }
@@ -1407,14 +1415,12 @@ min-height: 20px !important;
 max-height: 24px !important;
 }
 
-/* ✅ PRODUITS PANEL - HAUTEUR AUGMENTÉE SUR MOBILE */
 .pos-products-panel {
 height: 65vh !important;
 min-height: 300px !important;
 max-height: 70vh !important;
 }
 
-/* ✅ PANIER - MÊME HAUTEUR SUR MOBILE */
 .pos-cart-panel {
 max-height: 70vh !important;
 min-height: 300px !important;
@@ -1486,16 +1492,16 @@ padding: 2px !important;
 grid-template-columns: repeat(2, 1fr) !important;
 }
 .pos-category-card {
-min-height: 100px !important; /* 120 → 100 */
-max-height: 120px !important; /* 145 → 120 */
+min-height: 100px !important;
+max-height: 120px !important;
 padding: 4px 2px !important;
 }
 .pos-category-card .category-image {
-width: 80px !important; /* 70 → 80 */
-height: 80px !important; /* 70 → 80 */
+width: 80px !important;
+height: 80px !important;
 }
 .pos-category-card .fas.fa-folder {
-font-size: 38px !important; /* 34 → 38 */
+font-size: 38px !important;
 }
 .pos-category-card .category-name {
 font-size: 10px !important;
@@ -1504,7 +1510,6 @@ font-size: 10px !important;
 font-size: 8px !important;
 }
 
-/* ✅ CARTE CATÉGORIE SÉLECTIONNÉE - BORDURE VERTE */
 .pos-category-card.active {
 border-color: var(--accent) !important;
 }
@@ -1589,14 +1594,14 @@ border-bottom-color: #30363D !important;
 
 [data-theme="dark"] .pos-category-card {
 background: #0D1117 !important;
-border-color: transparent !important; /* ✅ SANS BORDURE EN MODE SOMBRE */
+border-color: transparent !important;
 }
 [data-theme="dark"] .pos-category-card:hover {
 background: #161B22 !important;
 border-color: var(--accent) !important;
 }
 [data-theme="dark"] .pos-category-card.active {
-border-color: var(--accent) !important; /* ✅ BORDURE VERTE EN MODE SOMBRE */
+border-color: var(--accent) !important;
 background: #161B22 !important;
 }
 
