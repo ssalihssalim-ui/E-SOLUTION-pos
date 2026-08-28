@@ -511,7 +511,7 @@ grid.innerHTML = html;
 updateClearButtonVisibility();
 }
 
-// ==================== AFFICHER LES CATÉGORIES - VERSION CORRIGÉE AVEC NOUVELLES TAILLES ====================
+// ==================== AFFICHER LES CATÉGORIES - VERSION AVEC TAILLES RÉDUITES ====================
 function afficherCategories(grid) {
 var isMobile = window.innerWidth < 700;
 var isTablette = window.innerWidth >= 700 && window.innerWidth <= 1024;
@@ -543,40 +543,40 @@ if (ordreA !== ordreB) return ordreA - ordreB;
 return (a.nom || '').localeCompare(b.nom || '');
 });
 
-// ✅ TAILLES DES IMAGES SELON L'ÉCRAN
+// ✅ TAILLES DES IMAGES SELON L'ÉCRAN - VERSION RÉDUITE
 var imgSize, cardMinHeight, cardMaxHeight, folderSize, nameSize, countSize;
 
 if (isPC) {
-imgSize = '200px';
-cardMinHeight = '210px';
-cardMaxHeight = '250px';
-folderSize = '85px';
-nameSize = '20px';
-countSize = '16px';
+imgSize = '170px';
+cardMinHeight = '180px';
+cardMaxHeight = '220px';
+folderSize = '72px';
+nameSize = '18px';
+countSize = '14px';
 } else if (isTablette) {
-imgSize = '250px';
-cardMinHeight = '150px';
-cardMaxHeight = '180px';
-folderSize = '90px';
-nameSize = '16px';
-countSize = '13px';
+imgSize = '160px';
+cardMinHeight = '170px';
+cardMaxHeight = '200px';
+folderSize = '68px';
+nameSize = '14px';
+countSize = '11px';
 } else {
-imgSize = '100px';
-cardMinHeight = '120px';
-cardMaxHeight = '150px';
-folderSize = '48px';
-nameSize = '12px';
-countSize = '10px';
+imgSize = '80px';
+cardMinHeight = '110px';
+cardMaxHeight = '140px';
+folderSize = '40px';
+nameSize = '11px';
+countSize = '9px';
 }
 
 // ✅ TRÈS PETIT MOBILE
 if (window.innerWidth < 400) {
-imgSize = '80px';
-cardMinHeight = '100px';
-cardMaxHeight = '120px';
-folderSize = '38px';
-nameSize = '10px';
-countSize = '8px';
+imgSize = '65px';
+cardMinHeight = '90px';
+cardMaxHeight = '110px';
+folderSize = '32px';
+nameSize = '9px';
+countSize = '7px';
 }
 
 for (var i = 0; i < sortedCategories.length; i++) {
