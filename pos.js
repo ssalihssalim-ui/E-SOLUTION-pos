@@ -511,7 +511,7 @@ grid.innerHTML = html;
 updateClearButtonVisibility();
 }
 
-// ==================== AFFICHER LES CATÉGORIES - HAUTEUR AUGMENTÉE DE 10PX ====================
+// ==================== AFFICHER LES CATÉGORIES - VERSION CORRIGÉE ====================
 function afficherCategories(grid) {
 var isMobile = window.innerWidth < 700;
 var isTablette = window.innerWidth >= 700 && window.innerWidth <= 1024;
@@ -543,27 +543,27 @@ if (ordreA !== ordreB) return ordreA - ordreB;
 return (a.nom || '').localeCompare(b.nom || '');
 });
 
-// ✅ TAILLES - HAUTEUR AUGMENTÉE DE 10PX
+// ✅ TAILLES DES IMAGES - VERSION RÉDUITE
 var imgSize, cardMinHeight, cardMaxHeight, folderSize, nameSize, countSize;
 
 if (isPC) {
-imgSize = '150px';
-cardMinHeight = '170px';   // +10px
-cardMaxHeight = '210px';   // +10px
+imgSize = '140px';
+cardMinHeight = '160px';
+cardMaxHeight = '200px';
 folderSize = '65px';
 nameSize = '16px';
 countSize = '12px';
 } else if (isTablette) {
-imgSize = '140px';
-cardMinHeight = '160px';   // +10px
-cardMaxHeight = '190px';   // +10px
+imgSize = '130px';
+cardMinHeight = '150px';
+cardMaxHeight = '180px';
 folderSize = '60px';
 nameSize = '13px';
 countSize = '10px';
 } else {
 imgSize = '70px';
-cardMinHeight = '110px';   // +10px
-cardMaxHeight = '140px';   // +10px
+cardMinHeight = '100px';
+cardMaxHeight = '130px';
 folderSize = '35px';
 nameSize = '10px';
 countSize = '8px';
@@ -572,8 +572,8 @@ countSize = '8px';
 // ✅ TRÈS PETIT MOBILE
 if (window.innerWidth < 400) {
 imgSize = '55px';
-cardMinHeight = '90px';    // +10px
-cardMaxHeight = '110px';   // +10px
+cardMinHeight = '80px';
+cardMaxHeight = '100px';
 folderSize = '28px';
 nameSize = '8px';
 countSize = '7px';
