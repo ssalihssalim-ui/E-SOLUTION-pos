@@ -1019,6 +1019,7 @@ console.error('❌ Erreur récupération produit:', err);
 });
 }
 
+// ==================== updateCartOnly - NOM SUR UNE LIGNE ====================
 function updateCartOnly(){
 if(!isOnPOSPage()) return;
 var ci=document.querySelector('.pos-cart-items');
@@ -1028,31 +1029,32 @@ if(posCart.length===0) {
 html='<div class="pos-cart-empty"><i class="fas fa-shopping-basket"></i><p>Panier vide</p></div>';
 } else {
 var isMobile = window.innerWidth < 700;
-var btnSize = isMobile ? '40px' : '28px';
-var fontSize = isMobile ? '1.2rem' : '0.7rem';
-var qtySize = isMobile ? '1.3rem' : '0.85rem';
-var nameSize = isMobile ? '22px' : '0.85rem';
-var priceSize = isMobile ? '0.7rem' : '0.7rem';
-var totalSize = isMobile ? '24px' : '0.8rem';
 
 for(var k=0;k<posCart.length;k++){
-var it=posCart[k],opts='';
-if(it.interdits&&it.interdits.length) opts+=' <span style="color:#ef4444;font-size:0.6rem;">🚫'+escapeHtml(it.interdits.join(','))+'</span>';
-if(it.epice&&it.epice!=='Normal') opts+=' <span style="color:#d97706;font-size:0.6rem;">🌶️'+escapeHtml(it.epice)+'</span>';
-if(it.sel&&it.sel!=='Normal') opts+=' <span style="color:#4f46e5;font-size:0.6rem;">🧂'+escapeHtml(it.sel)+'</span>';
+var it=posCart[k], opts='';
+if(it.interdits&&it.interdits.length) opts+=' <span style="color:#ef4444;font-size:0.5rem;">🚫'+escapeHtml(it.interdits.join(','))+'</span>';
+if(it.epice&&it.epice!=='Normal') opts+=' <span style="color:#d97706;font-size:0.5rem;">🌶️'+escapeHtml(it.epice)+'</span>';
+if(it.sel&&it.sel!=='Normal') opts+=' <span style="color:#4f46e5;font-size:0.5rem;">🧂'+escapeHtml(it.sel)+'</span>';
 
-html+='<div class="pos-cart-item" style="display:flex;align-items:center;justify-content:space-between;padding:8px 4px;border-bottom:1px solid var(--border);gap:8px;">' +
-'<div class="pos-cart-item-info" style="flex:1;min-width:0;">' +
-'<span class="pos-cart-item-name" style="font-size:'+nameSize+';font-weight:600;display:block;margin-right:10px;word-break:break-word;">'+escapeHtml(it.nom)+opts+'</span>' +
-'<span class="pos-cart-item-price" style="font-size:'+priceSize+';color:var(--text-secondary);">'+it.prixUnitaire.toFixed(2)+' MAD/u</span>' +
+var btnSize = isMobile ? '28px' : '24px';
+var fontSize = isMobile ? '0.6rem' : '0.5rem';
+var qtySize = isMobile ? '0.8rem' : '0.65rem';
+var nameSize = isMobile ? '13px' : '0.7rem';
+var priceSize = isMobile ? '0.5rem' : '0.5rem';
+var totalSize = isMobile ? '14px' : '0.65rem';
+
+html+='<div class="pos-cart-item" style="display:flex;align-items:center;justify-content:space-between;padding:4px 2px;border-bottom:1px solid var(--border);gap:4px;">' +
+'<div class="pos-cart-item-info" style="flex:1;min-width:0;display:flex;flex-direction:column;">' +
+'<span class="pos-cart-item-name" style="font-size:'+nameSize+';font-weight:600;display:block;word-break:break-word;white-space:normal;line-height:1.3;">'+escapeHtml(it.nom)+opts+'</span>' +
+'<span class="pos-cart-item-price" style="font-size:'+priceSize+';color:var(--text-secondary);">'+it.prixUnitaire.toFixed(2)+' MAD</span>' +
 '</div>' +
-'<div class="pos-cart-item-actions" style="display:flex;align-items:center;gap:6px;flex-shrink:0;">' +
+'<div class="pos-cart-item-actions" style="display:flex;align-items:center;gap:3px;flex-shrink:0;">' +
 '<button class="pos-qty-btn" onclick="posUpdateQty('+k+',-1)" style="width:'+btnSize+';height:'+btnSize+';border-radius:50%;border:2px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:'+fontSize+';transition:all 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.05);"><i class="fas fa-minus"></i></button>' +
-'<span class="pos-qty-value" style="font-size:'+qtySize+';font-weight:700;min-width:32px;text-align:center;">'+it.quantite+'</span>' +
+'<span class="pos-qty-value" style="font-size:'+qtySize+';font-weight:700;min-width:20px;text-align:center;">'+it.quantite+'</span>' +
 '<button class="pos-qty-btn" onclick="posUpdateQty('+k+',1)" style="width:'+btnSize+';height:'+btnSize+';border-radius:50%;border:2px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:'+fontSize+';transition:all 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.05);"><i class="fas fa-plus"></i></button>' +
-'<button class="pos-remove-btn" onclick="posRemoveItem('+k+')" style="background:none;border:none;color:#ef4444;cursor:pointer;padding:4px;font-size:1.1rem;transition:all 0.2s;"><i class="fas fa-times"></i></button>' +
+'<button class="pos-remove-btn" onclick="posRemoveItem('+k+')" style="background:none;border:none;color:#ef4444;cursor:pointer;padding:2px;font-size:0.8rem;transition:all 0.2s;"><i class="fas fa-times"></i></button>' +
 '</div>' +
-'<span class="pos-cart-item-total" style="font-size:'+totalSize+';font-weight:700;min-width:80px;text-align:right;flex-shrink:0;">'+(it.prixUnitaire*it.quantite).toFixed(2)+' MAD</span>' +
+'<span class="pos-cart-item-total" style="font-size:'+totalSize+';font-weight:700;min-width:50px;text-align:right;flex-shrink:0;">'+(it.prixUnitaire*it.quantite).toFixed(2)+' MAD</span>' +
 '</div>';
 }
 }
@@ -1184,24 +1186,24 @@ h+='<div class="pos-cart-header" style="display:flex;justify-content:space-betwe
 if(posCart.length===0){ h+='<div class="pos-cart-empty" style="text-align:center;padding:15px 8px;color:#94a3b8;"><i class="fas fa-shopping-basket" style="font-size:'+(isMobile?'22px':'28px')+';"></i><p style="font-size:'+(isMobile?'12px':'0.8rem')+';">Panier vide</p></div>'; }
 else{
 for(var k=0;k<posCart.length;k++){
-var it=posCart[k],opts='';
+var it=posCart[k], opts='';
 if(it.interdits&&it.interdits.length) opts+=' <span style="color:#ef4444;font-size:0.4rem;">🚫'+escapeHtml(it.interdits.join(','))+'</span>';
 if(it.epice&&it.epice!=='Normal') opts+=' <span style="color:#d97706;font-size:0.4rem;">🌶️'+escapeHtml(it.epice)+'</span>';
 if(it.sel&&it.sel!=='Normal') opts+=' <span style="color:#4f46e5;font-size:0.4rem;">🧂'+escapeHtml(it.sel)+'</span>';
-var btnSize = isMobile ? '28px' : '20px';
-var fontSize = isMobile ? '0.8rem' : '0.5rem';
-var qtySize = isMobile ? '0.9rem' : '0.65rem';
-var nameSize = isMobile ? '14px' : '0.65rem';
+var btnSize = isMobile ? '28px' : '22px';
+var fontSize = isMobile ? '0.6rem' : '0.5rem';
+var qtySize = isMobile ? '0.8rem' : '0.65rem';
+var nameSize = isMobile ? '13px' : '0.7rem';
 var priceSize = isMobile ? '0.5rem' : '0.5rem';
-var totalSize = isMobile ? '16px' : '0.6rem';
-h+='<div class="pos-cart-item" style="display:flex;align-items:center;justify-content:space-between;padding:4px 2px;border-bottom:1px solid var(--border);gap:3px;">' +
-'<div class="pos-cart-item-info" style="flex:1;min-width:0;">' +
-'<span class="pos-cart-item-name" style="font-size:'+nameSize+';font-weight:600;display:block;margin-right:4px;word-break:break-word;">'+escapeHtml(it.nom)+opts+'</span>' +
+var totalSize = isMobile ? '14px' : '0.65rem';
+h+='<div class="pos-cart-item" style="display:flex;align-items:center;justify-content:space-between;padding:4px 2px;border-bottom:1px solid var(--border);gap:4px;">' +
+'<div class="pos-cart-item-info" style="flex:1;min-width:0;display:flex;flex-direction:column;">' +
+'<span class="pos-cart-item-name" style="font-size:'+nameSize+';font-weight:600;display:block;word-break:break-word;white-space:normal;line-height:1.3;">'+escapeHtml(it.nom)+opts+'</span>' +
 '<span class="pos-cart-item-price" style="font-size:'+priceSize+';color:var(--text-secondary);">'+it.prixUnitaire.toFixed(2)+' MAD</span>' +
 '</div>' +
 '<div class="pos-cart-item-actions" style="display:flex;align-items:center;gap:3px;flex-shrink:0;">' +
 '<button class="pos-qty-btn" onclick="posUpdateQty('+k+',-1)" style="width:'+btnSize+';height:'+btnSize+';border-radius:50%;border:2px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:'+fontSize+';transition:all 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.05);"><i class="fas fa-minus"></i></button>' +
-'<span class="pos-qty-value" style="font-size:'+qtySize+';font-weight:700;min-width:22px;text-align:center;">'+it.quantite+'</span>' +
+'<span class="pos-qty-value" style="font-size:'+qtySize+';font-weight:700;min-width:20px;text-align:center;">'+it.quantite+'</span>' +
 '<button class="pos-qty-btn" onclick="posUpdateQty('+k+',1)" style="width:'+btnSize+';height:'+btnSize+';border-radius:50%;border:2px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:'+fontSize+';transition:all 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.05);"><i class="fas fa-plus"></i></button>' +
 '<button class="pos-remove-btn" onclick="posRemoveItem('+k+')" style="background:none;border:none;color:#ef4444;cursor:pointer;padding:2px;font-size:0.8rem;transition:all 0.2s;"><i class="fas fa-times"></i></button>' +
 '</div>' +
