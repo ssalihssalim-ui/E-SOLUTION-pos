@@ -1329,12 +1329,13 @@ font-size: 8px !important;
 font-size: 20px !important;
 }
 
+/* ✅ POS-ROW - HAUTEUR RÉDUITE DE 100px */
 .pos-row {
 display: flex !important;
 flex-direction: row !important;
 gap: 4px !important;
 width: 100% !important;
-height: auto !important;
+height: calc(100vh - 160px) !important;
 margin-top: 0 !important;
 padding-top: 0 !important;
 }
@@ -1345,9 +1346,9 @@ width: 70% !important;
 min-width: 0 !important;
 max-width: 70% !important;
 flex: 0 0 70% !important;
-height: calc(100vh - 60px) !important;
+height: calc(100vh - 160px) !important;
 min-height: 300px !important;
-max-height: calc(100vh - 60px) !important;
+max-height: calc(100vh - 160px) !important;
 padding: 4px !important;
 margin-top: 0 !important;
 }
@@ -1362,8 +1363,8 @@ min-width: 30% !important;
 max-width: 30% !important;
 flex: 0 0 30% !important;
 height: auto !important;
-max-height: calc(100vh - 60px) !important;
-min-height: 500px !important;
+max-height: calc(100vh - 160px) !important;
+min-height: 400px !important;
 padding: 4px !important;
 padding-top: 4px !important;
 margin-top: 0 !important;
@@ -1394,6 +1395,14 @@ padding: 4px 10px !important;
 
 /* ✅ DYNAMIC CONTENT - HAUTEUR RÉDUITE DE 100px */
 #dynamicContent {
+height: calc(100vh - 100px) !important;
+max-height: calc(100vh - 100px) !important;
+}
+
+/* ✅ MAIN CONTENT - HAUTEUR RÉDUITE DE 100px */
+.main-content {
+padding: 12px !important;
+padding-top: 60px !important;
 height: calc(100vh - 100px) !important;
 max-height: calc(100vh - 100px) !important;
 }
