@@ -511,10 +511,13 @@ grid.innerHTML = html;
 updateClearButtonVisibility();
 }
 
-// ==================== AFFICHER LES CATÉGORIES ====================
+// ==================== AFFICHER LES CATÉGORIES - VERSION CORRIGÉE AVEC NOUVELLES TAILLES ====================
 function afficherCategories(grid) {
 var isMobile = window.innerWidth < 700;
-var gridCols = isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fill, minmax(130px, 1fr))';
+var isTablette = window.innerWidth >= 700 && window.innerWidth <= 1024;
+var isPC = window.innerWidth > 1024;
+
+var gridCols = isMobile ? 'repeat(4, 1fr)' : (isTablette ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)');
 grid.style.gridTemplateColumns = gridCols;
 grid.style.overflowX = 'hidden';
 grid.style.overflowY = 'auto';
@@ -540,24 +543,44 @@ if (ordreA !== ordreB) return ordreA - ordreB;
 return (a.nom || '').localeCompare(b.nom || '');
 });
 
+// ✅ TAILLES DES IMAGES SELON L'ÉCRAN
+var imgSize, cardMinHeight, cardMaxHeight, folderSize, nameSize, countSize;
+
+if (isPC) {
+imgSize = '200px';
+cardMinHeight = '210px';
+cardMaxHeight = '250px';
+folderSize = '85px';
+nameSize = '20px';
+countSize = '16px';
+} else if (isTablette) {
+imgSize = '250px';
+cardMinHeight = '150px';
+cardMaxHeight = '180px';
+folderSize = '90px';
+nameSize = '16px';
+countSize = '13px';
+} else {
+imgSize = '100px';
+cardMinHeight = '120px';
+cardMaxHeight = '150px';
+folderSize = '48px';
+nameSize = '12px';
+countSize = '10px';
+}
+
+// ✅ TRÈS PETIT MOBILE
+if (window.innerWidth < 400) {
+imgSize = '80px';
+cardMinHeight = '100px';
+cardMaxHeight = '120px';
+folderSize = '38px';
+nameSize = '10px';
+countSize = '8px';
+}
+
 for (var i = 0; i < sortedCategories.length; i++) {
 var cat = sortedCategories[i];
-var cardStyle = isMobile ?
-'padding:8px 4px;min-height:80px;border-radius:8px;border-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;' :
-'padding:12px 8px;min-height:120px;border-radius:12px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;aspect-ratio:1/1;';
-
-var imgStyle = isMobile ?
-'height:50px;width:50px;border-radius:50%;margin-bottom:4px;overflow:hidden;flex-shrink:0;' :
-'height:70px;width:70px;border-radius:50%;margin-bottom:6px;overflow:hidden;flex-shrink:0;';
-
-var nameStyle = isMobile ?
-'font-size:11px !important;font-weight:600 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--text-primary);' :
-'font-size:0.85rem !important;font-weight:600 !important;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--text-primary);';
-
-var countStyle = isMobile ?
-'font-size:8px !important;color:var(--text-muted);' :
-'font-size:0.7rem !important;color:var(--text-muted);';
-
 var count = posProductsList.filter(function(p) {
 if (p.categories && p.categories.length > 0) {
 return p.categories.includes(cat.nom);
@@ -569,13 +592,29 @@ var imgContent = '';
 if (cat.imageBase64) {
 imgContent = '<img src="' + escapeHtml(cat.imageBase64) + '" loading="lazy" alt="' + escapeHtml(cat.nom) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">';
 } else {
-imgContent = '<i class="fas fa-folder" style="font-size:' + (isMobile ? '24px' : '36px') + ';color:var(--accent);"></i>';
+imgContent = '<i class="fas fa-folder" style="font-size:' + folderSize + ';color:var(--accent);"></i>';
 }
 
-html += '<div class="pos-category-card" style="' + cardStyle + 'background:var(--bg-page);border:2px solid var(--border);cursor:pointer;transition:var(--transition);" onclick="selectionnerCategorie(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')">' +
-'<div style="' + imgStyle + 'display:flex;align-items:center;justify-content:center;background:var(--gray-100);">' + imgContent + '</div>' +
-'<span style="' + nameStyle + '">' + escapeHtml(cat.nom) + '</span>' +
-'<span style="' + countStyle + '">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>' +
+// ✅ STYLE DES CARTES - SANS BORDURE PAR DÉFAUT, BORDURE VERTE AU CLIC
+var cardStyle = 'min-height:' + cardMinHeight + ';max-height:' + cardMaxHeight + ';' +
+'padding:8px 4px;border-radius:10px;' +
+'border:2px solid transparent;' +
+'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
+'width:100%;background:var(--bg-page);cursor:pointer;' +
+'transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);gap:4px;';
+
+var imgStyle = 'width:' + imgSize + ';height:' + imgSize + ';' +
+'border-radius:50%;overflow:hidden;flex-shrink:0;' +
+'background:var(--gray-100);display:flex;align-items:center;justify-content:center;' +
+'margin-bottom:4px;border:3px solid var(--gray-200);';
+
+html += '<div class="pos-category-card" style="' + cardStyle + '" ' +
+'onclick="selectionnerCategorie(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')"' +
+'onmouseover="this.style.borderColor=\'var(--accent)\';this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'var(--shadow-md)\';"' +
+'onmouseout="if(!this.classList.contains(\'active\')){this.style.borderColor=\'transparent\';this.style.transform=\'translateY(0)\';this.style.boxShadow=\'none\';}">' +
+'<div style="' + imgStyle + '">' + imgContent + '</div>' +
+'<span style="font-size:' + nameSize + ';font-weight:700;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--text-primary);margin-top:2px;line-height:1.2;">' + escapeHtml(cat.nom) + '</span>' +
+'<span style="font-size:' + countSize + ';color:var(--text-muted);font-weight:500;display:block;margin-top:0px;">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>' +
 '</div>';
 }
 }
@@ -583,8 +622,27 @@ html += '<div class="pos-category-card" style="' + cardStyle + 'background:var(-
 grid.innerHTML = html;
 }
 
-// ==================== SÉLECTIONNER UNE CATÉGORIE ====================
+// ==================== SÉLECTIONNER UNE CATÉGORIE - AVEC BORDURE VERTE ====================
 function selectionnerCategorie(catName) {
+// Supprimer la classe active de toutes les catégories
+document.querySelectorAll('.pos-category-card').forEach(function(card) {
+card.classList.remove('active');
+card.style.borderColor = 'transparent';
+card.style.transform = 'translateY(0)';
+card.style.boxShadow = 'none';
+});
+
+// Ajouter la classe active à la catégorie sélectionnée
+document.querySelectorAll('.pos-category-card').forEach(function(card) {
+var nameSpan = card.querySelector('span:first-of-type');
+if (nameSpan && nameSpan.textContent.trim() === catName) {
+card.classList.add('active');
+card.style.borderColor = '#14B8A6';
+card.style.transform = 'translateY(-2px)';
+card.style.boxShadow = '0 4px 12px rgba(20,184,166,0.25)';
+}
+});
+
 posSelectedCategoryForView = catName;
 posViewMode = 'products';
 posProductOffset = 0;
@@ -612,6 +670,14 @@ filterProductGrid();
 
 // ==================== RETOURNER AUX CATÉGORIES ====================
 function retournerCategories() {
+// Supprimer la classe active de toutes les catégories
+document.querySelectorAll('.pos-category-card').forEach(function(card) {
+card.classList.remove('active');
+card.style.borderColor = 'transparent';
+card.style.transform = 'translateY(0)';
+card.style.boxShadow = 'none';
+});
+
 posViewMode = 'categories';
 posSelectedCategoryForView = null;
 posSelectedCategory = 'all';
