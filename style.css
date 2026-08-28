@@ -1301,7 +1301,7 @@ min-height: 350px !important;
 max-height: 450px !important;
 }
 
-/* ✅ POS-STEPS-NAV - PADDING ET MARGIN RÉDUITS */
+/* ✅ POS-STEPS-NAV - PADDING ET MARGIN RÉDUITS ET FONT-SIZE 20px */
 .pos-steps-nav {
 position: sticky !important;
 top: 0 !important;
@@ -1316,7 +1316,7 @@ border-bottom: 1px solid var(--border) !important;
 border-radius: 0 !important;
 }
 .pos-step {
-font-size: 9px !important;
+font-size: 20px !important;
 padding: 0px 3px !important;
 gap: 1px !important;
 }
@@ -1326,7 +1326,7 @@ height: 14px !important;
 font-size: 8px !important;
 }
 .pos-step span:last-child {
-font-size: 8px !important;
+font-size: 20px !important;
 }
 
 .pos-row {
