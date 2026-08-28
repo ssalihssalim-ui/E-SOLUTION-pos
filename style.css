@@ -611,7 +611,7 @@ width: 100% !important;
 height: auto !important;
 }
 
-/* ✅ PRODUITS */
+/* ✅ PRODUITS - HAUTEUR AUGMENTÉE */
 .pos-products-panel {
 width: 100% !important;
 min-width: 0 !important;
@@ -623,14 +623,14 @@ box-shadow: var(--shadow-xs) !important;
 border: 1px solid var(--border) !important;
 display: flex !important;
 flex-direction: column !important;
-height: 70vh !important;
-min-height: 350px !important;
-max-height: 75vh !important;
+height: 75vh !important;
+min-height: 400px !important;
+max-height: 80vh !important;
 flex: none !important;
 transition: background 0.3s ease, border-color 0.3s ease;
 }
 
-/* ✅ PANIER */
+/* ✅ PANIER - MÊME HAUTEUR QUE PRODUITS */
 .pos-cart-panel {
 position: static !important;
 width: 100% !important;
@@ -647,8 +647,8 @@ display: flex !important;
 flex-direction: column !important;
 overflow: hidden !important;
 margin-top: 4px !important;
-max-height: 60vh !important;
-min-height: 180px !important;
+max-height: 75vh !important;
+min-height: 400px !important;
 transition: background 0.3s ease, border-color 0.3s ease;
 }
 
@@ -1133,15 +1133,17 @@ min-height: 22px !important;
 max-height: 28px !important;
 }
 
+/* ✅ PRODUITS PANEL - HAUTEUR AUGMENTÉE SUR PC */
 .pos-products-panel {
-height: 70vh !important;
+height: 75vh !important;
 min-height: 450px !important;
-max-height: 75vh !important;
+max-height: 80vh !important;
 }
 
+/* ✅ PANIER - MÊME HAUTEUR QUE PRODUITS SUR PC */
 .pos-cart-panel {
-max-height: 55vh !important;
-min-height: 200px !important;
+max-height: 80vh !important;
+min-height: 450px !important;
 }
 
 .pos-products-grid {
@@ -1263,9 +1265,9 @@ max-height: 400px !important;
         min-width: 0 !important;
         max-width: 70% !important;
         flex: 0 0 70% !important;
-        height: 70vh !important;
-        min-height: 350px !important;
-        max-height: 75vh !important;
+        height: 75vh !important;
+        min-height: 400px !important;
+        max-height: 80vh !important;
         padding: 8px !important;
     }
 
@@ -1279,8 +1281,8 @@ max-height: 400px !important;
         max-width: 30% !important;
         flex: 0 0 30% !important;
         height: auto !important;
-        max-height: 70vh !important;
-        min-height: 350px !important;
+        max-height: 80vh !important;
+        min-height: 400px !important;
         padding: 8px !important;
         padding-top: 8px !important;
         margin-top: 0 !important;
@@ -1328,6 +1330,19 @@ max-height: 400px !important;
     /* ✅ CARTE CATÉGORIE SÉLECTIONNÉE - BORDURE VERTE */
     .pos-category-card.active {
         border-color: var(--accent) !important;
+    }
+
+    /* ✅ PRODUITS PANEL - HAUTEUR AUGMENTÉE SUR TABLETTE */
+    .pos-products-panel {
+        height: 75vh !important;
+        min-height: 400px !important;
+        max-height: 80vh !important;
+    }
+
+    /* ✅ PANIER - MÊME HAUTEUR SUR TABLETTE */
+    .pos-cart-panel {
+        max-height: 80vh !important;
+        min-height: 400px !important;
     }
 }
 
@@ -1392,15 +1407,17 @@ min-height: 20px !important;
 max-height: 24px !important;
 }
 
+/* ✅ PRODUITS PANEL - HAUTEUR AUGMENTÉE SUR MOBILE */
 .pos-products-panel {
-height: 60vh !important;
-min-height: 250px !important;
-max-height: 65vh !important;
+height: 65vh !important;
+min-height: 300px !important;
+max-height: 70vh !important;
 }
 
+/* ✅ PANIER - MÊME HAUTEUR SUR MOBILE */
 .pos-cart-panel {
-max-height: 50vh !important;
-min-height: 130px !important;
+max-height: 70vh !important;
+min-height: 300px !important;
 }
 
 .pos-products-grid {
