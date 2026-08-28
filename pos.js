@@ -163,55 +163,69 @@ btn.style.display = visible ? 'block' : 'none';
 
 // ==================== TOGGLE OUTILS POS - CORRIGÉ ====================
 function posToggleTools() {
-posToolsVisible = !posToolsVisible;
-var toolsContainer = document.getElementById('posToolsContainer');
-var toggleBtn = document.getElementById('posToggleToolsBtn');
+    posToolsVisible = !posToolsVisible;
+    var toolsContainer = document.getElementById('posToolsContainer');
+    var toggleBtn = document.getElementById('posToggleToolsBtn');
 
-console.log('🔍 Toggle outils POS - État:', posToolsVisible);
+    console.log('🔍 Toggle outils POS - État:', posToolsVisible);
 
-if (toolsContainer) {
-if (posToolsVisible) {
-toolsContainer.style.display = 'flex';
-toolsContainer.style.flexDirection = 'column';
-toolsContainer.style.gap = '4px';
-toolsContainer.style.marginBottom = '4px';
-toolsContainer.style.padding = '5px 8px';
-toolsContainer.style.background = 'var(--bg-page)';
-toolsContainer.style.borderRadius = '6px';
-toolsContainer.style.border = '1px solid var(--border)';
-// Forcer l'affichage de tous les éléments enfants
-var children = toolsContainer.querySelectorAll('*');
-children.forEach(function(child) {
-child.style.display = '';
-});
-} else {
-toolsContainer.style.display = 'none';
-}
-}
+    if (toolsContainer) {
+        if (posToolsVisible) {
+            toolsContainer.style.display = 'flex';
+            toolsContainer.style.flexDirection = 'column';
+            toolsContainer.style.gap = '4px';
+            toolsContainer.style.marginBottom = '4px';
+            toolsContainer.style.padding = '5px 8px';
+            toolsContainer.style.background = 'var(--bg-page)';
+            toolsContainer.style.borderRadius = '6px';
+            toolsContainer.style.border = '1px solid var(--border)';
+            // Forcer l'affichage de tous les éléments enfants
+            var children = toolsContainer.querySelectorAll('*');
+            children.forEach(function(child) {
+                child.style.display = '';
+            });
+        } else {
+            toolsContainer.style.display = 'none';
+        }
+    }
 
-if (toggleBtn) {
-toggleBtn.innerHTML = posToolsVisible ? '✕ Masquer tout' : '🔍 Afficher tout';
-toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
-}
+    if (toggleBtn) {
+        toggleBtn.innerHTML = posToolsVisible ? '✕ Masquer tout' : '🔍 Afficher tout';
+        toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
+    }
 
-// Vérifier que la barre de recherche est visible
-var searchInput = document.getElementById('posSearchInput');
-if (searchInput && posToolsVisible) {
-searchInput.style.display = '';
-setTimeout(function() { searchInput.focus(); }, 100);
-}
+    // ✅ Barre de recherche
+    var searchInput = document.getElementById('posSearchInput');
+    if (searchInput) {
+        searchInput.style.display = posToolsVisible ? '' : 'none';
+        if (posToolsVisible) {
+            setTimeout(function() { searchInput.focus(); }, 100);
+        }
+    }
 
-// Vérifier que les boutons sont visibles
-var micBtn = document.getElementById('posMicBtn');
-if (micBtn && posToolsVisible) {
-micBtn.style.display = '';
-}
+    // ✅ Bouton micro
+    var micBtn = document.getElementById('posMicBtn');
+    if (micBtn) {
+        micBtn.style.display = posToolsVisible ? '' : 'none';
+    }
 
-// Vérifier que la barre de catégories est visible
-var categoriesBar = document.querySelector('.pos-categories-bar');
-if (categoriesBar && posToolsVisible) {
-categoriesBar.style.display = '';
-}
+    // ✅ Bouton Tables
+    var tablesBtn = document.querySelector('button[onclick*="posAfficherCommandesTables"]');
+    if (tablesBtn) {
+        tablesBtn.style.display = posToolsVisible ? '' : 'none';
+    }
+
+    // ✅ Bouton En ligne
+    var enligneBtn = document.querySelector('button[onclick*="navigateTo(\'commandes\')"]');
+    if (enligneBtn) {
+        enligneBtn.style.display = posToolsVisible ? '' : 'none';
+    }
+
+    // ✅ Barre des catégories
+    var categoriesBar = document.querySelector('.pos-categories-bar');
+    if (categoriesBar) {
+        categoriesBar.style.display = posToolsVisible ? '' : 'none';
+    }
 }
 
 // ==================== APPLIQUER LE SCROLL SUR DYNAMICCONTENT ====================
