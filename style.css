@@ -1338,20 +1338,20 @@ margin-top: 0 !important;
 padding-top: 0 !important;
 }
 
-/* ✅ PRODUITS PANEL - 100vh SUR TABLETTE AVEC PADDING RÉDUIT */
+/* ✅ PRODUITS PANEL - HAUTEUR RÉDUITE POUR ÉVITER LE SCROLL */
 .pos-products-panel {
 width: 70% !important;
 min-width: 0 !important;
 max-width: 70% !important;
 flex: 0 0 70% !important;
-height: 100vh !important;
-min-height: 400px !important;
-max-height: 100vh !important;
+height: calc(100vh - 60px) !important;
+min-height: 300px !important;
+max-height: calc(100vh - 60px) !important;
 padding: 4px !important;
 margin-top: 0 !important;
 }
 
-/* ✅ PANIER - 100vh SUR TABLETTE AVEC PADDING RÉDUIT */
+/* ✅ PANIER - HAUTEUR RÉDUITE POUR ÉVITER LE SCROLL */
 .pos-cart-panel {
 position: sticky !important;
 top: 0 !important;
@@ -1361,8 +1361,8 @@ min-width: 30% !important;
 max-width: 30% !important;
 flex: 0 0 30% !important;
 height: auto !important;
-max-height: 100vh !important;
-min-height: 400px !important;
+max-height: calc(100vh - 60px) !important;
+min-height: 300px !important;
 padding: 4px !important;
 padding-top: 4px !important;
 margin-top: 0 !important;
