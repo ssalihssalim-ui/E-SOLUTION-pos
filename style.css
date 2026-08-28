@@ -1340,10 +1340,10 @@ padding-top: 0 !important;
 
 /* ✅ PRODUITS PANEL - HAUTEUR RÉDUITE POUR ÉVITER LE SCROLL */
 .pos-products-panel {
-width: 70% !important;
+width: 65% !important;
 min-width: 0 !important;
-max-width: 70% !important;
-flex: 0 0 70% !important;
+max-width: 65% !important;
+flex: 0 0 65% !important;
 height: calc(100vh - 60px) !important;
 min-height: 300px !important;
 max-height: calc(100vh - 60px) !important;
@@ -1351,20 +1351,20 @@ padding: 4px !important;
 margin-top: 0 !important;
 }
 
-/* ✅ PANIER - HAUTEUR RÉDUITE POUR ÉVITER LE SCROLL - min-height 450px */
+/* ✅ PANIER - HAUTEUR AUGMENTÉE */
 .pos-cart-panel {
 position: sticky !important;
 top: 0 !important;
 right: 0 !important;
-width: 30% !important;
-min-width: 30% !important;
-max-width: 30% !important;
-flex: 0 0 30% !important;
+width: 35% !important;
+min-width: 35% !important;
+max-width: 35% !important;
+flex: 0 0 35% !important;
 height: auto !important;
 max-height: calc(100vh - 60px) !important;
 min-height: 450px !important;
-padding: 4px !important;
-padding-top: 4px !important;
+padding: 6px !important;
+padding-top: 6px !important;
 margin-top: 0 !important;
 align-self: flex-start !important;
 }
