@@ -1192,8 +1192,8 @@ max-height: 400px !important;
         justify-content: center !important;
     }
     .pos-product-img img {
-        width: 70% !important;
-        height: 70% !important;
+        width: 90% !important;
+        height: 90% !important;
         object-fit: contain !important;
         border-radius: 4px !important;
     }
