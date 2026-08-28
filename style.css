@@ -1187,11 +1187,15 @@ max-height: 400px !important;
         width: 85% !important;
         border-radius: 6px !important;
         border: 2px solid var(--gray-200) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
     .pos-product-img img {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
+        width: 70% !important;
+        height: 70% !important;
+        object-fit: contain !important;
+        border-radius: 4px !important;
     }
     .pos-product-name {
         font-size: 11px !important;
