@@ -1391,6 +1391,12 @@ padding: 4px 8px !important;
 font-size: 11px !important;
 padding: 4px 10px !important;
 }
+
+/* ✅ DYNAMIC CONTENT - HAUTEUR RÉDUITE DE 100px */
+#dynamicContent {
+height: calc(100vh - 100px) !important;
+max-height: calc(100vh - 100px) !important;
+}
 }
 
 /* ✅ SUR TABLETTE (1024px - 1200px) - IMAGES CATÉGORIES AGRANDIES */
