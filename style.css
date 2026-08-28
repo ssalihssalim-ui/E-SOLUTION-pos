@@ -1187,7 +1187,7 @@ gap: 4px !important;
 }
 
 .header-title i {
-font-size: 0.9rem !important;
+font-size: 0.8rem !important;
 padding: 3px !important;
 }
 
@@ -1308,17 +1308,17 @@ border-bottom: 1px solid var(--border) !important;
 border-radius: 0 !important;
 }
 .pos-step {
-font-size: 9px !important;
+font-size: 12px !important;
 padding: 0px 3px !important;
 gap: 1px !important;
 }
 .step-number {
 width: 14px !important;
 height: 14px !important;
-font-size: 8px !important;
+font-size: 11px !important;
 }
 .pos-step span:last-child {
-font-size: 8px !important;
+font-size: 13px !important;
 }
 
 .pos-row {
