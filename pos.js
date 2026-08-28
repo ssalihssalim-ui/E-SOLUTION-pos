@@ -547,14 +547,14 @@ return (a.nom || '').localeCompare(b.nom || '');
 var imgSize, cardMinHeight, cardMaxHeight, folderSize, nameSize, countSize;
 
 if (isPC) {
-imgSize = '150px';
+imgSize = '140px';
 cardMinHeight = '160px';
 cardMaxHeight = '200px';
 folderSize = '65px';
 nameSize = '16px';
 countSize = '12px';
 } else if (isTablette) {
-imgSize = '140px';
+imgSize = '130px';
 cardMinHeight = '150px';
 cardMaxHeight = '180px';
 folderSize = '60px';
