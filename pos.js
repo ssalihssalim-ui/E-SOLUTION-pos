@@ -511,7 +511,7 @@ grid.innerHTML = html;
 updateClearButtonVisibility();
 }
 
-// ==================== AFFICHER LES CATÉGORIES - VERSION AVEC TAILLES RÉDUITES ====================
+// ==================== AFFICHER LES CATÉGORIES - VERSION CORRIGÉE ====================
 function afficherCategories(grid) {
 var isMobile = window.innerWidth < 700;
 var isTablette = window.innerWidth >= 700 && window.innerWidth <= 1024;
@@ -543,39 +543,39 @@ if (ordreA !== ordreB) return ordreA - ordreB;
 return (a.nom || '').localeCompare(b.nom || '');
 });
 
-// ✅ TAILLES DES IMAGES SELON L'ÉCRAN - VERSION RÉDUITE
+// ✅ TAILLES DES IMAGES - VERSION RÉDUITE
 var imgSize, cardMinHeight, cardMaxHeight, folderSize, nameSize, countSize;
 
 if (isPC) {
-imgSize = '170px';
-cardMinHeight = '180px';
-cardMaxHeight = '220px';
-folderSize = '72px';
-nameSize = '18px';
-countSize = '14px';
-} else if (isTablette) {
-imgSize = '160px';
-cardMinHeight = '170px';
+imgSize = '150px';
+cardMinHeight = '160px';
 cardMaxHeight = '200px';
-folderSize = '68px';
-nameSize = '14px';
-countSize = '11px';
+folderSize = '65px';
+nameSize = '16px';
+countSize = '12px';
+} else if (isTablette) {
+imgSize = '140px';
+cardMinHeight = '150px';
+cardMaxHeight = '180px';
+folderSize = '60px';
+nameSize = '13px';
+countSize = '10px';
 } else {
-imgSize = '80px';
-cardMinHeight = '110px';
-cardMaxHeight = '140px';
-folderSize = '40px';
-nameSize = '11px';
-countSize = '9px';
+imgSize = '70px';
+cardMinHeight = '100px';
+cardMaxHeight = '130px';
+folderSize = '35px';
+nameSize = '10px';
+countSize = '8px';
 }
 
 // ✅ TRÈS PETIT MOBILE
 if (window.innerWidth < 400) {
-imgSize = '65px';
-cardMinHeight = '90px';
-cardMaxHeight = '110px';
-folderSize = '32px';
-nameSize = '9px';
+imgSize = '55px';
+cardMinHeight = '80px';
+cardMaxHeight = '100px';
+folderSize = '28px';
+nameSize = '8px';
 countSize = '7px';
 }
 
@@ -595,26 +595,34 @@ imgContent = '<img src="' + escapeHtml(cat.imageBase64) + '" loading="lazy" alt=
 imgContent = '<i class="fas fa-folder" style="font-size:' + folderSize + ';color:var(--accent);"></i>';
 }
 
-// ✅ STYLE DES CARTES - SANS BORDURE PAR DÉFAUT, BORDURE VERTE AU CLIC
+// ✅ STYLE DES CARTES - SANS BORDURE PAR DÉFAUT
 var cardStyle = 'min-height:' + cardMinHeight + ';max-height:' + cardMaxHeight + ';' +
 'padding:8px 4px;border-radius:10px;' +
 'border:2px solid transparent;' +
 'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
 'width:100%;background:var(--bg-page);cursor:pointer;' +
-'transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);gap:4px;';
+'transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);gap:2px;';
 
 var imgStyle = 'width:' + imgSize + ';height:' + imgSize + ';' +
 'border-radius:50%;overflow:hidden;flex-shrink:0;' +
 'background:var(--gray-100);display:flex;align-items:center;justify-content:center;' +
-'margin-bottom:4px;border:3px solid var(--gray-200);';
+'margin-bottom:2px;border:2px solid var(--gray-200);';
 
-html += '<div class="pos-category-card" style="' + cardStyle + '" ' +
+// ✅ CATEGORIE NAME - toujours visible
+var nameStyle = 'font-size:' + nameSize + ';font-weight:700;text-align:center;' +
+'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' +
+'max-width:100%;color:var(--text-primary);margin-top:2px;line-height:1.2;display:block;';
+
+var countStyle = 'font-size:' + countSize + ';color:var(--text-muted);' +
+'font-weight:500;display:block;margin-top:0px;';
+
+html += '<div class="pos-category-card" data-cat-name="' + escapeHtml(cat.nom) + '" style="' + cardStyle + '" ' +
 'onclick="selectionnerCategorie(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')"' +
-'onmouseover="this.style.borderColor=\'var(--accent)\';this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'var(--shadow-md)\';"' +
+'onmouseover="if(!this.classList.contains(\'active\')){this.style.borderColor=\'var(--accent)\';this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'var(--shadow-md)\';}"' +
 'onmouseout="if(!this.classList.contains(\'active\')){this.style.borderColor=\'transparent\';this.style.transform=\'translateY(0)\';this.style.boxShadow=\'none\';}">' +
 '<div style="' + imgStyle + '">' + imgContent + '</div>' +
-'<span style="font-size:' + nameSize + ';font-weight:700;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:var(--text-primary);margin-top:2px;line-height:1.2;">' + escapeHtml(cat.nom) + '</span>' +
-'<span style="font-size:' + countSize + ';color:var(--text-muted);font-weight:500;display:block;margin-top:0px;">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>' +
+'<span style="' + nameStyle + '">' + escapeHtml(cat.nom) + '</span>' +
+'<span style="' + countStyle + '">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>' +
 '</div>';
 }
 }
@@ -635,6 +643,7 @@ card.style.boxShadow = 'none';
 // Ajouter la classe active à la catégorie sélectionnée
 document.querySelectorAll('.pos-category-card').forEach(function(card) {
 var nameSpan = card.querySelector('span:first-of-type');
+var catNameAttr = card.getAttribute('data-cat-name');
 if (nameSpan && nameSpan.textContent.trim() === catName) {
 card.classList.add('active');
 card.style.borderColor = '#14B8A6';
