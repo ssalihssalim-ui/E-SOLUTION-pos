@@ -1166,236 +1166,194 @@ max-height: 400px !important;
 /* ✅ SUR ÉCRAN 9.7" (700px - 1024px) - IPAD 1024x658 */
 @media(min-width: 700px) and (max-width: 1024px) {
 
-    /* --- PRODUITS - CARTES RÉDUITES ET SANS BORDURE --- */
-    .pos-product-card {
-        min-height: 140px !important;
-        max-height: 160px !important;
-        padding: 4px 3px !important;
-        border: none !important;
-        border-radius: 6px !important;
-        background: var(--bg-page) !important;
-        box-shadow: none !important;
-    }
-    .pos-product-card:hover {
-        border: none !important;
-        transform: translateY(-2px) !important;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
-        background: var(--bg-card) !important;
-    }
-    .pos-product-img {
-        height: 105px !important;
-        width: 85% !important;
-        border-radius: 6px !important;
-        border: none !important;
-        background: transparent !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-    .pos-product-img img {
-        width: 95% !important;
-        height: 95% !important;
-        object-fit: contain !important;
-        border-radius: 4px !important;
-    }
-    .pos-product-name {
-        font-size: 11px !important;
-        font-weight: 600 !important;
-    }
-    .pos-product-price {
-        font-size: 13px !important;
-        font-weight: 700 !important;
-    }
-    .pos-promo-price {
-        font-size: 13px !important;
-    }
-    .pos-old-price {
-        font-size: 8px !important;
-    }
+/* --- PRODUITS - CARTES RÉDUITES ET SANS BORDURE --- */
+.pos-product-card {
+min-height: 140px !important;
+max-height: 160px !important;
+padding: 4px 3px !important;
+border: none !important;
+border-radius: 6px !important;
+background: var(--bg-page) !important;
+box-shadow: none !important;
+}
+.pos-product-card:hover {
+border: none !important;
+transform: translateY(-2px) !important;
+box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+background: var(--bg-card) !important;
+}
+.pos-product-img {
+height: 105px !important;
+width: 85% !important;
+border-radius: 6px !important;
+border: none !important;
+background: transparent !important;
+display: flex !important;
+align-items: center !important;
+justify-content: center !important;
+}
+.pos-product-img img {
+width: 95% !important;
+height: 95% !important;
+object-fit: contain !important;
+border-radius: 4px !important;
+}
+.pos-product-name {
+font-size: 11px !important;
+font-weight: 600 !important;
+}
+.pos-product-price {
+font-size: 13px !important;
+font-weight: 700 !important;
+}
+.pos-promo-price {
+font-size: 13px !important;
+}
+.pos-old-price {
+font-size: 8px !important;
+}
 
-    /* ✅ CATÉGORIES IPAD 9.7" - IMAGES TRÈS GRANDES, CARTES RÉDUITES */
-    .pos-category-card {
-        min-height: 150px !important;
-        max-height: 180px !important;
-        padding: 8px 4px !important;
-        border: 2px solid transparent !important;
-        background: transparent !important;
-        box-shadow: none !important;
-    }
-    .pos-category-card .category-image {
-        width: 280px !important;
-        height: 280px !important;
-        border: none !important;
-    }
-    .pos-category-card .fas.fa-folder {
-        font-size: 100px !important;
-    }
-    .pos-category-card .category-name {
-        font-size: 16px !important;
-        margin-top: 4px !important;
-    }
-    .pos-category-card .category-count {
-        font-size: 13px !important;
-    }
-    .pos-category-card:hover {
-        border: 2px solid transparent !important;
-        transform: translateY(-3px) !important;
-        box-shadow: none !important;
-        background: transparent !important;
-    }
-    .pos-category-card.active {
-        border-color: var(--accent) !important;
-        background: transparent !important;
-    }
+/* ✅ CATÉGORIES IPAD 9.7" - IMAGES TRÈS GRANDES, CARTES RÉDUITES */
+.pos-category-card {
+min-height: 150px !important;
+max-height: 180px !important;
+padding: 8px 4px !important;
+border: 2px solid transparent !important;
+background: transparent !important;
+box-shadow: none !important;
+}
+.pos-category-card .category-image {
+width: 280px !important;
+height: 280px !important;
+border: none !important;
+}
+.pos-category-card .fas.fa-folder {
+font-size: 100px !important;
+}
+.pos-category-card .category-name {
+font-size: 16px !important;
+margin-top: 4px !important;
+}
+.pos-category-card .category-count {
+font-size: 13px !important;
+}
+.pos-category-card:hover {
+border: 2px solid transparent !important;
+transform: translateY(-3px) !important;
+box-shadow: none !important;
+background: transparent !important;
+}
+.pos-category-card.active {
+border-color: var(--accent) !important;
+background: transparent !important;
+}
 
-    .pos-products-grid {
-        gap: 6px !important;
-        padding: 4px !important;
-        grid-template-columns: repeat(4, 1fr) !important;
-    }
-    .pos-categories-grid {
-        gap: 8px !important;
-        padding: 6px !important;
-        grid-template-columns: repeat(3, 1fr) !important;
-    }
+.pos-products-grid {
+gap: 6px !important;
+padding: 4px !important;
+grid-template-columns: repeat(4, 1fr) !important;
+}
+.pos-categories-grid {
+gap: 8px !important;
+padding: 6px !important;
+grid-template-columns: repeat(3, 1fr) !important;
+}
 
-    .pos-cart-items {
-        min-height: 300px !important;
-        max-height: 400px !important;
-    }
+.pos-cart-items {
+min-height: 300px !important;
+max-height: 400px !important;
+}
 
-    /* ✅ PAGE HEADER AVEC STEPS NAV INTÉGRÉ */
-    .page-header {
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        margin-top: 0px !important;
-        margin-bottom: 2px !important;
-        padding: 2px 8px !important;
-        min-height: 24px !important;
-        gap: 4px !important;
-        flex-wrap: nowrap !important;
-    }
-    .page-header .header-title {
-        margin-left: 50px !important;
-        display: flex !important;
-        align-items: center !important;
-        gap: 4px !important;
-        flex-shrink: 0 !important;
-    }
-    .page-header .header-title i {
-        font-size: 0.9rem !important;
-        padding: 4px !important;
-    }
-    .page-header .header-title h2 {
-        font-size: 0.9rem !important;
-    }
+/* ✅ POS-STEPS-NAV - PADDING ET MARGIN RÉDUITS */
+.pos-steps-nav {
+position: sticky !important;
+top: 0 !important;
+z-index: 100 !important;
+padding: 0px 4px !important;
+min-height: 16px !important;
+max-height: 20px !important;
+margin-bottom: 2px !important;
+gap: 4px !important;
+background: var(--bg-page) !important;
+border-bottom: 1px solid var(--border) !important;
+border-radius: 0 !important;
+}
+.pos-step {
+font-size: 9px !important;
+padding: 0px 3px !important;
+gap: 1px !important;
+}
+.step-number {
+width: 14px !important;
+height: 14px !important;
+font-size: 8px !important;
+}
+.pos-step span:last-child {
+font-size: 8px !important;
+}
 
-    /* ✅ STEPS NAV INTÉGRÉ DANS PAGE HEADER */
-    .pos-steps-nav {
-        display: flex !important;
-        justify-content: flex-end !important;
-        align-items: center !important;
-        gap: 6px !important;
-        padding: 0px !important;
-        background: transparent !important;
-        border-radius: 0 !important;
-        width: auto !important;
-        flex-shrink: 1 !important;
-        flex-wrap: nowrap !important;
-        min-height: auto !important;
-        max-height: none !important;
-        margin-bottom: 0 !important;
-        position: static !important;
-        top: auto !important;
-        z-index: auto !important;
-        border-bottom: none !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-    .pos-step {
-        font-size: 12px !important;
-        padding: 2px 6px !important;
-        gap: 4px !important;
-        background: transparent !important;
-        border-radius: 4px !important;
-    }
-    .pos-step.active {
-        background: #f0fdf4 !important;
-        border-radius: 4px !important;
-        padding: 2px 6px !important;
-    }
-    .step-number {
-        width: 18px !important;
-        height: 18px !important;
-        font-size: 10px !important;
-    }
-    .pos-step span:last-child {
-        font-size: 11px !important;
-    }
+.pos-row {
+display: flex !important;
+flex-direction: row !important;
+gap: 4px !important;
+width: 100% !important;
+height: auto !important;
+margin-top: 0 !important;
+padding-top: 0 !important;
+}
 
-    .pos-row {
-        display: flex !important;
-        flex-direction: row !important;
-        gap: 4px !important;
-        width: 100% !important;
-        height: auto !important;
-        margin-top: 0 !important;
-        padding-top: 0 !important;
-    }
+/* ✅ PRODUITS PANEL - 100vh SUR TABLETTE AVEC PADDING RÉDUIT */
+.pos-products-panel {
+width: 70% !important;
+min-width: 0 !important;
+max-width: 70% !important;
+flex: 0 0 70% !important;
+height: 100vh !important;
+min-height: 400px !important;
+max-height: 100vh !important;
+padding: 4px !important;
+margin-top: 0 !important;
+}
 
-    /* ✅ PRODUITS PANEL - 100vh SUR TABLETTE AVEC PADDING RÉDUIT */
-    .pos-products-panel {
-        width: 70% !important;
-        min-width: 0 !important;
-        max-width: 70% !important;
-        flex: 0 0 70% !important;
-        height: 100vh !important;
-        min-height: 400px !important;
-        max-height: 100vh !important;
-        padding: 4px !important;
-        margin-top: 0 !important;
-    }
+/* ✅ PANIER - 100vh SUR TABLETTE AVEC PADDING RÉDUIT */
+.pos-cart-panel {
+position: sticky !important;
+top: 0 !important;
+right: 0 !important;
+width: 30% !important;
+min-width: 30% !important;
+max-width: 30% !important;
+flex: 0 0 30% !important;
+height: auto !important;
+max-height: 100vh !important;
+min-height: 400px !important;
+padding: 4px !important;
+padding-top: 4px !important;
+margin-top: 0 !important;
+align-self: flex-start !important;
+}
 
-    /* ✅ PANIER - 100vh SUR TABLETTE AVEC PADDING RÉDUIT */
-    .pos-cart-panel {
-        position: sticky !important;
-        top: 0 !important;
-        right: 0 !important;
-        width: 30% !important;
-        min-width: 30% !important;
-        max-width: 30% !important;
-        flex: 0 0 30% !important;
-        height: auto !important;
-        max-height: 100vh !important;
-        min-height: 400px !important;
-        padding: 4px !important;
-        padding-top: 4px !important;
-        margin-top: 0 !important;
-        align-self: flex-start !important;
-    }
+.pos-search-container {
+height: 34px !important;
+}
+.pos-search-container input {
+font-size: 14px !important;
+height: 30px !important;
+}
+#posMicBtn {
+width: 34px !important;
+height: 34px !important;
+font-size: 14px !important;
+}
 
-    .pos-search-container {
-        height: 34px !important;
-    }
-    .pos-search-container input {
-        font-size: 14px !important;
-        height: 30px !important;
-    }
-    #posMicBtn {
-        width: 34px !important;
-        height: 34px !important;
-        font-size: 14px !important;
-    }
-
-    .pos-tools-buttons button {
-        font-size: 11px !important;
-        padding: 4px 8px !important;
-    }
-    .pos-cat-btn {
-        font-size: 11px !important;
-        padding: 4px 10px !important;
-    }
+.pos-tools-buttons button {
+font-size: 11px !important;
+padding: 4px 8px !important;
+}
+.pos-cat-btn {
+font-size: 11px !important;
+padding: 4px 10px !important;
+}
 }
 
 /* ✅ SUR TABLETTE (1024px - 1200px) - IMAGES CATÉGORIES AGRANDIES */
