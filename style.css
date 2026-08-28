@@ -1264,24 +1264,45 @@ max-height: 400px !important;
         max-height: 400px !important;
     }
 
+    /* ✅ POS-STEPS-NAV - PADDING ET MARGIN RÉDUITS */
     .pos-steps-nav {
         position: sticky !important;
         top: 0 !important;
         z-index: 100 !important;
-        padding: 2px 8px !important;
-        min-height: 22px !important;
-        max-height: 28px !important;
+        padding: 0px 4px !important;
+        min-height: 16px !important;
+        max-height: 20px !important;
+        margin-bottom: 2px !important;
+        gap: 4px !important;
+        background: var(--bg-page) !important;
+        border-bottom: 1px solid var(--border) !important;
+        border-radius: 0 !important;
+    }
+    .pos-step {
+        font-size: 9px !important;
+        padding: 0px 3px !important;
+        gap: 1px !important;
+    }
+    .step-number {
+        width: 14px !important;
+        height: 14px !important;
+        font-size: 8px !important;
+    }
+    .pos-step span:last-child {
+        font-size: 8px !important;
     }
 
     .pos-row {
         display: flex !important;
         flex-direction: row !important;
-        gap: 8px !important;
+        gap: 4px !important;
         width: 100% !important;
         height: auto !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
     }
 
-    /* ✅ PRODUITS PANEL - 100vh SUR TABLETTE */
+    /* ✅ PRODUITS PANEL - 100vh SUR TABLETTE AVEC PADDING RÉDUIT */
     .pos-products-panel {
         width: 70% !important;
         min-width: 0 !important;
@@ -1290,13 +1311,14 @@ max-height: 400px !important;
         height: 100vh !important;
         min-height: 400px !important;
         max-height: 100vh !important;
-        padding: 8px !important;
+        padding: 4px !important;
+        margin-top: 0 !important;
     }
 
-    /* ✅ PANIER - 100vh SUR TABLETTE */
+    /* ✅ PANIER - 100vh SUR TABLETTE AVEC PADDING RÉDUIT */
     .pos-cart-panel {
         position: sticky !important;
-        top: 30px !important;
+        top: 0 !important;
         right: 0 !important;
         width: 30% !important;
         min-width: 30% !important;
@@ -1305,8 +1327,8 @@ max-height: 400px !important;
         height: auto !important;
         max-height: 100vh !important;
         min-height: 400px !important;
-        padding: 8px !important;
-        padding-top: 8px !important;
+        padding: 4px !important;
+        padding-top: 4px !important;
         margin-top: 0 !important;
         align-self: flex-start !important;
     }
