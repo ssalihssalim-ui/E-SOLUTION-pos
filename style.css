@@ -1166,6 +1166,35 @@ max-height: 400px !important;
 /* ✅ SUR ÉCRAN 9.7" (700px - 1024px) - IPAD 1024x658 */
 @media(min-width: 700px) and (max-width: 1024px) {
 
+/* --- PAGE HEADER - HAUTEUR RÉDUITE --- */
+.page-header {
+display: flex !important;
+justify-content: flex-start !important;
+align-items: center !important;
+margin-top: 0px !important;
+margin-bottom: 2px !important;
+padding: 0px 4px !important;
+min-height: 22px !important;
+gap: 4px !important;
+flex-wrap: wrap;
+}
+
+.page-header .header-title {
+margin-left: 50px !important;
+display: flex !important;
+align-items: center !important;
+gap: 4px !important;
+}
+
+.header-title i {
+font-size: 0.9rem !important;
+padding: 3px !important;
+}
+
+.header-title h2 {
+font-size: 0.9rem !important;
+}
+
 /* --- PRODUITS - CARTES RÉDUITES ET SANS BORDURE --- */
 .pos-product-card {
 min-height: 140px !important;
