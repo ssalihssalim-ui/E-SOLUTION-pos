@@ -1187,12 +1187,19 @@ gap: 4px !important;
 }
 
 .header-title i {
-font-size: 0.8rem !important;
+font-size: 0.9rem !important;
 padding: 3px !important;
 }
 
 .header-title h2 {
 font-size: 0.9rem !important;
+}
+
+/* ✅ TEXTE "PANIER" ET "PAIEMENT" - AGRANDI À 16px */
+.pos-cart-header h3,
+.pos-cart-header h3 i,
+.pos-cart-header h3 span {
+font-size: 16px !important;
 }
 
 /* --- PRODUITS - CARTES RÉDUITES ET SANS BORDURE --- */
@@ -1308,17 +1315,17 @@ border-bottom: 1px solid var(--border) !important;
 border-radius: 0 !important;
 }
 .pos-step {
-font-size: 12px !important;
+font-size: 9px !important;
 padding: 0px 3px !important;
 gap: 1px !important;
 }
 .step-number {
 width: 14px !important;
 height: 14px !important;
-font-size: 11px !important;
+font-size: 8px !important;
 }
 .pos-step span:last-child {
-font-size: 13px !important;
+font-size: 8px !important;
 }
 
 .pos-row {
