@@ -1295,9 +1295,10 @@ padding: 6px !important;
 grid-template-columns: repeat(3, 1fr) !important;
 }
 
+/* ✅ POS-CART-ITEMS - HAUTEUR AUGMENTÉE */
 .pos-cart-items {
-min-height: 300px !important;
-max-height: 400px !important;
+min-height: 350px !important;
+max-height: 450px !important;
 }
 
 /* ✅ POS-STEPS-NAV - PADDING ET MARGIN RÉDUITS */
