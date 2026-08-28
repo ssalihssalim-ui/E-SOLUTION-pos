@@ -1186,14 +1186,15 @@ max-height: 400px !important;
         height: 105px !important;
         width: 85% !important;
         border-radius: 6px !important;
-        border: 2px solid var(--gray-200) !important;
+        border: none !important;
+        background: transparent !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
     }
     .pos-product-img img {
-        width: 90% !important;
-        height: 90% !important;
+        width: 95% !important;
+        height: 95% !important;
         object-fit: contain !important;
         border-radius: 4px !important;
     }
