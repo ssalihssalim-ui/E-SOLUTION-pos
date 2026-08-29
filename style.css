@@ -1565,7 +1565,7 @@ font-size: 10px !important;
 }
 
 /* ✅ SUR TRÈS PETIT ÉCRAN (< 400px) - CATÉGORIES ENCORE PLUS RÉDUITES */
-@media(max-width: 500px) {
+@media(max-width: 400px) {
 /* ✅ FORCER LE PANIER EN DESSOUS */
 .pos-row {
 display: flex !important;
