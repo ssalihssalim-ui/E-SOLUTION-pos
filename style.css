@@ -1437,7 +1437,7 @@ min-height: 400px !important;
 }
 }
 
-/* ✅ SUR MOBILE (< 700px) - CATÉGORIES AGRANDIES */
+/* ✅ SUR MOBILE (< 700px) - CATÉGORIES RÉDUITES */
 @media(max-width: 700px) {
 .pos-product-card {
 min-height: 115px !important;
@@ -1459,23 +1459,24 @@ font-size: 12px !important;
 font-size: 12px !important;
 }
 
+/* ✅ CATÉGORIES MOBILE - RÉDUITES */
 .pos-category-card {
-min-height: 120px !important;
-max-height: 150px !important;
-padding: 6px 3px !important;
+min-height: 75px !important;
+max-height: 95px !important;
+padding: 4px 2px !important;
 }
 .pos-category-card .category-image {
-width: 100px !important;
-height: 100px !important;
+width: 50px !important;
+height: 50px !important;
 }
 .pos-category-card .fas.fa-folder {
-font-size: 48px !important;
+font-size: 24px !important;
 }
 .pos-category-card .category-name {
-font-size: 12px !important;
+font-size: 9px !important;
 }
 .pos-category-card .category-count {
-font-size: 10px !important;
+font-size: 8px !important;
 }
 
 .pos-category-card.active {
@@ -1541,7 +1542,7 @@ font-size: 10px !important;
 }
 }
 
-/* ✅ SUR TRÈS PETIT ÉCRAN (< 400px) */
+/* ✅ SUR TRÈS PETIT ÉCRAN (< 400px) - CATÉGORIES ENCORE PLUS RÉDUITES */
 @media(max-width: 400px) {
 .pos-products-grid {
 gap: 3px !important;
@@ -1573,22 +1574,22 @@ padding: 2px !important;
 grid-template-columns: repeat(2, 1fr) !important;
 }
 .pos-category-card {
-min-height: 100px !important;
-max-height: 120px !important;
-padding: 4px 2px !important;
+min-height: 60px !important;
+max-height: 75px !important;
+padding: 3px 2px !important;
 }
 .pos-category-card .category-image {
-width: 80px !important;
-height: 80px !important;
+width: 40px !important;
+height: 40px !important;
 }
 .pos-category-card .fas.fa-folder {
-font-size: 38px !important;
+font-size: 20px !important;
 }
 .pos-category-card .category-name {
-font-size: 10px !important;
+font-size: 8px !important;
 }
 .pos-category-card .category-count {
-font-size: 8px !important;
+font-size: 7px !important;
 }
 
 .pos-category-card.active {
