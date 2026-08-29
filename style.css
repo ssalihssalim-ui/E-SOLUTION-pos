@@ -1499,8 +1499,8 @@ max-height: 95px !important;
 padding: 4px 2px !important;
 }
 .pos-category-card .category-image {
-width: 50px !important;
-height: 50px !important;
+width: 70px !important;
+height: 70px !important;
 }
 .pos-category-card .fas.fa-folder {
 font-size: 24px !important;
@@ -1544,7 +1544,7 @@ grid-template-columns: repeat(3, 1fr) !important;
 
 .pos-cart-items {
 max-height: 200px !important;
-min-height: 60px !important;
+min-height: 80px !important;
 }
 
 .pos-payment-form {
