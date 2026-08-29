@@ -179,7 +179,6 @@ function posToggleTools() {
             toolsContainer.style.background = 'var(--bg-page)';
             toolsContainer.style.borderRadius = '6px';
             toolsContainer.style.border = '1px solid var(--border)';
-            // Forcer l'affichage de tous les éléments enfants
             var children = toolsContainer.querySelectorAll('*');
             children.forEach(function(child) {
                 child.style.display = '';
@@ -194,7 +193,6 @@ function posToggleTools() {
         toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
     }
 
-    // ✅ Barre de recherche
     var searchInput = document.getElementById('posSearchInput');
     if (searchInput) {
         searchInput.style.display = posToolsVisible ? '' : 'none';
@@ -203,25 +201,21 @@ function posToggleTools() {
         }
     }
 
-    // ✅ Bouton micro
     var micBtn = document.getElementById('posMicBtn');
     if (micBtn) {
         micBtn.style.display = posToolsVisible ? '' : 'none';
     }
 
-    // ✅ Bouton Tables
     var tablesBtn = document.querySelector('button[onclick*="posAfficherCommandesTables"]');
     if (tablesBtn) {
         tablesBtn.style.display = posToolsVisible ? '' : 'none';
     }
 
-    // ✅ Bouton En ligne
     var enligneBtn = document.querySelector('button[onclick*="navigateTo(\'commandes\')"]');
     if (enligneBtn) {
         enligneBtn.style.display = posToolsVisible ? '' : 'none';
     }
 
-    // ✅ Barre des catégories
     var categoriesBar = document.querySelector('.pos-categories-bar');
     if (categoriesBar) {
         categoriesBar.style.display = posToolsVisible ? '' : 'none';
@@ -531,7 +525,7 @@ var isMobile = window.innerWidth < 700;
 var isTablette = window.innerWidth >= 700 && window.innerWidth <= 1024;
 var isPC = window.innerWidth > 1024;
 
-var gridCols = isMobile ? 'repeat(4, 1fr)' : (isTablette ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)');
+var gridCols = isMobile ? 'repeat(3, 1fr)' : (isTablette ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)');
 grid.style.gridTemplateColumns = gridCols;
 grid.style.overflowX = 'hidden';
 grid.style.overflowY = 'auto';
@@ -557,7 +551,6 @@ if (ordreA !== ordreB) return ordreA - ordreB;
 return (a.nom || '').localeCompare(b.nom || '');
 });
 
-// ✅ TAILLES DES IMAGES - VERSION RÉDUITE
 var imgSize, cardMinHeight, cardMaxHeight, folderSize, nameSize, countSize;
 
 if (isPC) {
@@ -575,22 +568,21 @@ folderSize = '60px';
 nameSize = '13px';
 countSize = '10px';
 } else {
-imgSize = '70px';
-cardMinHeight = '100px';
-cardMaxHeight = '130px';
-folderSize = '35px';
-nameSize = '10px';
-countSize = '8px';
-}
-
-// ✅ TRÈS PETIT MOBILE
-if (window.innerWidth < 400) {
-imgSize = '55px';
-cardMinHeight = '80px';
-cardMaxHeight = '100px';
-folderSize = '28px';
+imgSize = '45px';
+cardMinHeight = '65px';
+cardMaxHeight = '80px';
+folderSize = '20px';
 nameSize = '8px';
 countSize = '7px';
+}
+
+if (window.innerWidth < 400) {
+imgSize = '35px';
+cardMinHeight = '50px';
+cardMaxHeight = '65px';
+folderSize = '16px';
+nameSize = '7px';
+countSize = '6px';
 }
 
 for (var i = 0; i < sortedCategories.length; i++) {
@@ -609,7 +601,6 @@ imgContent = '<img src="' + escapeHtml(cat.imageBase64) + '" loading="lazy" alt=
 imgContent = '<i class="fas fa-folder" style="font-size:' + folderSize + ';color:var(--accent);"></i>';
 }
 
-// ✅ STYLE DES CARTES - SANS BORDURE PAR DÉFAUT
 var cardStyle = 'min-height:' + cardMinHeight + ';max-height:' + cardMaxHeight + ';' +
 'padding:8px 4px;border-radius:10px;' +
 'border:2px solid transparent;' +
@@ -622,7 +613,6 @@ var imgStyle = 'width:' + imgSize + ';height:' + imgSize + ';' +
 'background:var(--gray-100);display:flex;align-items:center;justify-content:center;' +
 'margin-bottom:2px;border:2px solid var(--gray-200);';
 
-// ✅ CATEGORIE NAME - toujours visible
 var nameStyle = 'font-size:' + nameSize + ';font-weight:700;text-align:center;' +
 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' +
 'max-width:100%;color:var(--text-primary);margin-top:2px;line-height:1.2;display:block;';
@@ -646,7 +636,6 @@ grid.innerHTML = html;
 
 // ==================== SÉLECTIONNER UNE CATÉGORIE - AVEC BORDURE VERTE ====================
 function selectionnerCategorie(catName) {
-// Supprimer la classe active de toutes les catégories
 document.querySelectorAll('.pos-category-card').forEach(function(card) {
 card.classList.remove('active');
 card.style.borderColor = 'transparent';
@@ -654,7 +643,6 @@ card.style.transform = 'translateY(0)';
 card.style.boxShadow = 'none';
 });
 
-// Ajouter la classe active à la catégorie sélectionnée
 document.querySelectorAll('.pos-category-card').forEach(function(card) {
 var nameSpan = card.querySelector('span:first-of-type');
 var catNameAttr = card.getAttribute('data-cat-name');
@@ -693,7 +681,6 @@ filterProductGrid();
 
 // ==================== RETOURNER AUX CATÉGORIES ====================
 function retournerCategories() {
-// Supprimer la classe active de toutes les catégories
 document.querySelectorAll('.pos-category-card').forEach(function(card) {
 card.classList.remove('active');
 card.style.borderColor = 'transparent';
@@ -1132,6 +1119,12 @@ var stepIndicator = '<div class="pos-steps-nav" style="display:flex; justify-con
 
 var productPanelDisplay = (posStep === 2) ? 'display:none;' : '';
 
+// ✅ Mobile : forcer panier en dessous
+var mobileCartStyle = '';
+if (isMobile) {
+    mobileCartStyle = 'width:100% !important;max-height:35vh !important;min-height:150px !important;margin-top:4px !important;flex:1 !important;';
+}
+
 var productsPanelMaxHeight = 'none';
 
 var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(110px, 1fr))';
@@ -1177,13 +1170,13 @@ var ih = ca.imageBase64?'<img src="'+escapeHtml(ca.imageBase64)+'" loading="lazy
 h+='<button class="pos-cat-btn '+ac+'" onclick="posFilterCategory(\''+escapeHtml(ca.nom).replace(/'/g,"\\'")+'\')" style="padding:'+(isMobile?'3px 6px':'4px 10px')+';font-size:'+(isMobile?'9px':'0.65rem')+';gap:'+(isMobile?'2px':'4px')+';border-radius:16px;border:2px solid '+(posSelectedCategory===ca.nom?'#14B8A6':'#e2e8f0')+';background:'+(posSelectedCategory===ca.nom?'#f0fdf4':'#fff')+';cursor:pointer;font-weight:600;transition:all 0.2s;display:flex;align-items:center;">'+ih+' '+escapeHtml(ca.nom)+'</button>';
 }
 h+='</div>';
-h+='</div>'; // Fin tools container
+h+='</div>';
 h+='</div>' +
 
 '<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:hidden;overflow-y:auto;flex-wrap:wrap;align-content:start;flex:1;"></div>' +
 '</div>' +
 
-'<div class="pos-cart-panel" style="width:100%;background:var(--bg-card);border-radius:var(--radius-xl);box-shadow:var(--shadow-xs);border:1px solid var(--border);display:flex;flex-direction:column;margin-top:4px;max-height:35vh;flex:2;min-height:120px;">';
+'<div class="pos-cart-panel" style="' + (isMobile ? mobileCartStyle : 'width:100%;background:var(--bg-card);border-radius:var(--radius-xl);box-shadow:var(--shadow-xs);border:1px solid var(--border);display:flex;flex-direction:column;margin-top:4px;max-height:35vh;flex:2;min-height:120px;') + '">';
 
 if(posStep===1){
 h+='<div class="pos-cart-header" style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;border-bottom:1px solid var(--border);flex-shrink:0;"><h3 style="font-size:'+(isMobile?'18px':'0.9rem')+';cursor:pointer;" onclick="document.querySelector(\'.pos-cart-panel\').scrollIntoView({behavior:\'smooth\',block:\'start\'})"><i class="fas fa-shopping-cart"></i> Panier <span class="pos-cart-badge" style="background:#14B8A6;color:#fff;border-radius:50%;padding:1px 6px;font-size:'+(isMobile?'12px':'0.6rem')+';">'+posCart.length+'</span></h3><button class="pos-clear-btn" onclick="posResetCart()" style="font-size:'+(isMobile?'12px':'0.7rem')+';background:#ef4444;color:#fff;border:none;border-radius:4px;padding:'+(isMobile?'3px 8px':'4px 10px')+';cursor:pointer;"><i class="fas fa-trash-alt"></i> Vider</button></div><div class="pos-cart-items" style="flex:1;overflow-y:auto;padding:4px 8px;min-height:60px;max-height:180px;">';
@@ -1406,7 +1399,6 @@ if(window.posVenteId){ batch.update(db.collection('ventes').doc(window.posVenteI
 for(var i=0;i<posCart.length;i++){ var it=posCart[i]; batch.update(db.collection('products').doc(it.id), {stock:firebase.firestore.FieldValue.increment(-it.quantite), vendues:firebase.firestore.FieldValue.increment(it.quantite), ca:firebase.firestore.FieldValue.increment(it.prixUnitaire*it.quantite)}); }
 await batch.commit();
 
-// ✅ CORRECTION : Utiliser forceUpdateClient avec await
 if(posCurrentClient && posCurrentClient.id && paid) {
 try {
 const success = await forceUpdateClient(posCurrentClient.id, t, profitTotal);
