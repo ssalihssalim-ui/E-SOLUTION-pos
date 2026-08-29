@@ -1515,6 +1515,47 @@ btn.style.display = (input.value && input.value.length > 0) ? 'flex' : 'none';
 
 function goBackToPOS(){ if(window.currentUserData&&(window.currentUserData.userData.role==='caissier'||window.currentUserData.userData.role==='admin')){ if(posCart.length>0&&posStep===1){ if(!confirm('⚠️ '+posCart.length+' article(s) dans le panier. Garder ?')) posResetCart(); } navigateTo('pos'); } }
 
+// ==================== CORRECTION MOBILE PANIER EN BAS ====================
+function corrigerDispositionMobile() {
+    if (window.innerWidth <= 700) {
+        var row = document.querySelector('.pos-row');
+        var produits = document.querySelector('.pos-products-panel');
+        var panier = document.querySelector('.pos-cart-panel');
+        
+        if (row && produits && panier) {
+            row.style.display = 'flex';
+            row.style.flexDirection = 'column';
+            row.style.flexWrap = 'nowrap';
+            
+            produits.style.width = '100%';
+            produits.style.maxWidth = '100%';
+            produits.style.minWidth = '100%';
+            produits.style.height = 'auto';
+            produits.style.minHeight = '300px';
+            produits.style.maxHeight = '60vh';
+            produits.style.flex = '1';
+            
+            panier.style.width = '100%';
+            panier.style.maxWidth = '100%';
+            panier.style.minWidth = '100%';
+            panier.style.height = 'auto';
+            panier.style.minHeight = '150px';
+            panier.style.maxHeight = '35vh';
+            panier.style.marginTop = '4px';
+            panier.style.position = 'static';
+        }
+    }
+}
+
+var ancienBuildFullPOS = window.buildFullPOS;
+window.buildFullPOS = function(c) {
+    ancienBuildFullPOS(c);
+    setTimeout(corrigerDispositionMobile, 100);
+};
+
+window.addEventListener('load', corrigerDispositionMobile);
+window.addEventListener('resize', corrigerDispositionMobile);
+
 window.posCart=posCart; window.posStep=posStep; window.posProductsList=posProductsList; window.posAllClients=posAllClients; window.posCurrentClient=posCurrentClient; window.posCurrentTable=posCurrentTable; window.posDiscountMAD=posDiscountMAD; window.posAmountGiven=posAmountGiven; window.posPaymentMethod=posPaymentMethod; window.posResetCart=posResetCart; window.posAddToCartOrOpenOptions=posAddToCartOrOpenOptions; window.posSetPaymentMethod=posSetPaymentMethod; window.posCalculateTotal=posCalculateTotal; window.posFinalizeSale=posFinalizeSale; window.posGoToStep2=posGoToStep2; window.posGoToStep1=posGoToStep1; window.posSearchProducts=posSearchProducts; window.clearPosSearch=clearPosSearch; window.clearClientSearch=clearClientSearch; window.updateClearButtonVisibility=updateClearButtonVisibility; window.updateCartOnly=updateCartOnly; window.renderPOS=renderPOS; window.updatePaymentButtons=updatePaymentButtons; window.loadMoreProducts=loadMoreProducts; window.loadClientCredits=loadClientCredits; window.updateClientCreditDisplay=updateClientCreditDisplay; window.posCalculateChange=posCalculateChange; window.onProductAdded=window.onProductAdded||function(pid){ console.log('Produit ajouté:',pid); };
 window.posNaviguerEtape = posNaviguerEtape;
 window.buildFullPOS = buildFullPOS;
@@ -1529,7 +1570,9 @@ window.posToggleTools = posToggleTools;
 window.posToolsVisible = posToolsVisible;
 window.applyDynamicContentScroll = applyDynamicContentScroll;
 window.forceUpdateClient = forceUpdateClient;
+window.corrigerDispositionMobile = corrigerDispositionMobile;
 
 console.log('🚀 E-SOLUTION - POS chargé avec corrections');
 console.log('✅ forceUpdateClient disponible');
 console.log('✅ Bouton "Afficher tout" corrigé');
+console.log('✅ Correction mobile panier en bas');
