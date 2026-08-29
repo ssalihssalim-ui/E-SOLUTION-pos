@@ -1,4 +1,4 @@
-// ==================== DEPENSES.JS - E-SOLUTION ====================
+// ==================== DEPENSES.JS - E-SOLUTION (CORRIGÉ POUR CAISSIER) ====================
 var globalPeriod = 'all';
 var depensesSearch = '';
 var depensesCategoryFilter = '';
@@ -18,6 +18,11 @@ var personnelSearchQuery = '';
 var personnelCurrentPage = 1;
 var personnelItemsPerPage = 15;
 
+// Vérification du rôle
+function isAdminUser() {
+    return window.currentUserData && window.currentUserData.userData.role === 'admin';
+}
+
 function loadDepensesPage(c) {
     var html = '';
 
@@ -30,7 +35,7 @@ function loadDepensesPage(c) {
     html += '</div>';
     html += '</div>';
 
-    // SECTION STOCK
+    // SECTION STOCK (visible pour admin et caissier)
     html += '<div class="content-card" style="margin-bottom:30px;">';
     html += '<div class="card-header">';
     html += '<h3><i class="fas fa-boxes"></i> Stock (matières premières, emballages…) <span id="stockTotalDisplay" style="font-size:0.9rem;color:#14B8A6;"></span></h3>';
@@ -47,7 +52,7 @@ function loadDepensesPage(c) {
     html += '<div id="stockPagination"></div>';
     html += '</div>';
 
-    // SECTION DÉPENSES
+    // SECTION DÉPENSES (visible pour admin et caissier)
     var catOptions = '<option value="">Toutes les catégories</option>';
     Object.keys(depenseCategories).forEach(function(cat) {
         catOptions += '<option value="' + cat + '">' + cat + '</option>';
@@ -69,27 +74,29 @@ function loadDepensesPage(c) {
     html += '<div id="depensesPagination"></div>';
     html += '</div>';
 
-    // SECTION PERSONNEL
-    html += '<div class="content-card">';
-    html += '<div class="card-header">';
-    html += '<h3><i class="fas fa-users"></i> Personnel <span id="personnelTotalDisplay" style="font-size:0.9rem;color:#14B8A6;"></span></h3>';
-    html += '<div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">';
-    html += '<input type="text" id="personnelSearchInput" placeholder="🔍 Rechercher..." style="padding:8px 12px; border:2px solid #e2e8f0; border-radius:8px; width:200px;" onkeyup="personnelSearchQuery = this.value.trim().toLowerCase(); personnelCurrentPage=1; renderPersonnelTable();">';
-    html += '<button class="btn-add" onclick="openPersonnelForm()"><i class="fas fa-plus"></i> Ajouter</button>';
-    html += '<button class="btn-add" onclick="loadPersonnel()"><i class="fas fa-sync"></i> Actualiser</button>';
-    html += '</div>';
-    html += '</div>';
-    html += '<div class="table-container"><table class="data-table" id="personnelTable" style="font-size:0.7rem;">';
-    html += '<thead><tr>';
-    html += '<th>Nom</th><th>Rôle</th><th>Salaire (MAD)</th><th>Horaire</th><th>Téléphone</th><th>Date d\'embauche</th><th>Actions</th>';
-    html += '</thead><tbody></tbody></tr></div>';
-    html += '<div id="personnelPagination"></div>';
-    html += '</div>';
+    // SECTION PERSONNEL (visible uniquement pour admin)
+    if (isAdminUser()) {
+        html += '<div class="content-card">';
+        html += '<div class="card-header">';
+        html += '<h3><i class="fas fa-users"></i> Personnel <span id="personnelTotalDisplay" style="font-size:0.9rem;color:#14B8A6;"></span></h3>';
+        html += '<div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">';
+        html += '<input type="text" id="personnelSearchInput" placeholder="🔍 Rechercher..." style="padding:8px 12px; border:2px solid #e2e8f0; border-radius:8px; width:200px;" onkeyup="personnelSearchQuery = this.value.trim().toLowerCase(); personnelCurrentPage=1; renderPersonnelTable();">';
+        html += '<button class="btn-add" onclick="openPersonnelForm()"><i class="fas fa-plus"></i> Ajouter</button>';
+        html += '<button class="btn-add" onclick="loadPersonnel()"><i class="fas fa-sync"></i> Actualiser</button>';
+        html += '</div>';
+        html += '</div>';
+        html += '<div class="table-container"><table class="data-table" id="personnelTable" style="font-size:0.7rem;">';
+        html += '<thead><tr>';
+        html += '<th>Nom</th><th>Rôle</th><th>Salaire (MAD)</th><th>Horaire</th><th>Téléphone</th><th>Date d\'embauche</th><th>Actions</th>';
+        html += '</thead><tbody></tbody></tr></div>';
+        html += '<div id="personnelPagination"></div>';
+        html += '</div>';
+    }
 
     c.innerHTML = html;
     loadStock();
     loadDepenses();
-    loadPersonnel();
+    if (isAdminUser()) loadPersonnel();
 }
 
 // ==================== STOCK ====================
@@ -421,6 +428,7 @@ function deleteDepense(id) {
 
 // ==================== PERSONNEL ====================
 async function loadPersonnel() {
+    if (!isAdminUser()) return; // Sécurité supplémentaire
     try {
         const snapshot = await db.collection('personnel').orderBy('nom').get();
         allPersonnelData = [];
@@ -499,6 +507,7 @@ function renderPersonnelTable() {
 }
 
 function openPersonnelForm(data) {
+    if (!isAdminUser()) return; // Sécurité supplémentaire
     data = data || {};
     var h = '';
     h += '<div class="form-row"><div class="form-group"><label>Nom *</label><input type="text" id="persNom" value="' + escapeHtml(data.nom || '') + '" required></div>';
@@ -519,6 +528,7 @@ function openPersonnelForm(data) {
 }
 
 function savePersonnel() {
+    if (!isAdminUser()) return; // Sécurité supplémentaire
     var nom = document.getElementById('persNom').value.trim();
     if (!nom) { alert('Nom obligatoire'); return; }
     var d = {
@@ -549,12 +559,14 @@ function savePersonnel() {
 }
 
 function editPersonnel(id) {
+    if (!isAdminUser()) return;
     db.collection('personnel').doc(id).get().then(function(doc) {
         if (doc.exists) { editingId = id; currentCollection = 'personnel'; openPersonnelForm(doc.data()); }
     });
 }
 
 async function deletePersonnel(id) {
+    if (!isAdminUser()) return;
     if (confirm('Supprimer cet employé ?')) {
         await CacheDB.write('personnel', id, null, 'delete');
         allPersonnelData = allPersonnelData.filter(function(x) { return x.id !== id; });
@@ -573,4 +585,4 @@ function escapeHtml(str) {
     });
 }
 
-console.log('🚀 E-SOLUTION - Dépenses JS prêt');
+console.log('🚀 E-SOLUTION - Dépenses JS prêt (accès caissier stock/dépenses uniquement)');
