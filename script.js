@@ -1,4 +1,4 @@
-// ==================== SCRIPT.JS - MIXMAX MINIMARKET (COMPLET FINAL) ====================
+// ==================== SCRIPT.JS - MIXMAX MINIMARKET (COMPLET FINAL CORRIGÉ) ====================
 // Script principal - Navigation instantanée optimisée
 
 // ========== VARIABLES GLOBALES ==========
@@ -321,19 +321,14 @@ showAuthPage();
 auth.onAuthStateChanged(async function(u) {
 if (u) {
 try {
-// 🔥 ALLER CHERCHER DIRECTEMENT DANS FIRESTORE
 const doc = await db.collection('users').doc(u.uid).get();
-
 if (!doc.exists) {
 console.warn('⚠️ Utilisateur non trouvé dans Firestore');
 auth.signOut();
 showAuthPage();
 return;
 }
-
 const userData = doc.data();
-
-// Vérifier le statut authorized
 if (userData.authorized !== 'yes') {
 console.warn('⛔ Utilisateur non autorisé');
 auth.signOut();
@@ -341,19 +336,12 @@ showAuthPage();
 alert('⛔ Votre compte est en attente de validation par l\'administrateur.');
 return;
 }
-
-// Mettre à jour le cache
 const ud = { uid: u.uid, userData: userData };
 window.currentUserData = ud;
 await CacheDB.set('users', u.uid, ud);
 await CacheDB.set('users', 'current', ud);
-
-if (userData.role === 'client') {
-showClientPage();
-} else {
-showDashboard();
-}
-
+if (userData.role === 'client') showClientPage();
+else showDashboard();
 } catch (e) {
 console.error('❌ Erreur vérification utilisateur:', e);
 auth.signOut();
@@ -385,11 +373,8 @@ if (o) o.classList.remove('active');
 
 function toggleSidebar() {
 var s = document.getElementById('sidebar');
-if (s && s.classList.contains('open')) {
-closeSidebar();
-} else {
-openSidebar();
-}
+if (s && s.classList.contains('open')) closeSidebar();
+else openSidebar();
 }
 
 function openClientSidebar() {
@@ -408,11 +393,8 @@ if (o) o.classList.remove('active');
 
 function toggleClientSidebar() {
 var s = document.getElementById('clientSidebar');
-if (s && s.classList.contains('open')) {
-closeClientSidebar();
-} else {
-openClientSidebar();
-}
+if (s && s.classList.contains('open')) closeClientSidebar();
+else openClientSidebar();
 }
 
 document.addEventListener('keydown', function(e) {
@@ -493,7 +475,21 @@ var content = document.getElementById('dynamicContent'); if (!content) return;
 
 content.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin" style="font-size:1.5rem;color:#2E7D32;"></i></div>';
 
-// Plus de cas particulier pour caissier, on appelle directement les fonctions standard
+// 🔥 CAS PARTICULIER POUR LE CAISSIER : PAGE DÉPENSES
+if (page === 'depenses' && window.currentUserData.userData.role === 'caissier') {
+    content.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin" style="font-size:1.5rem;color:#2E7D32;"></i></div>';
+    if (typeof window.loadDepensesPage === 'function') {
+        window.loadDepensesPage(content);
+    } else if (typeof loadDepensesPage === 'function') {
+        loadDepensesPage(content);
+    } else {
+        content.innerHTML = '<div class="content-card"><p style="text-align:center;padding:40px;color:#94a3b8;">Dépenses non disponible</p></div>';
+    }
+    closeSidebar();
+    return;
+}
+
+// Navigation standard pour toutes les autres pages
 var pageFunctions = { pos: 'loadPosPage', commandes: 'loadCommandesPage', categories: 'loadCategoriesPage', products: 'loadProductsPage', clients: 'loadClientsPage', fournisseurs: 'loadFournisseursPage', ventes: 'loadVentesPage', credits: 'loadCreditsPage', depenses: 'loadDepensesPage', statistiques: 'loadStatistiquesPage', options: 'loadOptionsPage', dashboard: 'loadDashboardPage' };
 var fnName = pageFunctions[page];
 if (fnName && typeof window[fnName] === 'function') {
@@ -575,4 +571,4 @@ document.addEventListener('click', function(e) { var o = document.getElementById
 window.addEventListener('online', function() { console.log('✅ En ligne'); if (typeof CacheDB !== 'undefined' && CacheDB.sync) CacheDB.sync().catch(function(e) { console.warn(e); }); });
 window.addEventListener('offline', function() { console.warn('⚠️ Mode hors ligne'); });
 
-console.log('☕ Mixmax Minimarket - Script principal OK (navigation instantanée + menu amélioré + fallback crédits)');
+console.log('☕ Mixmax Minimarket - Script principal OK (navigation instantanée + menu amélioré + fallback crédits + dépenses caissier)');
