@@ -630,13 +630,16 @@ if (!content) return;
 
 // 🔥 Cas particulier pour le caissier : page "depenses"
 if (page === 'depenses' && window.currentUserData && window.currentUserData.userData.role === 'caissier') {
-if (typeof window.loadCaissierDepenses === 'function') {
-window.loadCaissierDepenses(content);
-} else {
-content.innerHTML = '<div class="content-card"><p style="text-align:center;padding:40px;color:#94a3b8;">Dépenses non disponibles</p></div>';
-}
-closeSidebar();
-return;
+    content.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin"></i></div>';
+    if (typeof window.loadDepensesPage === 'function') {
+        window.loadDepensesPage(content);
+    } else if (typeof loadDepensesPage === 'function') {
+        loadDepensesPage(content);
+    } else {
+        content.innerHTML = '<div class="content-card"><p style="text-align:center;padding:40px;color:#94a3b8;">Dépenses non disponibles</p></div>';
+    }
+    closeSidebar();
+    return;
 }
 
 var titles = {
