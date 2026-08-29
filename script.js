@@ -463,7 +463,8 @@ items = [
 { p: 'pos', i: 'fa-cash-register', l: 'POS' },
 { p: 'commandes', i: 'fa-shopping-basket', l: 'Commandes en ligne' },
 { p: 'ventes', i: 'fa-shopping-cart', l: 'Ventes' },
-{ p: 'credits', i: 'fa-credit-card', l: 'Crédits' }
+{ p: 'credits', i: 'fa-credit-card', l: 'Crédits' },
+{ p: 'depenses', i: 'fa-money-bill-wave', l: 'Dépenses' }
 ];
 var rs = document.getElementById('sidebarRole'); if (rs) rs.textContent = 'Caissier';
 }
@@ -491,6 +492,17 @@ var hi = document.querySelector('.header-title i'); if (hi && icons[page]) hi.cl
 var content = document.getElementById('dynamicContent'); if (!content) return;
 
 content.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin" style="font-size:1.5rem;color:#2E7D32;"></i></div>';
+
+// 🔥 Cas particulier pour le caissier : page "depenses"
+if (page === 'depenses' && window.currentUserData.userData.role === 'caissier') {
+if (typeof window.loadCaissierDepenses === 'function') {
+window.loadCaissierDepenses(content);
+} else {
+content.innerHTML = '<div class="content-card"><p style="text-align:center;padding:40px;color:#94a3b8;">Dépenses non disponibles</p></div>';
+}
+closeSidebar();
+return;
+}
 
 var pageFunctions = { pos: 'loadPosPage', commandes: 'loadCommandesPage', categories: 'loadCategoriesPage', products: 'loadProductsPage', clients: 'loadClientsPage', fournisseurs: 'loadFournisseursPage', ventes: 'loadVentesPage', credits: 'loadCreditsPage', depenses: 'loadDepensesPage', statistiques: 'loadStatistiquesPage', options: 'loadOptionsPage', dashboard: 'loadDashboardPage' };
 var fnName = pageFunctions[page];
