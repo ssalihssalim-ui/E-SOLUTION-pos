@@ -1566,6 +1566,39 @@ font-size: 10px !important;
 
 /* ✅ SUR TRÈS PETIT ÉCRAN (< 400px) - CATÉGORIES ENCORE PLUS RÉDUITES */
 @media(max-width: 400px) {
+/* ✅ FORCER LE PANIER EN DESSOUS */
+.pos-row {
+display: flex !important;
+flex-direction: column !important;
+gap: 4px !important;
+width: 100% !important;
+height: auto !important;
+}
+
+.pos-products-panel {
+width: 100% !important;
+max-width: 100% !important;
+min-width: 100% !important;
+flex: 1 !important;
+height: auto !important;
+min-height: 280px !important;
+max-height: 55vh !important;
+order: 1 !important;
+}
+
+.pos-cart-panel {
+width: 100% !important;
+max-width: 100% !important;
+min-width: 100% !important;
+height: auto !important;
+min-height: 140px !important;
+max-height: 35vh !important;
+order: 2 !important;
+margin-top: 4px !important;
+position: static !important;
+flex: none !important;
+}
+
 .pos-products-grid {
 gap: 3px !important;
 padding: 2px !important;
@@ -1601,11 +1634,11 @@ max-height: 75px !important;
 padding: 3px 2px !important;
 }
 .pos-category-card .category-image {
-width: 40px !important;
-height: 40px !important;
+width: 35px !important;
+height: 35px !important;
 }
 .pos-category-card .fas.fa-folder {
-font-size: 20px !important;
+font-size: 18px !important;
 }
 .pos-category-card .category-name {
 font-size: 8px !important;
