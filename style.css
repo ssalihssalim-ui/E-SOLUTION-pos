@@ -1437,99 +1437,6 @@ min-height: 400px !important;
 }
 }
 
-/* ============================================================
-✅ MODE PAYSAGE MOBILE (700px - 950px)
-============================================================ */
-@media(min-width: 700px) and (max-width: 950px) and (orientation: landscape) {
-    /* ✅ FORCER LE PANIER EN DESSOUS */
-    .pos-row {
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 4px !important;
-        width: 100% !important;
-        height: auto !important;
-    }
-
-    .pos-products-panel {
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 100% !important;
-        flex: 1 !important;
-        height: auto !important;
-        min-height: 220px !important;
-        max-height: 50vh !important;
-        order: 1 !important;
-    }
-
-    .pos-cart-panel {
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 100% !important;
-        height: auto !important;
-        min-height: 100px !important;
-        max-height: 35vh !important;
-        order: 2 !important;
-        margin-top: 4px !important;
-        position: static !important;
-        flex: none !important;
-    }
-
-    /* ✅ Réduire les grilles */
-    .pos-products-grid {
-        gap: 4px !important;
-        padding: 3px !important;
-        grid-template-columns: repeat(5, 1fr) !important;
-    }
-
-    .pos-categories-grid {
-        gap: 6px !important;
-        padding: 4px !important;
-        grid-template-columns: repeat(4, 1fr) !important;
-    }
-
-    /* ✅ Réduire les cartes catégories */
-    .pos-category-card {
-        min-height: 65px !important;
-        max-height: 85px !important;
-        padding: 4px 2px !important;
-    }
-    .pos-category-card .category-image {
-        width: 45px !important;
-        height: 45px !important;
-    }
-    .pos-category-card .fas.fa-folder {
-        font-size: 22px !important;
-    }
-    .pos-category-card .category-name {
-        font-size: 9px !important;
-    }
-    .pos-category-card .category-count {
-        font-size: 8px !important;
-    }
-
-    /* ✅ Réduire les cartes produits */
-    .pos-product-card {
-        min-height: 85px !important;
-        max-height: 105px !important;
-        padding: 3px 2px !important;
-    }
-    .pos-product-img {
-        height: 50px !important;
-        width: 75% !important;
-    }
-    .pos-product-name {
-        font-size: 9px !important;
-    }
-    .pos-product-price {
-        font-size: 11px !important;
-    }
-
-    .pos-cart-items {
-        max-height: 150px !important;
-        min-height: 50px !important;
-    }
-}
-
 /* ✅ SUR MOBILE (< 700px) - CATÉGORIES RÉDUITES */
 @media(max-width: 700px) {
 /* ✅ FORCER LE PANIER EN DESSOUS */
@@ -1658,7 +1565,7 @@ font-size: 10px !important;
 }
 
 /* ✅ SUR TRÈS PETIT ÉCRAN (< 400px) - CATÉGORIES ENCORE PLUS RÉDUITES */
-@media(max-width: 400px) {
+@media(max-width: 500px) {
 /* ✅ FORCER LE PANIER EN DESSOUS */
 .pos-row {
 display: flex !important;
