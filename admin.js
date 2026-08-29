@@ -621,12 +621,23 @@ localStorage.setItem('fidelite_active', a); localStorage.setItem('fidelite_point
 alert('✅ Enregistré');
 }
 
-// ==================== NAVIGATION ====================
+// ==================== NAVIGATION (AVEC GESTION CAISSIER) ====================
 function navigateTo(page) {
 console.log('📍 Navigation vers:', page);
 
 var content = document.getElementById('dynamicContent');
 if (!content) return;
+
+// 🔥 Cas particulier pour le caissier : page "depenses"
+if (page === 'depenses' && window.currentUserData && window.currentUserData.userData.role === 'caissier') {
+if (typeof window.loadCaissierDepenses === 'function') {
+window.loadCaissierDepenses(content);
+} else {
+content.innerHTML = '<div class="content-card"><p style="text-align:center;padding:40px;color:#94a3b8;">Dépenses non disponibles</p></div>';
+}
+closeSidebar();
+return;
+}
 
 var titles = {
 'dashboard': 'Dashboard',
