@@ -1439,6 +1439,39 @@ min-height: 400px !important;
 
 /* ✅ SUR MOBILE (< 700px) - CATÉGORIES RÉDUITES */
 @media(max-width: 700px) {
+/* ✅ FORCER LE PANIER EN DESSOUS */
+.pos-row {
+display: flex !important;
+flex-direction: column !important;
+gap: 4px !important;
+width: 100% !important;
+height: auto !important;
+}
+
+.pos-products-panel {
+width: 100% !important;
+max-width: 100% !important;
+min-width: 100% !important;
+flex: 1 !important;
+height: auto !important;
+min-height: 300px !important;
+max-height: 60vh !important;
+order: 1 !important;
+}
+
+.pos-cart-panel {
+width: 100% !important;
+max-width: 100% !important;
+min-width: 100% !important;
+height: auto !important;
+min-height: 150px !important;
+max-height: 35vh !important;
+order: 2 !important;
+margin-top: 4px !important;
+position: static !important;
+flex: none !important;
+}
+
 .pos-product-card {
 min-height: 115px !important;
 max-height: 140px !important;
@@ -1497,17 +1530,6 @@ min-height: 20px !important;
 max-height: 24px !important;
 }
 
-.pos-products-panel {
-height: 65vh !important;
-min-height: 300px !important;
-max-height: 70vh !important;
-}
-
-.pos-cart-panel {
-max-height: 70vh !important;
-min-height: 300px !important;
-}
-
 .pos-products-grid {
 gap: 4px !important;
 padding: 3px !important;
@@ -1521,7 +1543,7 @@ grid-template-columns: repeat(3, 1fr) !important;
 }
 
 .pos-cart-items {
-max-height: 350px !important;
+max-height: 200px !important;
 min-height: 60px !important;
 }
 
