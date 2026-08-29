@@ -86,7 +86,7 @@ function loadCaissierStock(content) {
         console.error('Conteneur non trouvé pour Stock');
         return;
     }
-    
+
     if (typeof loadClientStockPage === 'function') {
         loadClientStockPage(container);
     } else {
@@ -111,7 +111,7 @@ function loadCaissierStock(content) {
 function loadCaissierStockFallback() {
     var container = document.getElementById('caissierStockContainer');
     if (!container) return;
-    
+
     db.collection('stock').orderBy('nom').get().then(function(snapshot) {
         if (snapshot.empty) {
             container.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;">Aucun stock</div>';
@@ -144,7 +144,7 @@ function loadCaissierDepenses(content) {
         console.error('Conteneur non trouvé pour Dépenses');
         return;
     }
-    
+
     if (typeof loadClientDepensesPage === 'function') {
         loadClientDepensesPage(container);
     } else {
@@ -169,14 +169,14 @@ function loadCaissierDepenses(content) {
 function loadCaissierDepensesFallback() {
     var container = document.getElementById('caissierDepensesContainer');
     if (!container) return;
-    
+
     var userId = window.currentUserData ? window.currentUserData.uid : null;
     var query = db.collection('depenses').orderBy('createdAt', 'desc').limit(100);
-    
+
     if (userId) {
         query = query.where('createdBy', '==', userId);
     }
-    
+
     query.get().then(function(snapshot) {
         if (snapshot.empty) {
             container.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;">Aucune dépense</div>';
@@ -229,7 +229,7 @@ function openCaissierDepenseForm() {
     h += '<button class="btn-cancel" onclick="closeModal()">Annuler</button>';
     h += '<button class="btn-save" onclick="saveCaissierDepense()">Ajouter</button>';
     h += '</div>';
-    
+
     openModal('💰 Ajouter une dépense', h);
 }
 
@@ -238,13 +238,13 @@ function saveCaissierDepense() {
     var montant = parseFloat(document.getElementById('caissierDepenseMontant').value);
     var categorie = document.getElementById('caissierDepenseCategorie').value;
     var payeA = document.getElementById('caissierDepensePayeA').value.trim();
-    
+
     if (!description) { alert('La description est obligatoire'); return; }
     if (isNaN(montant) || montant <= 0) { alert('Le montant doit être supérieur à 0'); return; }
-    
+
     var userId = window.currentUserData ? window.currentUserData.uid : null;
     var userData = window.currentUserData ? window.currentUserData.userData : {};
-    
+
     var data = {
         description: description,
         montant: montant,
@@ -255,7 +255,7 @@ function saveCaissierDepense() {
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-    
+
     CacheDB.write('depenses', null, data, 'add').then(function() {
         alert('✅ Dépense ajoutée !');
         closeModal();
@@ -276,5 +276,9 @@ function deleteCaissierDepense(id) {
         alert('Erreur: ' + e.message);
     });
 }
+
+// Exposer les fonctions pour la navigation
+window.loadCaissierStock = loadCaissierStock;
+window.loadCaissierDepenses = loadCaissierDepenses;
 
 console.log('🚀 E-SOLUTION - Caissier JS prêt (avec Stock & Dépenses)');
