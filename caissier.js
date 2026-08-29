@@ -39,6 +39,7 @@
     }, interval);
 })();
 
+// Pages de base
 function loadCaissierDashboard() {
     if (typeof loadDashboardPage === 'function') {
         loadDashboardPage(document.getElementById('dynamicContent'));
@@ -79,42 +80,54 @@ function loadCaissierCredits() {
     }
 }
 
-// ==================== STOCK POUR CAISSIER ====================
-function loadCaissierStock(content) {
+// ==================== STOCK + DÉPENSES (page combinée) ====================
+function loadCaissierDepenses(content) {
     var container = content || document.getElementById('dynamicContent');
     if (!container) {
-        console.error('Conteneur non trouvé pour Stock');
+        console.error('Conteneur non trouvé pour Dépenses');
         return;
     }
 
-    if (typeof loadClientStockPage === 'function') {
-        loadClientStockPage(container);
-    } else {
-        console.warn('loadClientStockPage non définie, fallback');
-        container.innerHTML = `
-            <div class="content-card">
-                <div class="card-header">
-                    <h3><i class="fas fa-boxes"></i> Gestion Stock</h3>
-                    <button class="btn-add" onclick="loadCaissierStock()">
-                        <i class="fas fa-sync"></i> Actualiser
-                    </button>
-                </div>
-                <div id="caissierStockContainer">
-                    <p style="text-align:center;padding:40px;">Chargement du stock...</p>
-                </div>
+    // Structure : deux cartes empilées (Stock puis Dépenses)
+    container.innerHTML = `
+        <div class="content-card">
+            <div class="card-header">
+                <h3><i class="fas fa-boxes"></i> Stock</h3>
+                <button class="btn-add" onclick="loadCaissierStockSection()">
+                    <i class="fas fa-sync"></i> Actualiser
+                </button>
             </div>
-        `;
-        loadCaissierStockFallback();
-    }
+            <div id="caissierStockContainer">
+                <p style="text-align:center;padding:20px;">Chargement du stock...</p>
+            </div>
+        </div>
+
+        <div class="content-card" style="margin-top:20px;">
+            <div class="card-header">
+                <h3><i class="fas fa-money-bill-wave"></i> Dépenses</h3>
+                <button class="btn-add" onclick="openCaissierDepenseForm()">
+                    <i class="fas fa-plus"></i> Ajouter une dépense
+                </button>
+            </div>
+            <div id="caissierDepensesContainer">
+                <p style="text-align:center;padding:20px;">Chargement des dépenses...</p>
+            </div>
+        </div>
+    `;
+
+    // Charger les deux sections
+    loadCaissierStockSection();
+    loadCaissierDepensesSection();
 }
 
-function loadCaissierStockFallback() {
-    var container = document.getElementById('caissierStockContainer');
-    if (!container) return;
+// --- Section Stock (lecture seule) ---
+function loadCaissierStockSection() {
+    var stockContainer = document.getElementById('caissierStockContainer');
+    if (!stockContainer) return;
 
     db.collection('stock').orderBy('nom').get().then(function(snapshot) {
         if (snapshot.empty) {
-            container.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;">Aucun stock</div>';
+            stockContainer.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;">Aucun stock</div>';
             return;
         }
         var html = '<div class="table-container"><table class="data-table"><thead><tr>';
@@ -131,44 +144,16 @@ function loadCaissierStockFallback() {
             html += '</tr>';
         });
         html += '</tbody></table></div>';
-        container.innerHTML = html;
+        stockContainer.innerHTML = html;
     }).catch(function(e) {
-        container.innerHTML = '<p style="color:#ef4444;">❌ Erreur: ' + e.message + '</p>';
+        stockContainer.innerHTML = '<p style="color:#ef4444;">❌ Erreur: ' + e.message + '</p>';
     });
 }
 
-// ==================== DÉPENSES POUR CAISSIER ====================
-function loadCaissierDepenses(content) {
-    var container = content || document.getElementById('dynamicContent');
-    if (!container) {
-        console.error('Conteneur non trouvé pour Dépenses');
-        return;
-    }
-
-    if (typeof loadClientDepensesPage === 'function') {
-        loadClientDepensesPage(container);
-    } else {
-        console.warn('loadClientDepensesPage non définie, fallback');
-        container.innerHTML = `
-            <div class="content-card">
-                <div class="card-header">
-                    <h3><i class="fas fa-money-bill-wave"></i> Dépenses</h3>
-                    <button class="btn-add" onclick="openCaissierDepenseForm()">
-                        <i class="fas fa-plus"></i> Ajouter une dépense
-                    </button>
-                </div>
-                <div id="caissierDepensesContainer">
-                    <p style="text-align:center;padding:40px;">Chargement des dépenses...</p>
-                </div>
-            </div>
-        `;
-        loadCaissierDepensesFallback();
-    }
-}
-
-function loadCaissierDepensesFallback() {
-    var container = document.getElementById('caissierDepensesContainer');
-    if (!container) return;
+// --- Section Dépenses (avec actions) ---
+function loadCaissierDepensesSection() {
+    var depContainer = document.getElementById('caissierDepensesContainer');
+    if (!depContainer) return;
 
     var userId = window.currentUserData ? window.currentUserData.uid : null;
     var query = db.collection('depenses').orderBy('createdAt', 'desc').limit(100);
@@ -179,7 +164,7 @@ function loadCaissierDepensesFallback() {
 
     query.get().then(function(snapshot) {
         if (snapshot.empty) {
-            container.innerHTML = '<div style="text-align:center;padding:40px;color:#94a3b8;">Aucune dépense</div>';
+            depContainer.innerHTML = '<div style="text-align:center;padding:20px;color:#94a3b8;">Aucune dépense</div>';
             return;
         }
         var html = '<div class="table-container"><table class="data-table"><thead><tr>';
@@ -208,12 +193,13 @@ function loadCaissierDepensesFallback() {
         html += '<div style="margin-top:15px;padding:15px;background:#fef2f2;border-radius:12px;text-align:center;">';
         html += '<strong>Total dépenses: ' + total.toFixed(2) + ' MAD</strong>';
         html += '</div>';
-        container.innerHTML = html;
+        depContainer.innerHTML = html;
     }).catch(function(e) {
-        container.innerHTML = '<p style="color:#ef4444;">❌ Erreur: ' + e.message + '</p>';
+        depContainer.innerHTML = '<p style="color:#ef4444;">❌ Erreur: ' + e.message + '</p>';
     });
 }
 
+// --- Formulaire d'ajout de dépense ---
 function openCaissierDepenseForm() {
     var h = '';
     h += '<div class="form-row"><div class="form-group"><label>Description *</label><input type="text" id="caissierDepenseDescription" required></div></div>';
@@ -259,7 +245,7 @@ function saveCaissierDepense() {
     CacheDB.write('depenses', null, data, 'add').then(function() {
         alert('✅ Dépense ajoutée !');
         closeModal();
-        loadCaissierDepenses();
+        loadCaissierDepensesSection(); // Recharge uniquement la section dépenses
         CacheDB.sync();
     }).catch(function(e) {
         alert('Erreur: ' + e.message);
@@ -270,15 +256,19 @@ function deleteCaissierDepense(id) {
     if (!confirm('Supprimer cette dépense ?')) return;
     CacheDB.write('depenses', id, null, 'delete').then(function() {
         alert('✅ Dépense supprimée');
-        loadCaissierDepenses();
+        loadCaissierDepensesSection();
         CacheDB.sync();
     }).catch(function(e) {
         alert('Erreur: ' + e.message);
     });
 }
 
-// Exposer les fonctions pour la navigation
-window.loadCaissierStock = loadCaissierStock;
-window.loadCaissierDepenses = loadCaissierDepenses;
+// Exposer les fonctions globalement
+window.loadCaissierDepenses = loadCaissierDepenses;         // page combinée
+window.loadCaissierStock = loadCaissierStockSection;        // pour compatibilité
+window.loadCaissierDepensesSection = loadCaissierDepensesSection;
+window.openCaissierDepenseForm = openCaissierDepenseForm;
+window.saveCaissierDepense = saveCaissierDepense;
+window.deleteCaissierDepense = deleteCaissierDepense;
 
-console.log('🚀 E-SOLUTION - Caissier JS prêt (avec Stock & Dépenses)');
+console.log('🚀 Caissier JS prêt (page Dépenses avec Stock + Dépenses)');
