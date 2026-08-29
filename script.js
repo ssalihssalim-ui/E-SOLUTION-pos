@@ -493,17 +493,7 @@ var content = document.getElementById('dynamicContent'); if (!content) return;
 
 content.innerHTML = '<div style="text-align:center;padding:20px;"><i class="fas fa-spinner fa-spin" style="font-size:1.5rem;color:#2E7D32;"></i></div>';
 
-// 🔥 Cas particulier pour le caissier : page "depenses"
-if (page === 'depenses' && window.currentUserData.userData.role === 'caissier') {
-if (typeof window.loadCaissierDepenses === 'function') {
-window.loadCaissierDepenses(content);
-} else {
-content.innerHTML = '<div class="content-card"><p style="text-align:center;padding:40px;color:#94a3b8;">Dépenses non disponibles</p></div>';
-}
-closeSidebar();
-return;
-}
-
+// Plus de cas particulier pour caissier, on appelle directement les fonctions standard
 var pageFunctions = { pos: 'loadPosPage', commandes: 'loadCommandesPage', categories: 'loadCategoriesPage', products: 'loadProductsPage', clients: 'loadClientsPage', fournisseurs: 'loadFournisseursPage', ventes: 'loadVentesPage', credits: 'loadCreditsPage', depenses: 'loadDepensesPage', statistiques: 'loadStatistiquesPage', options: 'loadOptionsPage', dashboard: 'loadDashboardPage' };
 var fnName = pageFunctions[page];
 if (fnName && typeof window[fnName] === 'function') {
