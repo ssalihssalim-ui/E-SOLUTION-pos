@@ -1210,6 +1210,11 @@ if (deleteBtn) deleteBtn.style.display = 'none';
 if (selectAllBtn) selectAllBtn.style.display = 'none';
 loadCredits();
 CacheDB.sync();
+
+// ✅ AJOUT : Sauvegarde du cache
+if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+    CacheDB.saveCollection('credits');
+}
 }).catch(function(e) {
 alert('❌ Erreur: ' + e.message);
 });
@@ -1345,6 +1350,12 @@ async function confirmCreditPayment(creditId) {
         
         loadCredits();
         CacheDB.sync();
+
+        // ✅ AJOUT : Sauvegarde du cache
+        if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+            CacheDB.saveCollection('credits');
+            CacheDB.saveCollection('ventes');
+        }
 
     } catch(e) {
         console.error('Erreur paiement crédit:', e);
@@ -1711,6 +1722,11 @@ closeModal();
 loadCredits();
 CacheDB.sync();
 alert('✅ Crédit mis à jour');
+
+// ✅ AJOUT : Sauvegarde du cache
+if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+    CacheDB.saveCollection('credits');
+}
 } catch (e) {
 alert('❌ Erreur: ' + e.message);
 }
@@ -1722,6 +1738,11 @@ await db.collection('credits').doc(id).delete();
 window.allCreditsData = (window.allCreditsData || []).filter(function(c) { return c.id !== id; });
 if (typeof loadCredits === 'function') loadCredits();
 CacheDB.sync();
+
+// ✅ AJOUT : Sauvegarde du cache
+if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+    CacheDB.saveCollection('credits');
+}
 } catch (e) {
 console.error('Erreur deleteCredit:', e);
 throw e;
