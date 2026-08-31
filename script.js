@@ -142,7 +142,7 @@ html += '</div>';
 return html;
 };
 
-// ✅ CORRECTION FONCTION changePage - Exposée globalement
+// ✅ CORRECTION FONCTION changePage - Exposée globalement avec window
 window.changePage = window.changePage || function(collection, newPage) {
 var dataArrays = {
 categories: window.allCategoriesData || [],
@@ -162,17 +162,17 @@ if (newPage < 1 || newPage > totalPages) return;
 
 window.currentPages[collection] = newPage;
 
-// ✅ Appel des fonctions de rendu correctement
+// ✅ Appel des fonctions de rendu correctement - Utiliser window.xxx
 var renderFunctions = {
-categories: function() { if (typeof renderCategoriesTable === 'function') renderCategoriesTable(); },
-products: function() { if (typeof renderProductsTable === 'function') renderProductsTable(); },
-clients: function() { if (typeof renderClientsTable === 'function') renderClientsTable(); },
-fournisseurs: function() { if (typeof renderFournisseursTable === 'function') renderFournisseursTable(); },
-ventes: function() { if (typeof renderVentesTable === 'function') renderVentesTable(); },
-credits: function() { if (typeof renderCreditsTable === 'function') renderCreditsTable(); },
-depenses: function() { if (typeof renderDepensesTable === 'function') renderDepensesTable(); },
-commandes: function() { if (typeof renderCommandesTable === 'function') renderCommandesTable(); },
-users: function() { if (typeof renderUsersTable === 'function') renderUsersTable(); }
+categories: function() { if (typeof window.renderCategoriesTable === 'function') window.renderCategoriesTable(); },
+products: function() { if (typeof window.renderProductsTable === 'function') window.renderProductsTable(); },
+clients: function() { if (typeof window.renderClientsTable === 'function') window.renderClientsTable(); },
+fournisseurs: function() { if (typeof window.renderFournisseursTable === 'function') window.renderFournisseursTable(); },
+ventes: function() { if (typeof window.renderVentesTable === 'function') window.renderVentesTable(); },
+credits: function() { if (typeof window.renderCreditsTable === 'function') window.renderCreditsTable(); },
+depenses: function() { if (typeof window.renderDepensesTable === 'function') window.renderDepensesTable(); },
+commandes: function() { if (typeof window.renderCommandesTable === 'function') window.renderCommandesTable(); },
+users: function() { if (typeof window.renderUsersTable === 'function') window.renderUsersTable(); }
 };
 
 if (renderFunctions[collection]) renderFunctions[collection]();
