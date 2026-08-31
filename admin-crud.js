@@ -59,22 +59,16 @@ function loadCategoriesPage(c) {
     loadCategories();
 }
 
-// ✅ CORRECTION DÉFINITIVE ANTI-DOUBLONS
-var _categoriesLoaded = false; // 🔒 Verrou anti-doublons
-
+// ✅ CORRECTION : Toujours recharger les données à chaque visite
 async function loadCategories() {
-    // 🔒 Si déjà chargé, ne pas recharger
-    if (_categoriesLoaded) return;
-    _categoriesLoaded = true;
-    
-    // ✅ 1. Charger depuis le cache (RAPIDE)
+    // ✅ 1. Toujours recharger depuis le cache (rapide)
     const cached = await CacheDB.getAll('categories');
     if (cached.length) {
         allCategoriesData = cached;
         renderCategoriesTable();
     }
     
-    // ✅ 2. Mettre à jour depuis Firestore SEULEMENT si le cache est vide
+    // ✅ 2. Mettre à jour depuis Firestore si nécessaire (données manquantes ou rafraîchissement)
     if (allCategoriesData.length === 0) {
         try {
             const snapshot = await db.collection('categories').get();
