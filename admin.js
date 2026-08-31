@@ -227,11 +227,18 @@ html += '</div>';
 return html;
 }
 
+// ✅ CORRECTION : Utiliser window. pour les fonctions de rendu
 function changePage(tableName, newPage) {
 var renderFunctions = {
-categories: renderCategoriesTable, products: renderProductsTable, clients: renderClientsTable,
-fournisseurs: renderFournisseursTable, depenses: renderDepensesTable, commandes: renderCommandesTable,
-ventes: renderVentesTable, credits: renderCreditsTable, users: renderUsersTable
+categories: function() { if (typeof window.renderCategoriesTable === 'function') window.renderCategoriesTable(); },
+products: function() { if (typeof window.renderProductsTable === 'function') window.renderProductsTable(); },
+clients: function() { if (typeof window.renderClientsTable === 'function') window.renderClientsTable(); },
+fournisseurs: function() { if (typeof window.renderFournisseursTable === 'function') window.renderFournisseursTable(); },
+depenses: function() { if (typeof window.renderDepensesTable === 'function') window.renderDepensesTable(); },
+commandes: function() { if (typeof window.renderCommandesTable === 'function') window.renderCommandesTable(); },
+ventes: function() { if (typeof window.renderVentesTable === 'function') window.renderVentesTable(); },
+credits: function() { if (typeof window.renderCreditsTable === 'function') window.renderCreditsTable(); },
+users: function() { if (typeof window.renderUsersTable === 'function') window.renderUsersTable(); }
 };
 var dataArrays = {
 categories: window.allCategoriesData, products: window.allProductsData, clients: window.allClientsData,
