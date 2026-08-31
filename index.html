@@ -150,16 +150,16 @@ Contenu du modal
 </div>
 </div>
 
-<!-- ==================== SCRIPTS ==================== -->
+<!-- ==================== SCRIPTS (ORDRE CORRIGÉ POUR PAGINATION) ==================== -->
 <script src="db-cache.js"></script>
 <script src="firebase-config.js"></script>
 <script src="auth.js"></script>
-<script src="script.js"></script>
+<script src="admin-crud.js"></script>   <!-- ✅ CHARGÉ AVANT script.js -->
+<script src="admin-ventes.js"></script>  <!-- ✅ CHARGÉ AVANT script.js -->
+<script src="admin-credits.js"></script>  <!-- ✅ CHARGÉ AVANT script.js -->
+<script src="admin.js"></script>  <!-- ✅ CHARGÉ AVANT script.js -->
+<script src="script.js"></script>  <!-- ✅ script.js APRÈS les autres -->
 <script src="pos.js"></script>
-<script src="admin.js"></script>
-<script src="admin-crud.js"></script>
-<script src="admin-ventes.js"></script>
-<script src="admin-credits.js"></script>
 <script src="client.js"></script>
 <script src="menutactile.js"></script>
 <script src="depenses.js"></script>
