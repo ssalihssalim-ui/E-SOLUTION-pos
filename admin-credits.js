@@ -1820,6 +1820,102 @@ function getPageData(pageType, data) {
     return data.slice(start, end);
 }
 
+// ==================== FONCTIONS MANQUANTES AJOUTÉES ====================
+
+// ✅ FONCTION AJOUTÉE : closeCreditSelection
+function closeCreditSelection() {
+    // Réinitialiser la sélection
+    window.creditSelectedIds = [];
+    window.creditSelectionMode = false;
+    window.selectAllBtnState = false;
+
+    // Mettre à jour l'interface
+    var paymentZone = document.getElementById('creditPaymentZone');
+    if (paymentZone) paymentZone.style.display = 'none';
+
+    var selectBtn = document.getElementById('toggleSelectionBtn');
+    if (selectBtn) {
+        selectBtn.innerHTML = '<i class="fas fa-check-square"></i> Sélectionner';
+    }
+
+    var selectAllBtn = document.getElementById('selectAllBtn');
+    if (selectAllBtn) {
+        selectAllBtn.style.display = 'none';
+        selectAllBtn.innerHTML = '<i class="fas fa-check-double"></i> Tout sélectionner';
+    }
+
+    var deleteBtn = document.getElementById('deleteSelectedBtn');
+    if (deleteBtn) deleteBtn.style.display = 'none';
+
+    // Rafraîchir le tableau
+    if (typeof renderCreditsTablePro === 'function') {
+        renderCreditsTablePro();
+    } else if (typeof renderCreditsTable === 'function') {
+        renderCreditsTable();
+    }
+}
+window.closeCreditSelection = closeCreditSelection;
+
+// ✅ FONCTION AJOUTÉE : validateCreditPayment
+function validateCreditPayment() {
+    var amountInput = document.getElementById('creditPaymentAmountInput');
+    if (!amountInput) {
+        alert('❌ Erreur : champ de montant introuvable');
+        return;
+    }
+
+    var amount = parseFloat(amountInput.value);
+    if (isNaN(amount) || amount <= 0) {
+        alert('❌ Veuillez entrer un montant valide');
+        return;
+    }
+
+    // Vérifier qu'un crédit est sélectionné
+    if (!window.creditSelectedIds || window.creditSelectedIds.length === 0) {
+        alert('❌ Aucun crédit sélectionné');
+        return;
+    }
+
+    // Pour chaque crédit sélectionné, appliquer le paiement
+    var promises = window.creditSelectedIds.map(function(id) {
+        var credit = (window.allCreditsData || []).find(function(c) { return c.id === id; });
+        if (!credit) return Promise.resolve();
+
+        var total = credit.remainingAmount || credit.total || 0;
+        var newPaid = total - amount;
+        var isFullyPaid = newPaid <= 0.01;
+
+        // Mettre à jour dans Firestore
+        return db.collection('credits').doc(id).update({
+            amountGiven: (credit.amountGiven || 0) + amount,
+            remainingAmount: Math.max(0, newPaid),
+            paid: isFullyPaid,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(function() {
+            // Mettre à jour le cache
+            var updatedCredit = {
+                ...credit,
+                amountGiven: (credit.amountGiven || 0) + amount,
+                remainingAmount: Math.max(0, newPaid),
+                paid: isFullyPaid
+            };
+            return CacheDB.set('credits', id, updatedCredit);
+        });
+    });
+
+    Promise.all(promises).then(function() {
+        alert('✅ Paiement effectué avec succès !');
+        closeCreditSelection();
+        if (typeof loadCredits === 'function') {
+            loadCredits();
+        }
+        CacheDB.sync();
+    }).catch(function(e) {
+        alert('❌ Erreur : ' + e.message);
+    });
+}
+window.validateCreditPayment = validateCreditPayment;
+
 // ==================== EXPOSITION DES FONCTIONS GLOBALES ====================
 
 window.loadCreditsPage = loadCreditsPage;
@@ -1864,6 +1960,7 @@ window.printCreditFactureDetails = printCreditFactureDetails;
 // ✅ AJOUT DES FONCTIONS PAIEMENT CRÉDIT
 window.openCreditPaymentModal = openCreditPaymentModal;
 window.confirmCreditPayment = confirmCreditPayment;
+window.validateCreditPayment = validateCreditPayment;
 
 // ✅ AJOUT DES FONCTIONS PAGINATION
 window.getPaginationHTML = getPaginationHTML;
