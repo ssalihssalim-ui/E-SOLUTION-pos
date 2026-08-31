@@ -59,14 +59,23 @@ function loadCategoriesPage(c) {
     loadCategories();
 }
 
+// ✅ CORRECTION : Utiliser le cache d'abord pour un chargement RAPIDE
 async function loadCategories() {
-    currentPages.categories = 1; allCategoriesData = [];
+    // ✅ 1. Charger depuis le cache (RAPIDE)
+    const cached = await CacheDB.getAll('categories');
+    if (cached.length) {
+        allCategoriesData = cached;
+        renderCategoriesTable();
+    }
+    
+    // ✅ 2. Mettre à jour depuis Firestore en arrière-plan
     try {
         const snapshot = await db.collection('categories').get();
+        allCategoriesData = [];
         snapshot.forEach(d => allCategoriesData.push({ id: d.id, ...d.data() }));
         for (let doc of allCategoriesData) await CacheDB.set('categories', doc.id, doc);
+        renderCategoriesTable();
     } catch (e) { console.error(e); }
-    renderCategoriesTable();
 }
 
 async function renderCategoriesTable() {
