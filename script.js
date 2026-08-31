@@ -126,35 +126,57 @@ var start = (page - 1) * perPage;
 return data.slice(start, start + perPage);
 };
 
+// ✅ CORRECTION PAGINATION - Version améliorée
 window.getPaginationHTML = window.getPaginationHTML || function(collection, totalItems) {
 var perPage = window.itemsPerPage || 15;
 var totalPages = Math.ceil(totalItems / perPage);
 var cp = window.currentPages[collection] || 1;
 if (totalPages <= 1) return '';
 var html = '<div style="display:flex;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap;">';
-html += '<button onclick="window.currentPages.' + collection + '=1;' + getRefreshFn(collection) + '" ' + (cp <= 1 ? 'disabled' : '') + ' style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;">⏮</button>';
-html += '<button onclick="window.currentPages.' + collection + '=' + Math.max(1, cp - 1) + ';' + getRefreshFn(collection) + '" ' + (cp <= 1 ? 'disabled' : '') + ' style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;">◀</button>';
+html += '<button onclick="changePage(\'' + collection + '\', 1)" ' + (cp <= 1 ? 'disabled' : '') + ' style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;">⏮</button>';
+html += '<button onclick="changePage(\'' + collection + '\', ' + Math.max(1, cp - 1) + ')" ' + (cp <= 1 ? 'disabled' : '') + ' style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;">◀</button>';
 html += '<span style="padding:6px 12px;">' + cp + ' / ' + totalPages + '</span>';
-html += '<button onclick="window.currentPages.' + collection + '=' + Math.min(totalPages, cp + 1) + ';' + getRefreshFn(collection) + '" ' + (cp >= totalPages ? 'disabled' : '') + ' style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;">▶</button>';
-html += '<button onclick="window.currentPages.' + collection + '=' + totalPages + ';' + getRefreshFn(collection) + '" ' + (cp >= totalPages ? 'disabled' : '') + ' style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;">⏭</button>';
+html += '<button onclick="changePage(\'' + collection + '\', ' + Math.min(totalPages, cp + 1) + ')" ' + (cp >= totalPages ? 'disabled' : '') + ' style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;">▶</button>';
+html += '<button onclick="changePage(\'' + collection + '\', ' + totalPages + ')" ' + (cp >= totalPages ? 'disabled' : '') + ' style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;">⏭</button>';
 html += '</div>';
 return html;
 };
 
-function getRefreshFn(c) {
-var m = {
-categories: 'renderCategoriesTable()',
-products: 'renderProductsTable()',
-clients: 'renderClientsTable()',
-fournisseurs: 'renderFournisseursTable()',
-ventes: 'renderVentesTable()',
-credits: 'renderCreditsTable()',
-depenses: 'renderDepensesTable()',
-commandes: 'renderCommandesTable()',
-users: 'renderUsersTable()'
+// ✅ CORRECTION FONCTION changePage - Exposée globalement
+window.changePage = window.changePage || function(collection, newPage) {
+var dataArrays = {
+categories: window.allCategoriesData || [],
+products: window.allProductsData || [],
+clients: window.allClientsData || [],
+fournisseurs: window.allFournisseursData || [],
+ventes: window.filteredVentes || window.allVentesData || [],
+credits: window.filteredCredits || window.allCreditsData || [],
+depenses: window.filteredDepenses || window.allDepensesData || [],
+commandes: window.filteredCommandes || window.allCommandesData || [],
+users: window.allUsersData || []
 };
-return m[c] || '';
-}
+
+var totalItems = (dataArrays[collection] || []).length;
+var totalPages = Math.ceil(totalItems / (window.itemsPerPage || 15));
+if (newPage < 1 || newPage > totalPages) return;
+
+window.currentPages[collection] = newPage;
+
+// ✅ Appel des fonctions de rendu correctement
+var renderFunctions = {
+categories: function() { if (typeof renderCategoriesTable === 'function') renderCategoriesTable(); },
+products: function() { if (typeof renderProductsTable === 'function') renderProductsTable(); },
+clients: function() { if (typeof renderClientsTable === 'function') renderClientsTable(); },
+fournisseurs: function() { if (typeof renderFournisseursTable === 'function') renderFournisseursTable(); },
+ventes: function() { if (typeof renderVentesTable === 'function') renderVentesTable(); },
+credits: function() { if (typeof renderCreditsTable === 'function') renderCreditsTable(); },
+depenses: function() { if (typeof renderDepensesTable === 'function') renderDepensesTable(); },
+commandes: function() { if (typeof renderCommandesTable === 'function') renderCommandesTable(); },
+users: function() { if (typeof renderUsersTable === 'function') renderUsersTable(); }
+};
+
+if (renderFunctions[collection]) renderFunctions[collection]();
+};
 
 window.refreshCurrentPage = function() {
 var ct = document.getElementById('pageTitle')?.textContent || '';
