@@ -312,6 +312,13 @@ c.innerHTML = '<div class="stats-grid">' +
 '</div>';
 loadDashboardStats();
 loadPendingRegistrations();
+
+// ✅ AJOUT : Sauvegarde systématique
+if (typeof CacheDB !== 'undefined' && CacheDB.saveAll) {
+    setTimeout(function() {
+        CacheDB.saveAll();
+    }, 500);
+}
 }
 
 function loadDashboardStats() {
@@ -470,6 +477,12 @@ await CacheDB.set('users', 'current', window.currentUserData);
 // 6. Synchroniser
 await CacheDB.sync();
 
+// ✅ AJOUT : Sauvegarde du cache
+if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+    CacheDB.saveCollection('users');
+    CacheDB.saveCollection('clients');
+}
+
 alert('✅ Utilisateur accepté avec succès !');
 
 // 7. Rafraîchir les listes
@@ -510,6 +523,12 @@ await CacheDB.delete('clients', uid);
 // 4. Synchroniser
 await CacheDB.sync();
 
+// ✅ AJOUT : Sauvegarde du cache
+if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+    CacheDB.saveCollection('users');
+    CacheDB.saveCollection('clients');
+}
+
 alert('✅ Utilisateur supprimé');
 
 // 5. Rafraîchir
@@ -545,6 +564,13 @@ c.innerHTML = '<div class="stats-grid">' +
 '<div class="content-card"><div class="card-header"><h3><i class="fas fa-users"></i> Utilisateurs</h3><div style="display:flex;gap:10px;"><input type="text" id="usersSearchInput" placeholder="🔍 Rechercher..." style="padding:8px 12px;border:2px solid #e2e8f0;border-radius:8px;width:220px;" onkeyup="window.usersSearchQuery=this.value.trim().toLowerCase();renderUsersTable();"><button class="btn-add" onclick="loadUsersList()">Actualiser</button></div></div><div class="table-container"><table class="data-table" id="usersTable"><thead><tr><th>Username</th><th>Nom</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Actions</th></tr></thead><tbody></tbody></table></div></div>';
 loadUsersList();
 loadFideliteSettings();
+
+// ✅ AJOUT : Sauvegarde systématique
+if (typeof CacheDB !== 'undefined' && CacheDB.saveAll) {
+    setTimeout(function() {
+        CacheDB.saveAll();
+    }, 500);
+}
 }
 
 function loadUsersList() {
@@ -757,6 +783,13 @@ ${getPeriodOptions('all')}
 `;
 
 loadCreditsData();
+
+// ✅ AJOUT : Sauvegarde systématique
+if (typeof CacheDB !== 'undefined' && CacheDB.saveAll) {
+    setTimeout(function() {
+        CacheDB.saveAll();
+    }, 500);
+}
 }
 
 async function loadCreditsData() {
