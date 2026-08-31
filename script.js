@@ -37,6 +37,31 @@ window.usersSearchQuery = window.usersSearchQuery || '';
 window.editCategoryData = window.editCategoryData || null;
 window.pendingUsersData = window.pendingUsersData || [];
 
+// ========== OPTIMISATION : PRÉCHARGEMENT EN PARALLÈLE ==========
+async function preloadAllData() {
+    if (typeof CacheDB === 'undefined') return;
+    
+    try {
+        const results = await Promise.allSettled([
+            CacheDB.getAll('categories'),
+            CacheDB.getAll('products'),
+            CacheDB.getAll('clients'),
+            CacheDB.getAll('fournisseurs'),
+            CacheDB.getAll('ventes'),
+            CacheDB.getAll('credits'),
+            CacheDB.getAll('stock'),
+            CacheDB.getAll('depenses')
+        ]);
+        
+        console.log('⚡ Données préchargées en parallèle:', results.length, 'collections');
+    } catch(e) {
+        console.warn('Erreur préchargement:', e);
+    }
+}
+
+// Lancer le préchargement immédiatement
+preloadAllData();
+
 // ========== FONCTIONS UTILITAIRES GLOBALES ==========
 window.escapeHtml = window.escapeHtml || function(str) {
 if (!str) return '';
@@ -391,7 +416,7 @@ showAuthPage();
 }
 showLogin();
 
-// ✅ AJOUT : Sauvegarde systématique au démarrage
+// ✅ OPTIMISATION : Sauvegarde UNE SEULE FOIS après 3 secondes
 setTimeout(function() {
     if (typeof CacheDB !== 'undefined' && CacheDB.saveAll) {
         console.log('💾 Sauvegarde initiale des données...');
@@ -400,7 +425,7 @@ setTimeout(function() {
             CacheDB.setupRealtime();
         }
     }
-}, 2000);
+}, 3000);
 }
 
 // ========== GESTION DU MENU MOBILE ==========
