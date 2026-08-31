@@ -207,7 +207,7 @@ async function loadCategoriesInFilter() {
 function filterProducts() { selectedCategoryFilter = document.getElementById('categoryFilter').value; currentPages.products = 1; renderProductsTable(); }
 
 async function loadProducts() {
-    currentPages.products = 1;
+    // ✅ CORRECTION : NE PAS réinitialiser currentPages.products à 1
     window.allProductsData = [];
     try {
         const snapshot = await db.collection('products').get();
