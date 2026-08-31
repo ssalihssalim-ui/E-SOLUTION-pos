@@ -1463,6 +1463,17 @@ window.posStep = 1;
 if(isOnPOSPage()) renderPOS();
 if(navigator.onLine) setTimeout(function(){ CacheDB.sync().catch(function(){}); },500);
 }
+
+// ✅ AJOUT : Sauvegarde du cache après chaque vente
+if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+setTimeout(function() {
+    CacheDB.saveCollection('ventes');
+    CacheDB.saveCollection('products');
+    CacheDB.saveCollection('clients');
+    CacheDB.saveCollection('credits');
+}, 500);
+}
+
 }catch(e){ alert('Erreur: '+e.message); }
 finally { isFinalizing=false; if(fb){ fb.disabled=false; fb.innerHTML='<i class="fas fa-check-circle"></i> Finaliser'; } }
 }
