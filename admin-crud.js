@@ -59,16 +59,22 @@ function loadCategoriesPage(c) {
     loadCategories();
 }
 
-// ✅ CORRECTION : Utiliser le cache + Firestore SANS doublons
+// ✅ CORRECTION DÉFINITIVE ANTI-DOUBLONS
+var _categoriesLoaded = false; // 🔒 Verrou anti-doublons
+
 async function loadCategories() {
-    // ✅ 1. Vérifier si les données existent déjà dans le cache
+    // 🔒 Si déjà chargé, ne pas recharger
+    if (_categoriesLoaded) return;
+    _categoriesLoaded = true;
+    
+    // ✅ 1. Charger depuis le cache (RAPIDE)
     const cached = await CacheDB.getAll('categories');
-    if (cached.length && allCategoriesData.length === 0) {
+    if (cached.length) {
         allCategoriesData = cached;
         renderCategoriesTable();
     }
     
-    // ✅ 2. Mettre à jour depuis Firestore UNIQUEMENT si pas déjà chargé
+    // ✅ 2. Mettre à jour depuis Firestore SEULEMENT si le cache est vide
     if (allCategoriesData.length === 0) {
         try {
             const snapshot = await db.collection('categories').get();
@@ -217,16 +223,22 @@ async function loadCategoriesInFilter() {
 
 function filterProducts() { selectedCategoryFilter = document.getElementById('categoryFilter').value; currentPages.products = 1; renderProductsTable(); }
 
-// ✅ CORRECTION : Utiliser le cache + Firestore SANS doublons
+// ✅ CORRECTION DÉFINITIVE ANTI-DOUBLONS
+var _productsLoaded = false; // 🔒 Verrou anti-doublons
+
 async function loadProducts() {
-    // ✅ 1. Vérifier si les données existent déjà dans le cache
+    // 🔒 Si déjà chargé, ne pas recharger
+    if (_productsLoaded) return;
+    _productsLoaded = true;
+    
+    // ✅ 1. Charger depuis le cache (RAPIDE)
     const cached = await CacheDB.getAll('products');
-    if (cached.length && window.allProductsData.length === 0) {
+    if (cached.length) {
         window.allProductsData = cached;
         renderProductsTable();
     }
     
-    // ✅ 2. Mettre à jour depuis Firestore UNIQUEMENT si pas déjà chargé
+    // ✅ 2. Mettre à jour depuis Firestore SEULEMENT si le cache est vide
     if (window.allProductsData.length === 0) {
         try {
             const snapshot = await db.collection('products').get();
@@ -476,16 +488,22 @@ function loadClientsPage(c) {
 
 function clientSearch(query) { clientSearchQuery = query.toLowerCase().trim(); currentPages.clients = 1; renderClientsTable(); }
 
-// ✅ CORRECTION : Utiliser le cache + Firestore SANS doublons
+// ✅ CORRECTION DÉFINITIVE ANTI-DOUBLONS
+var _clientsLoaded = false; // 🔒 Verrou anti-doublons
+
 async function loadClients() {
-    // ✅ 1. Vérifier si les données existent déjà dans le cache
+    // 🔒 Si déjà chargé, ne pas recharger
+    if (_clientsLoaded) return;
+    _clientsLoaded = true;
+    
+    // ✅ 1. Charger depuis le cache (RAPIDE)
     const cached = await CacheDB.getAll('clients');
-    if (cached.length && allClientsData.length === 0) {
+    if (cached.length) {
         allClientsData = cached;
         renderClientsTable();
     }
     
-    // ✅ 2. Mettre à jour depuis Firestore UNIQUEMENT si pas déjà chargé
+    // ✅ 2. Mettre à jour depuis Firestore SEULEMENT si le cache est vide
     if (allClientsData.length === 0) {
         try {
             const snapshot = await db.collection('clients').get();
@@ -581,16 +599,22 @@ function loadFournisseursPage(c) {
     loadFournisseurs();
 }
 
-// ✅ CORRECTION : Utiliser le cache + Firestore SANS doublons
+// ✅ CORRECTION DÉFINITIVE ANTI-DOUBLONS
+var _fournisseursLoaded = false; // 🔒 Verrou anti-doublons
+
 async function loadFournisseurs() {
-    // ✅ 1. Vérifier si les données existent déjà dans le cache
+    // 🔒 Si déjà chargé, ne pas recharger
+    if (_fournisseursLoaded) return;
+    _fournisseursLoaded = true;
+    
+    // ✅ 1. Charger depuis le cache (RAPIDE)
     const cached = await CacheDB.getAll('fournisseurs');
-    if (cached.length && allFournisseursData.length === 0) {
+    if (cached.length) {
         allFournisseursData = cached;
         renderFournisseursTable();
     }
     
-    // ✅ 2. Mettre à jour depuis Firestore UNIQUEMENT si pas déjà chargé
+    // ✅ 2. Mettre à jour depuis Firestore SEULEMENT si le cache est vide
     if (allFournisseursData.length === 0) {
         try {
             const snapshot = await db.collection('fournisseurs').get();
