@@ -12,6 +12,9 @@ const STATIC_FILES = [
   '/script.js',
   '/auth.js',
   '/admin.js',
+  '/admin-crud.js',  // ✅ Ajouté
+  '/admin-ventes.js',  // ✅ Ajouté
+  '/admin-credits.js',  // ✅ Ajouté
   '/pos.js',
   '/client.js',
   '/menutactile.js',
@@ -20,6 +23,7 @@ const STATIC_FILES = [
   '/caissier.js',
   '/depenses.js',
   '/statistics.js',
+  '/pos-audio.js',
   '/manifest.json',
   '/logo.png'
 ];
@@ -30,9 +34,9 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(STATIC_CACHE).then(cache => {
       console.log('📦 Mise en cache des fichiers statiques...');
-      return cache.addAll(STATIC_FILES)
-        .then(() => console.log('✅ Cache statique prêt'))
-        .catch(err => console.error('❌ Erreur de mise en cache:', err));
+      return Promise.allSettled(
+        STATIC_FILES.map(url => cache.add(url))
+      ).then(() => console.log('✅ Cache statique prêt'));
     })
   );
   self.skipWaiting();
@@ -96,7 +100,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Fichiers statiques
+  // Fichiers statiques : cache-first
   if (STATIC_FILES.some(file => request.url.endsWith(file) || request.url.includes(file))) {
     event.respondWith(
       caches.open(STATIC_CACHE).then(cache => {
