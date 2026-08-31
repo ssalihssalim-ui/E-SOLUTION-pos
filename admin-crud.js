@@ -990,4 +990,10 @@ window.validerAchats = validerAchats;
 window.calculerTotalLigne = calculerTotalLigne;
 window.ouvrirCameraFacture = ouvrirCameraFacture;
 
+// ✅ AJOUT : Exposer les fonctions de rendu globalement
+window.renderCategoriesTable = renderCategoriesTable;
+window.renderProductsTable = renderProductsTable;
+window.renderClientsTable = renderClientsTable;
+window.renderFournisseursTable = renderFournisseursTable;
+
 console.log('🚀 E-SOLUTION - Admin CRUD - Module achats pro avec Gemini');
