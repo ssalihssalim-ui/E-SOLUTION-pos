@@ -1765,3 +1765,13 @@ padding-top: env(safe-area-inset-top, 0px) !important;
 .main-content {
 padding-top: calc(22px + env(safe-area-inset-top, 0px)) !important;
 }
+
+/* ============================================================
+✅ OPTIMISATION RAPIDITÉ MOBILE
+============================================================ */
+@media (max-width: 768px) {
+    * {
+        transition: none !important;
+        animation: none !important;
+    }
+}
