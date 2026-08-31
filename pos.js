@@ -161,6 +161,27 @@ btn.style.display = visible ? 'block' : 'none';
 }
 }
 
+// ==================== OPTIMISATION : PRÉCHARGEMENT DU POS ====================
+async function preloadPosData() {
+    if (typeof CacheDB === 'undefined') return;
+    
+    try {
+        const results = await Promise.allSettled([
+            CacheDB.getAll('categories'),
+            CacheDB.getAll('products'),
+            CacheDB.getAll('clients'),
+            CacheDB.getAll('stock')
+        ]);
+        
+        console.log('⚡ Données POS préchargées en parallèle:', results.length, 'collections');
+    } catch(e) {
+        console.warn('Erreur préchargement POS:', e);
+    }
+}
+
+// Lancer le préchargement immédiatement
+preloadPosData();
+
 // ==================== TOGGLE OUTILS POS - CORRIGÉ ====================
 function posToggleTools() {
     posToolsVisible = !posToolsVisible;
@@ -287,18 +308,41 @@ posResetCart(); posStep=1; posCommandesFilterText=''; posCommandesSortField='cre
 posCategoriesList=[]; posProductsList=[]; posAllClients=[]; posFilteredClients=[];
 c.innerHTML='<div style="text-align:center;padding:60px;"><i class="fas fa-spinner fa-spin" style="font-size:2.5rem;color:#14B8A6;"></i><p style="margin-top:15px;color:#64748b;">Chargement du POS...</p></div>';
 setStaticBackButtonVisibility(false);
-try{
-let cc=await CacheDB.getAll('categories'),cp=await CacheDB.getAll('products'),cl=await CacheDB.getAll('clients');
-if(cc.length){ posCategoriesList=cc.map(x=>({id:x.id,nom:x.nom,imageBase64:x.imageBase64,recette:x.recette||false,ordre:x.ordre||0})); }
-if(cp.length){ posProductsList=cp.filter(x=>x.disponible!==false).map(x=>({...x,description:x.description||''})); productIndexBuilt=false; }
-if(cl.length){ posAllClients=cl.map(x=>({id:x.id,nom:x.nom,prenom:x.prenom,telephone:x.telephone,description:x.description||''})); posFilteredClients=[...posAllClients]; }
-if(isOnPOSPage()) renderPOS();
-if (typeof window.buildClientIndex === 'function') window.buildClientIndex();
-if (typeof window.buildProductIndex === 'function') window.buildProductIndex();
-}catch(e){ console.error(e); }
+
+// ✅ OPTIMISATION : Charger depuis le cache en PRIORITÉ (RAPIDE)
+try {
+    let [cc, cp, cl] = await Promise.all([
+        CacheDB.getAll('categories'),
+        CacheDB.getAll('products'),
+        CacheDB.getAll('clients')
+    ]);
+    
+    if (cc.length) { 
+        posCategoriesList = cc.map(x => ({ id: x.id, nom: x.nom, imageBase64: x.imageBase64, recette: x.recette || false, ordre: x.ordre || 0 })); 
+    }
+    if (cp.length) { 
+        posProductsList = cp.filter(x => x.disponible !== false).map(x => ({ ...x, description: x.description || '' })); 
+        productIndexBuilt = false; 
+    }
+    if (cl.length) { 
+        posAllClients = cl.map(x => ({ id: x.id, nom: x.nom, prenom: x.prenom, telephone: x.telephone, description: x.description || '' })); 
+        posFilteredClients = [...posAllClients]; 
+    }
+    
+    if (isOnPOSPage()) renderPOS();
+    if (typeof window.buildClientIndex === 'function') window.buildClientIndex();
+    if (typeof window.buildProductIndex === 'function') window.buildProductIndex();
+} catch(e) { console.error(e); }
+
+// ✅ Mettre à jour depuis Firestore en arrière-plan (SYNCHRONISATION)
 setTimeout(async function(){
 try{
-const[cs,ps,cl]=await Promise.all([db.collection('categories').get(),db.collection('products').get(),db.collection('clients').limit(500).get()]);
+const [cs, ps, cl] = await Promise.all([
+    db.collection('categories').get(),
+    db.collection('products').get(),
+    db.collection('clients').limit(500).get()
+]);
+
 posCategoriesList=[]; cs.forEach(d=>{ let cat={id:d.id,nom:d.data().nom,imageBase64:d.data().imageBase64,recette:d.data().recette||false,ordre:d.data().ordre||0}; posCategoriesList.push(cat); CacheDB.set('categories',d.id,cat); });
 posProductsList=[]; ps.forEach(d=>{ let dd=d.data(); if(dd.disponible!==false){ let prod={id:d.id,nom:dd.nom||'',description:dd.description||'',prixVente:dd.prixVente||0,prixPromo:dd.prixPromo||0,prixAchat:dd.prixAchat||0,stock:dd.stock,categorie:dd.categorie||'',categories:dd.categories||[],imageBase64:dd.imageBase64||'',favori:dd.favori||false}; posProductsList.push(prod); CacheDB.set('products',d.id,prod); } }); productIndexBuilt=false;
 posAllClients=[]; cl.forEach(d=>{ let data=d.data(),cli={id:d.id,nom:data.nom,prenom:data.prenom,telephone:data.telephone,description:data.description||''}; posAllClients.push(cli); CacheDB.set('clients',d.id,cli); }); posFilteredClients=[...posAllClients];
@@ -306,7 +350,8 @@ if(isOnPOSPage()) renderPOS();
 if (typeof window.buildClientIndex === 'function') window.buildClientIndex();
 if (typeof window.buildProductIndex === 'function') window.buildProductIndex();
 }catch(e){ console.error(e); }
-},300);
+}, 300);
+
 await posChargerCommandesTables(); await posChargerCommandesEnLigneCount();
 var cmdData=localStorage.getItem('posCommandeData'),payData=localStorage.getItem('posPayerVente');
 var creditData = localStorage.getItem('posPayerCredit');
