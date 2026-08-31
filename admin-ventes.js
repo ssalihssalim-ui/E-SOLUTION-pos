@@ -106,6 +106,11 @@ ventesSelectionnees.clear();
 alert(`✅ ${totalDeleted} vente(s) supprimée(s) !`);
 loadVentes();
 
+// ✅ AJOUT : Sauvegarde du cache après suppression en masse
+if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+    CacheDB.saveCollection('ventes');
+}
+
 } catch(e) {
 console.error('❌ Erreur :', e);
 alert('❌ Erreur : ' + e.message);
@@ -1186,6 +1191,11 @@ validatedBy: window.currentUserData ? window.currentUserData.userData.prenom + '
 alert('✅ Validée !');
 loadCommandes();
 CacheDB.sync();
+
+// ✅ AJOUT : Sauvegarde du cache
+if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+    CacheDB.saveCollection('commandes');
+}
 }
 
 async function payCommande(cid) {
@@ -1210,6 +1220,11 @@ CacheDB.write('commandes', cid, { statut: 'annule' }, 'update').then(function() 
 alert('❌ Annulée');
 loadCommandes();
 CacheDB.sync();
+
+// ✅ AJOUT : Sauvegarde du cache
+if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+    CacheDB.saveCollection('commandes');
+}
 });
 }
 }
@@ -1660,7 +1675,15 @@ remainingAmount: paid ? 0 : remaining,
 paid: paid,
 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
 };
-saveDocument('ventes', data, function() { closeModal(); loadVentes(); });
+saveDocument('ventes', data, function() { 
+closeModal(); 
+loadVentes(); 
+
+// ✅ AJOUT : Sauvegarde du cache
+if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+    CacheDB.saveCollection('ventes');
+}
+});
 }
 
 function deleteVente(did) {
@@ -1669,6 +1692,11 @@ CacheDB.write('ventes', did, null, 'delete').then(function() {
 alert('✅ Supprimé');
 loadVentes();
 CacheDB.sync();
+
+// ✅ AJOUT : Sauvegarde du cache
+if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+    CacheDB.saveCollection('ventes');
+}
 });
 }
 }
