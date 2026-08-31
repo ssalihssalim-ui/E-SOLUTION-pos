@@ -118,7 +118,15 @@ function saveCategory() {
             ordre: parseInt(document.getElementById('catOrdre').value) || 0
         };
         d.imageBase64 = img || existingImage;
-        saveDocument('categories', d, function() { closeModal(); refreshCurrentPage(); });
+        saveDocument('categories', d, function() { 
+            closeModal(); 
+            refreshCurrentPage(); 
+            
+            // ✅ AJOUT : Sauvegarde du cache
+            if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+                CacheDB.saveCollection('categories');
+            }
+        });
     };
     if (f) fileToBase64(f, sf); else sf(null);
 }
@@ -403,6 +411,11 @@ function saveProduct() {
                 var idx = window.allProductsData.findIndex(function(x) { return x.id === editingId; }); 
                 if (idx !== -1) window.allProductsData[idx] = Object.assign({}, window.allProductsData[idx], d, { id: editingId }); 
                 closeModal(); renderProductsTable(); CacheDB.sync(); 
+                
+                // ✅ AJOUT : Sauvegarde du cache
+                if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+                    CacheDB.saveCollection('products');
+                }
             }); 
         }
         else { 
@@ -410,6 +423,11 @@ function saveProduct() {
                 d.id = newId; 
                 window.allProductsData.push(d); 
                 closeModal(); renderProductsTable(); CacheDB.sync(); 
+                
+                // ✅ AJOUT : Sauvegarde du cache
+                if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+                    CacheDB.saveCollection('products');
+                }
             }); 
         }
     };
@@ -500,7 +518,15 @@ function saveClient() {
     if (!n || !p) { alert('Nom et Prénom obligatoires'); return; }
     var d = { nom: n, prenom: p, username: document.getElementById('cliUsername').value, genre: document.getElementById('cliGenre').value, adresse: document.getElementById('cliAdresse').value, email: document.getElementById('cliEmail').value, telephone: document.getElementById('cliTel').value, whatsapp: document.getElementById('cliWhatsapp').value, facebook: document.getElementById('cliFacebook').value, instagram: document.getElementById('cliInstagram').value, ca: parseFloat(document.getElementById('cliCA').value) || 0, profit: parseFloat(document.getElementById('cliProfit').value) || 0, pointsFidelite: parseInt(document.getElementById('cliPoints').value) || 0, allergies: document.getElementById('cliAllergies').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean), aime: document.getElementById('cliAime').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean), deteste: document.getElementById('cliDeteste').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean), description: document.getElementById('cliDesc').value };
     if (!editingId) d.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-    saveDocument('clients', d, function() { closeModal(); loadClients(); });
+    saveDocument('clients', d, function() { 
+        closeModal(); 
+        loadClients(); 
+        
+        // ✅ AJOUT : Sauvegarde du cache
+        if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+            CacheDB.saveCollection('clients');
+        }
+    });
 }
 
 function editClient(id) { db.collection('clients').doc(id).get().then(function(doc) { if (doc.exists) { editingId = id; currentCollection = 'clients'; openClientForm(doc.data()); } }); }
@@ -591,7 +617,15 @@ function saveFournisseur() {
         factureSchema: factureSchema
     };
     if (!editingId) d.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-    saveDocument('fournisseurs', d, function() { closeModal(); loadFournisseurs(); });
+    saveDocument('fournisseurs', d, function() { 
+        closeModal(); 
+        loadFournisseurs(); 
+        
+        // ✅ AJOUT : Sauvegarde du cache
+        if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+            CacheDB.saveCollection('fournisseurs');
+        }
+    });
 }
 
 function editFournisseur(id) { db.collection('fournisseurs').doc(id).get().then(function(doc) { if (doc.exists) { editingId = id; currentCollection = 'fournisseurs'; openFournisseurForm(doc.data()); } }); }
@@ -836,6 +870,12 @@ async function validerAchats() {
         fermerAchatModal();
         if (typeof loadProducts === 'function') loadProducts();
         else if (typeof renderProductsTable === 'function') renderProductsTable();
+        
+        // ✅ AJOUT : Sauvegarde du cache après achat
+        if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+            CacheDB.saveCollection('products');
+            CacheDB.saveCollection('fournisseurs');
+        }
     } catch(e) {
         alert('❌ Erreur : ' + e.message);
     }
