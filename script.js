@@ -354,6 +354,17 @@ showAuthPage();
 });
 }
 showLogin();
+
+// ✅ AJOUT : Sauvegarde systématique au démarrage
+setTimeout(function() {
+    if (typeof CacheDB !== 'undefined' && CacheDB.saveAll) {
+        console.log('💾 Sauvegarde initiale des données...');
+        CacheDB.saveAll();
+        if (typeof CacheDB.setupRealtime === 'function') {
+            CacheDB.setupRealtime();
+        }
+    }
+}, 2000);
 }
 
 // ========== GESTION DU MENU MOBILE ==========
