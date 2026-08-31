@@ -239,14 +239,8 @@ async function loadCategoriesInFilter() {
 
 function filterProducts() { selectedCategoryFilter = document.getElementById('categoryFilter').value; currentPages.products = 1; renderProductsTable(); }
 
-// ✅ CORRECTION DÉFINITIVE ANTI-DOUBLONS
-var _productsLoaded = false; // 🔒 Verrou anti-doublons
-
+// ✅ CORRECTION : SUPPRESSION DU VERROU ANTI-DOUBLONS
 async function loadProducts() {
-    // 🔒 Si déjà chargé, ne pas recharger
-    if (_productsLoaded) return;
-    _productsLoaded = true;
-    
     // ✅ 1. Charger depuis le cache (RAPIDE)
     const cached = await CacheDB.getAll('products');
     if (cached.length) {
@@ -254,16 +248,14 @@ async function loadProducts() {
         renderProductsTable();
     }
     
-    // ✅ 2. Mettre à jour depuis Firestore SEULEMENT si le cache est vide
-    if (window.allProductsData.length === 0) {
-        try {
-            const snapshot = await db.collection('products').get();
-            window.allProductsData = [];
-            snapshot.forEach(d => { let dd = d.data(); dd.id = d.id; let prix = (dd.prixPromo && dd.prixPromo > 0) ? dd.prixPromo : (dd.prixVente || 0); dd.profit = (prix - (dd.prixAchat || 0)); window.allProductsData.push(dd); });
-            for (let doc of window.allProductsData) await CacheDB.set('products', doc.id, doc);
-            renderProductsTable();
-        } catch (e) { console.error(e); }
-    }
+    // ✅ 2. Mettre à jour depuis Firestore
+    try {
+        const snapshot = await db.collection('products').get();
+        window.allProductsData = [];
+        snapshot.forEach(d => { let dd = d.data(); dd.id = d.id; let prix = (dd.prixPromo && dd.prixPromo > 0) ? dd.prixPromo : (dd.prixVente || 0); dd.profit = (prix - (dd.prixAchat || 0)); window.allProductsData.push(dd); });
+        for (let doc of window.allProductsData) await CacheDB.set('products', doc.id, doc);
+        renderProductsTable();
+    } catch (e) { console.error(e); }
 }
 
 function renderProductsTable() {
@@ -504,14 +496,8 @@ function loadClientsPage(c) {
 
 function clientSearch(query) { clientSearchQuery = query.toLowerCase().trim(); currentPages.clients = 1; renderClientsTable(); }
 
-// ✅ CORRECTION DÉFINITIVE ANTI-DOUBLONS
-var _clientsLoaded = false; // 🔒 Verrou anti-doublons
-
+// ✅ CORRECTION : SUPPRESSION DU VERROU ANTI-DOUBLONS
 async function loadClients() {
-    // 🔒 Si déjà chargé, ne pas recharger
-    if (_clientsLoaded) return;
-    _clientsLoaded = true;
-    
     // ✅ 1. Charger depuis le cache (RAPIDE)
     const cached = await CacheDB.getAll('clients');
     if (cached.length) {
@@ -519,16 +505,14 @@ async function loadClients() {
         renderClientsTable();
     }
     
-    // ✅ 2. Mettre à jour depuis Firestore SEULEMENT si le cache est vide
-    if (allClientsData.length === 0) {
-        try {
-            const snapshot = await db.collection('clients').get();
-            allClientsData = [];
-            snapshot.forEach(d => { let dd = d.data(); dd.id = d.id; allClientsData.push(dd); });
-            for (let doc of allClientsData) await CacheDB.set('clients', doc.id, doc);
-            renderClientsTable();
-        } catch (e) { console.error(e); }
-    }
+    // ✅ 2. Mettre à jour depuis Firestore
+    try {
+        const snapshot = await db.collection('clients').get();
+        allClientsData = [];
+        snapshot.forEach(d => { let dd = d.data(); dd.id = d.id; allClientsData.push(dd); });
+        for (let doc of allClientsData) await CacheDB.set('clients', doc.id, doc);
+        renderClientsTable();
+    } catch (e) { console.error(e); }
 }
 
 function renderClientsTable() {
@@ -615,14 +599,8 @@ function loadFournisseursPage(c) {
     loadFournisseurs();
 }
 
-// ✅ CORRECTION DÉFINITIVE ANTI-DOUBLONS
-var _fournisseursLoaded = false; // 🔒 Verrou anti-doublons
-
+// ✅ CORRECTION : SUPPRESSION DU VERROU ANTI-DOUBLONS
 async function loadFournisseurs() {
-    // 🔒 Si déjà chargé, ne pas recharger
-    if (_fournisseursLoaded) return;
-    _fournisseursLoaded = true;
-    
     // ✅ 1. Charger depuis le cache (RAPIDE)
     const cached = await CacheDB.getAll('fournisseurs');
     if (cached.length) {
@@ -630,16 +608,14 @@ async function loadFournisseurs() {
         renderFournisseursTable();
     }
     
-    // ✅ 2. Mettre à jour depuis Firestore SEULEMENT si le cache est vide
-    if (allFournisseursData.length === 0) {
-        try {
-            const snapshot = await db.collection('fournisseurs').get();
-            allFournisseursData = [];
-            snapshot.forEach(d => { let dd = d.data(); dd.id = d.id; allFournisseursData.push(dd); });
-            for (let doc of allFournisseursData) await CacheDB.set('fournisseurs', doc.id, doc);
-            renderFournisseursTable();
-        } catch (e) { console.error(e); }
-    }
+    // ✅ 2. Mettre à jour depuis Firestore
+    try {
+        const snapshot = await db.collection('fournisseurs').get();
+        allFournisseursData = [];
+        snapshot.forEach(d => { let dd = d.data(); dd.id = d.id; allFournisseursData.push(dd); });
+        for (let doc of allFournisseursData) await CacheDB.set('fournisseurs', doc.id, doc);
+        renderFournisseursTable();
+    } catch (e) { console.error(e); }
 }
 
 function renderFournisseursTable() {
