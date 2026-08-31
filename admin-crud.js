@@ -86,6 +86,7 @@ async function loadCategories() {
     }
 }
 
+// ✅ CORRECTION MAJEURE : SUPPRESSION DES REQUÊTES FIRESTORE EN BOUCLE
 async function renderCategoriesTable() {
     var tb = document.querySelector('#categoriesTable tbody');
     if (!tb) return;
@@ -96,9 +97,30 @@ async function renderCategoriesTable() {
         tb.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;font-size:24px;">Aucune catégorie</td></tr>';
         document.getElementById('categoriesPagination').innerHTML = ''; return;
     }
+    
+    // ✅ CORRECTION : Créer un dictionnaire pour compter les produits en mémoire
+    var counts = {};
+    (window.allProductsData || []).forEach(function(p) {
+        // On compte pour toutes les catégories
+        if (p.categorie) {
+            if (!counts[p.categorie]) counts[p.categorie] = 0;
+            counts[p.categorie]++;
+        }
+        // On compte aussi pour les catégories multiples (si utilisées)
+        if (p.categories) {
+            p.categories.forEach(function(cat) {
+                if (!counts[cat]) counts[cat] = 0;
+                counts[cat]++;
+            });
+        }
+    });
+
+    // ✅ CORRECTION : Utiliser le dictionnaire au lieu d'une requête Firestore
     for (var i = 0; i < pageData.length; i++) {
-        var d = pageData[i]; var pc = 0;
-        try { var ps = await db.collection('products').where('categorie', '==', d.nom).get(); pc = ps.size; } catch (e) { }
+        var d = pageData[i];
+        // On récupère le nombre depuis le dictionnaire
+        var pc = counts[d.nom] || 0; 
+
         var im = d.imageBase64 ? '<img src="' + d.imageBase64 + '" style="width:50px;height:50px;object-fit:cover;border-radius:8px;">' : '<i class="fas fa-folder fa-3x" style="color:#14B8A6;"></i>';
         var pcol = (d.profit || 0) >= 0 ? '#14B8A6' : '#dc2626';
         var recetteBadge = d.recette ? '<span class="status-success" style="font-size:20px; padding:6px 14px;">✅ Oui</span>' : '<span class="status-warning" style="font-size:20px; padding:6px 14px;">❌ Non</span>';
