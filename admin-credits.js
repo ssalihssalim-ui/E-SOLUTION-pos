@@ -433,18 +433,16 @@ min-width: 180px !important;
 #creditsPage .action-buttons .btn-edit,
 #creditsPage .action-buttons .btn-delete,
 #creditsPage .action-buttons .btn-add {
-width: auto !important;
-height: auto !important;
-min-width: auto !important;
-min-height: auto !important;
-border-radius: 8px !important;
+width: 50px !important;
+height: 50px !important;
+min-width: 50px !important;
+min-height: 50px !important;
+border-radius: 10px !important;
 display: inline-flex !important;
 align-items: center !important;
 justify-content: center !important;
-padding: 8px 12px !important;
-font-size: 14px !important;
-font-weight: 700 !important;
-gap: 6px !important;
+padding: 0 !important;
+font-size: 20px !important;
 transition: all 0.2s ease !important;
 border: none !important;
 cursor: pointer !important;
@@ -455,7 +453,7 @@ box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
 #creditsPage .action-buttons .btn-edit i,
 #creditsPage .action-buttons .btn-delete i,
 #creditsPage .action-buttons .btn-add i {
-font-size: 16px !important;
+font-size: 22px !important;
 pointer-events: none !important;
 line-height: 1 !important;
 }
@@ -517,92 +515,6 @@ color: #fff !important;
 background: #dc2626 !important;
 }
 
-#creditsPage .action-buttons .btn-add.payer-btn {
-background: #10B981 !important;
-color: #fff !important;
-font-size: 14px !important;
-padding: 8px 12px !important;
-width: auto !important;
-min-width: 60px !important;
-border-radius: 8px !important;
-gap: 4px !important;
-}
-
-#creditsPage .action-buttons .btn-add.payer-btn:hover {
-background: #059669 !important;
-transform: translateY(-2px) !important;
-}
-
-#creditsPage .action-buttons .btn-add.payer-btn i {
-font-size: 14px !important;
-}
-
-#creditsPage .filter-group {
-display: flex;
-align-items: center;
-gap: 10px;
-}
-
-#creditsPage .filter-group label {
-font-size: 16px !important;
-font-weight: 600;
-color: var(--text-secondary);
-text-transform: uppercase;
-letter-spacing: 0.5px;
-}
-
-#creditsPage .filter-group select {
-padding: 10px 16px;
-border: 2px solid var(--border);
-border-radius: 10px;
-font-size: 20px !important;
-font-family: 'Inter', sans-serif;
-background: var(--white);
-color: var(--text-primary);
-transition: var(--transition);
-min-width: 140px;
-}
-
-#creditsPage .filter-group select:focus {
-border-color: var(--black);
-outline: none;
-box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
-}
-
-#creditsPage .total-row-pro {
-display: flex;
-justify-content: flex-end;
-align-items: center;
-gap: 32px;
-padding: 18px 24px;
-background: #fef2f2;
-border-radius: 14px;
-margin-top: 18px;
-border: 1px solid #fecaca;
-flex-wrap: wrap;
-}
-
-#creditsPage .total-row-pro .total-label {
-font-size: 16px !important;
-font-weight: 700;
-color: var(--text-secondary);
-text-transform: uppercase;
-letter-spacing: 0.5px;
-}
-
-#creditsPage .total-row-pro .total-amount {
-font-size: 28px !important;
-font-weight: 900;
-color: var(--danger);
-letter-spacing: -0.5px;
-}
-
-#creditsPage .total-row-pro .total-amount i {
-color: var(--danger);
-font-size: 22px !important;
-margin-right: 6px;
-}
-
 @media(max-width:1024px) {
 #creditsPage .action-buttons {
 min-width: 140px !important;
@@ -612,18 +524,17 @@ gap: 4px !important;
 #creditsPage .action-buttons .btn-edit,
 #creditsPage .action-buttons .btn-delete,
 #creditsPage .action-buttons .btn-add {
-width: auto !important;
-height: auto !important;
-min-width: auto !important;
-min-height: auto !important;
-font-size: 13px !important;
-padding: 6px 10px !important;
+width: 44px !important;
+height: 44px !important;
+min-width: 44px !important;
+min-height: 44px !important;
+font-size: 18px !important;
 }
 
-#creditsPage .action-buttons .btn-add.payer-btn {
-min-width: 50px !important;
-font-size: 12px !important;
-padding: 0 10px !important;
+#creditsPage .action-buttons .btn-edit i,
+#creditsPage .action-buttons .btn-delete i,
+#creditsPage .action-buttons .btn-add i {
+font-size: 18px !important;
 }
 }
 
@@ -676,19 +587,18 @@ gap: 4px !important;
 #creditsPage .action-buttons .btn-edit,
 #creditsPage .action-buttons .btn-delete,
 #creditsPage .action-buttons .btn-add {
-width: auto !important;
-height: auto !important;
-min-width: auto !important;
-min-height: auto !important;
-font-size: 12px !important;
-padding: 5px 8px !important;
-border-radius: 6px !important;
+width: 38px !important;
+height: 38px !important;
+min-width: 38px !important;
+min-height: 38px !important;
+font-size: 16px !important;
+border-radius: 8px !important;
 }
 
 #creditsPage .action-buttons .btn-edit i,
 #creditsPage .action-buttons .btn-delete i,
 #creditsPage .action-buttons .btn-add i {
-font-size: 14px !important;
+font-size: 16px !important;
 }
 }
 
@@ -755,26 +665,18 @@ gap: 2px !important;
 #creditsPage .action-buttons .btn-edit,
 #creditsPage .action-buttons .btn-delete,
 #creditsPage .action-buttons .btn-add {
-width: auto !important;
-height: auto !important;
-min-width: auto !important;
-min-height: auto !important;
-font-size: 11px !important;
-padding: 4px 6px !important;
-border-radius: 5px !important;
-}
-
-#creditsPage .action-buttons .btn-add.payer-btn {
-min-width: 40px !important;
-font-size: 10px !important;
-padding: 0 4px !important;
-height: auto !important;
+width: 32px !important;
+height: 32px !important;
+min-width: 32px !important;
+min-height: 32px !important;
+font-size: 14px !important;
+border-radius: 6px !important;
 }
 
 #creditsPage .action-buttons .btn-edit i,
 #creditsPage .action-buttons .btn-delete i,
 #creditsPage .action-buttons .btn-add i {
-font-size: 12px !important;
+font-size: 14px !important;
 }
 }
 </style>
@@ -1073,27 +975,27 @@ articlesHtml = '-';
 var mode = d.paymentMethod || '-';
 var amountPaid = d.amountGiven || 0;
 
-// ✅ ACTIONS - BOUTONS CLAIRS AVEC FONT AWESOME
+// ✅ BOUTONS AVEC UNIQUEMENT DES ICÔNES - PAS DE TEXTE
 var actions = `
 <div class="action-buttons" style="display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:nowrap;">
-    <button class="btn-print" onclick="printFacture('${d.id}')" title="Imprimer / PDF" style="display:inline-flex; align-items:center; gap:4px; padding:8px 10px; background:#6366f1; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600;">
-        <i class="fas fa-print" style="font-size:16px;"></i> Imprimer
+    <button class="btn-print" onclick="printFacture('${d.id}')" title="Imprimer / PDF" style="width:50px; height:50px; min-width:50px; min-height:50px; display:inline-flex; align-items:center; justify-content:center; background:#6366f1; color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:20px; transition:all 0.2s ease; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+        <i class="fas fa-print"></i>
     </button>
-    <button class="btn-whatsapp" onclick="sendCreditWhatsApp('${d.id}')" title="Envoyer WhatsApp" style="display:inline-flex; align-items:center; gap:4px; padding:8px 10px; background:#25D366; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600;">
-        <i class="fab fa-whatsapp" style="font-size:16px;"></i> WhatsApp
+    <button class="btn-whatsapp" onclick="sendCreditWhatsApp('${d.id}')" title="Envoyer WhatsApp" style="width:50px; height:50px; min-width:50px; min-height:50px; display:inline-flex; align-items:center; justify-content:center; background:#25D366; color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:20px; transition:all 0.2s ease; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+        <i class="fab fa-whatsapp"></i>
     </button>
     `;
 if (!d.paid) {
-    actions += `<button class="btn-payer" onclick="openCreditPaymentModal('${d.id}')" title="Marquer payé" style="display:inline-flex; align-items:center; gap:4px; padding:8px 10px; background:#10B981; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600;">
-        <i class="fas fa-check-circle" style="font-size:16px;"></i> Payer
+    actions += `<button class="btn-payer" onclick="openCreditPaymentModal('${d.id}')" title="Marquer payé" style="width:50px; height:50px; min-width:50px; min-height:50px; display:inline-flex; align-items:center; justify-content:center; background:#10B981; color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:20px; transition:all 0.2s ease; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+        <i class="fas fa-check-circle"></i>
     </button>`;
 }
 actions += `
-    <button class="btn-edit" onclick="editCredit('${d.id}')" title="Modifier" style="display:inline-flex; align-items:center; gap:4px; padding:8px 10px; background:#f59e0b; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600;">
-        <i class="fas fa-edit" style="font-size:16px;"></i> Modifier
+    <button class="btn-edit" onclick="editCredit('${d.id}')" title="Modifier" style="width:50px; height:50px; min-width:50px; min-height:50px; display:inline-flex; align-items:center; justify-content:center; background:#f59e0b; color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:20px; transition:all 0.2s ease; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+        <i class="fas fa-edit"></i>
     </button>
-    <button class="btn-delete" onclick="if(confirm('Supprimer définitivement ce crédit ?')) deleteCredit('${d.id}')" title="Supprimer" style="display:inline-flex; align-items:center; gap:4px; padding:8px 10px; background:#ef4444; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600;">
-        <i class="fas fa-trash-alt" style="font-size:16px;"></i> Supprimer
+    <button class="btn-delete" onclick="if(confirm('Supprimer définitivement ce crédit ?')) deleteCredit('${d.id}')" title="Supprimer" style="width:50px; height:50px; min-width:50px; min-height:50px; display:inline-flex; align-items:center; justify-content:center; background:#ef4444; color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:20px; transition:all 0.2s ease; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+        <i class="fas fa-trash-alt"></i>
     </button>
 `;
 actions += `</div>`;
