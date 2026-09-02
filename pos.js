@@ -11,7 +11,7 @@
 // ✅ Retour automatique à l'étape 1 après finalisation
 // ✅ CA et Profit client mis à jour (FORCE UPDATE)
 // ✅ Bouton "Afficher tout" corrigé
-// ✅ Affichage crédit client cliquable - REDIRECTION VERS PAGE CRÉDITS
+// ✅ Affichage crédit client cliquable - REDIRECTION VERS PAGE CRÉDITS AVEC SAUVEGARDE D'ÉTAT
 
 var posCart = [];
 var posStep = 1;
@@ -278,7 +278,7 @@ return 0;
 }
 }
 
-// ✅ VERSION MODIFIÉE : affichage crédit cliquable - REDIRECTION VERS PAGE CRÉDITS
+// ✅ VERSION MODIFIÉE : affichage crédit cliquable - REDIRECTION VERS PAGE CRÉDITS AVEC SAUVEGARDE D'ÉTAT
 async function updateClientCreditDisplay(clientId) {
     var displayEl = document.getElementById('clientCreditDisplay');
     if (!displayEl) return;
@@ -299,11 +299,23 @@ async function updateClientCreditDisplay(clientId) {
         displayEl.style.textDecoration = 'underline';
         displayEl.style.textDecorationStyle = 'dotted';
         displayEl.onclick = function() {
-            // ✅ REDIRECTION VERS LA PAGE CRÉDITS AVEC LE CLIENT PRÉ-SÉLECTIONNÉ
-            var clientName = posCurrentClient ? posCurrentClient.name : '';
-            var clientId = posCurrentClient ? posCurrentClient.id : '';
+            // ✅ SAUVEGARDER L'ÉTAT COMPLET DU POS AVANT DE QUITTER
+            var posState = {
+                cart: posCart,
+                step: posStep,
+                client: posCurrentClient,
+                table: posCurrentTable,
+                paymentMethod: posPaymentMethod,
+                discountMAD: posDiscountMAD,
+                amountGiven: posAmountGiven,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('posSavedState', JSON.stringify(posState));
+            console.log('💾 État POS sauvegardé:', posState);
             
             // Sauvegarder le client sélectionné pour la page crédits
+            var clientName = posCurrentClient ? posCurrentClient.name : '';
+            var clientId = posCurrentClient ? posCurrentClient.id : '';
             localStorage.setItem('posSelectedCreditClientId', clientId);
             localStorage.setItem('posSelectedCreditClientName', clientName);
             
@@ -329,6 +341,35 @@ posResetCart(); posStep=1; posCommandesFilterText=''; posCommandesSortField='cre
 posCategoriesList=[]; posProductsList=[]; posAllClients=[]; posFilteredClients=[];
 c.innerHTML='<div style="text-align:center;padding:60px;"><i class="fas fa-spinner fa-spin" style="font-size:2.5rem;color:#14B8A6;"></i><p style="margin-top:15px;color:#64748b;">Chargement du POS...</p></div>';
 setStaticBackButtonVisibility(false);
+
+// ✅ Vérifier s'il y a un état POS sauvegardé (retour depuis la page crédits)
+var savedState = localStorage.getItem('posSavedState');
+if (savedState) {
+    try {
+        var state = JSON.parse(savedState);
+        // Vérifier que l'état n'est pas trop vieux (plus de 5 minutes)
+        if (state.timestamp && (Date.now() - state.timestamp) < 300000) {
+            console.log('🔄 Restauration de l\'état POS:', state);
+            // Restaurer le panier
+            posCart = state.cart || [];
+            posStep = state.step || 1;
+            posCurrentClient = state.client || null;
+            posCurrentTable = state.table || '';
+            posPaymentMethod = state.paymentMethod || 'espece';
+            posDiscountMAD = state.discountMAD || 0;
+            posAmountGiven = state.amountGiven || 0;
+            
+            console.log('✅ État POS restauré avec succès');
+            console.log('📦 Panier:', posCart.length, 'articles');
+            console.log('👤 Client:', posCurrentClient ? posCurrentClient.name : 'Aucun');
+        } else {
+            localStorage.removeItem('posSavedState');
+        }
+    } catch(e) {
+        console.warn('⚠️ Erreur restauration état POS:', e);
+        localStorage.removeItem('posSavedState');
+    }
+}
 
 // ✅ OPTIMISATION : Charger depuis le cache en PRIORITÉ (RAPIDE)
 try {
@@ -1465,6 +1506,9 @@ if(window.posVenteId){ batch.update(db.collection('ventes').doc(window.posVenteI
 for(var i=0;i<posCart.length;i++){ var it=posCart[i]; batch.update(db.collection('products').doc(it.id), {stock:firebase.firestore.FieldValue.increment(-it.quantite), vendues:firebase.firestore.FieldValue.increment(it.quantite), ca:firebase.firestore.FieldValue.increment(it.prixUnitaire*it.quantite)}); }
 await batch.commit();
 
+// ✅ Nettoyer l'état sauvegardé après finalisation
+localStorage.removeItem('posSavedState');
+
 if(posCurrentClient && posCurrentClient.id && paid) {
 try {
 const success = await forceUpdateClient(posCurrentClient.id, t, profitTotal);
@@ -1553,6 +1597,10 @@ posCurrentTable = '';
 posPaymentMethod = 'espece';
 delete window.posCommandeId;
 delete window.posVenteId;
+
+// ✅ Nettoyer l'état sauvegardé lors du reset
+localStorage.removeItem('posSavedState');
+
 if (document.getElementById('posClientSearchInput')) {
 document.getElementById('posClientSearchInput').value = '';
 }
@@ -1653,4 +1701,4 @@ console.log('🚀 E-SOLUTION - POS chargé avec corrections');
 console.log('✅ forceUpdateClient disponible');
 console.log('✅ Bouton "Afficher tout" corrigé');
 console.log('✅ Correction mobile panier en bas');
-console.log('✅ Crédit client cliquable - REDIRECTION VERS PAGE CRÉDITS');
+console.log('✅ Crédit client cliquable - REDIRECTION VERS PAGE CRÉDITS AVEC SAUVEGARDE D\'ÉTAT');
