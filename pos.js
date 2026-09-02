@@ -11,7 +11,7 @@
 // ✅ Retour automatique à l'étape 1 après finalisation
 // ✅ CA et Profit client mis à jour (FORCE UPDATE)
 // ✅ Bouton "Afficher tout" corrigé
-// ✅ Affichage crédit client cliquable - redirection vers page crédits
+// ✅ Affichage crédit client cliquable avec modal de détail
 
 var posCart = [];
 var posStep = 1;
@@ -278,7 +278,129 @@ return 0;
 }
 }
 
-// ✅ VERSION MODIFIÉE : affichage crédit cliquable - REDIRECTION VERS PAGE CRÉDITS
+// ✅ NOUVELLE FONCTION : charger les crédits détaillés d'un client
+async function loadClientCreditsDetails(clientId) {
+    if (!clientId) return [];
+    try {
+        const snapshot = await db.collection('credits')
+            .where('clientId', '==', clientId)
+            .where('paid', '==', false)
+            .get();
+        let credits = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            credits.push({
+                id: doc.id,
+                factureNum: data.factureNum || doc.id.substring(0, 8),
+                date: data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date(),
+                total: data.total || 0,
+                remainingAmount: data.remainingAmount || data.total || 0,
+                paid: data.paid || false,
+                ...data
+            });
+        });
+        return credits;
+    } catch(e) {
+        console.warn('Erreur chargement crédits détaillés:', e);
+        return [];
+    }
+}
+
+// ✅ NOUVELLE FONCTION : ouvrir le modal des crédits du client
+function posOpenClientCreditsModal(clientId, clientName) {
+    if (!clientId) {
+        alert('Aucun client sélectionné');
+        return;
+    }
+
+    const modalContent = `
+        <div style="padding:10px;">
+            <h4 style="margin-bottom:16px;">💳 Crédits de ${escapeHtml(clientName || 'ce client')}</h4>
+            <div id="posCreditsListContainer" style="text-align:center;padding:20px;">
+                <i class="fas fa-spinner fa-spin" style="font-size:2rem;color:#14B8A6;"></i>
+                <p style="margin-top:10px;color:#94a3b8;">Chargement des crédits...</p>
+            </div>
+            <div style="margin-top:20px;display:flex;justify-content:flex-end;gap:10px;">
+                <button class="btn-cancel" onclick="closeModal();" style="padding:10px 24px;border-radius:8px;border:none;background:#e2e8f0;color:#475569;font-weight:600;cursor:pointer;font-size:0.9rem;">
+                    Retour au panier
+                </button>
+            </div>
+        </div>
+    `;
+
+    openModal('📋 Détails des crédits', modalContent);
+
+    loadClientCreditsDetails(clientId).then(credits => {
+        const container = document.getElementById('posCreditsListContainer');
+        if (!container) return;
+
+        if (!credits || credits.length === 0) {
+            container.innerHTML = `
+                <div style="text-align:center;padding:20px;">
+                    <i class="fas fa-check-circle" style="font-size:2.5rem;color:#14B8A6;"></i>
+                    <p style="margin-top:10px;color:#64748b;font-size:1.1rem;">Aucun crédit impayé pour ce client</p>
+                </div>
+            `;
+            return;
+        }
+
+        let html = `
+            <div style="overflow-x:auto;max-height:400px;overflow-y:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:0.9rem;">
+                    <thead>
+                        <tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0;">
+                            <th style="padding:10px 12px;text-align:left;font-weight:700;">Facture</th>
+                            <th style="padding:10px 12px;text-align:left;font-weight:700;">Date</th>
+                            <th style="padding:10px 12px;text-align:right;font-weight:700;">Total</th>
+                            <th style="padding:10px 12px;text-align:right;font-weight:700;">Reste à payer</th>
+                            <th style="padding:10px 12px;text-align:center;font-weight:700;">Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        credits.forEach(c => {
+            const dateStr = c.date ? c.date.toLocaleDateString('fr-FR') : '-';
+            const status = c.paid ? '✅ Payé' : '⏳ Impayé';
+            const statusColor = c.paid ? '#14B8A6' : '#ef4444';
+            html += `
+                <tr style="border-bottom:1px solid #f1f5f9;">
+                    <td style="padding:8px 12px;font-weight:600;">#${escapeHtml(c.factureNum)}</td>
+                    <td style="padding:8px 12px;color:#64748b;">${dateStr}</td>
+                    <td style="padding:8px 12px;text-align:right;font-weight:600;">${c.total.toFixed(2)} MAD</td>
+                    <td style="padding:8px 12px;text-align:right;font-weight:700;color:#ef4444;">${c.remainingAmount.toFixed(2)} MAD</td>
+                    <td style="padding:8px 12px;text-align:center;color:${statusColor};font-weight:600;">${status}</td>
+                </tr>
+            `;
+        });
+
+        const totalCredits = credits.reduce((sum, c) => sum + c.remainingAmount, 0);
+        html += `
+                    </tbody>
+                </table>
+                <div style="margin-top:16px;padding:12px;background:#f0fdf4;border-radius:8px;border:2px solid #14B8A6;display:flex;justify-content:space-between;font-weight:700;font-size:1.1rem;">
+                    <span>Total crédits impayés :</span>
+                    <span style="color:#ef4444;">${totalCredits.toFixed(2)} MAD</span>
+                </div>
+            </div>
+        `;
+
+        container.innerHTML = html;
+    }).catch(err => {
+        console.error('Erreur chargement crédits:', err);
+        const container = document.getElementById('posCreditsListContainer');
+        if (container) {
+            container.innerHTML = `
+                <div style="text-align:center;padding:20px;color:#ef4444;">
+                    <i class="fas fa-exclamation-triangle" style="font-size:2rem;"></i>
+                    <p style="margin-top:10px;">Erreur lors du chargement des crédits</p>
+                </div>
+            `;
+        }
+    });
+}
+
+// ✅ VERSION MODIFIÉE : affichage crédit cliquable
 async function updateClientCreditDisplay(clientId) {
     var displayEl = document.getElementById('clientCreditDisplay');
     if (!displayEl) return;
@@ -299,16 +421,8 @@ async function updateClientCreditDisplay(clientId) {
         displayEl.style.textDecoration = 'underline';
         displayEl.style.textDecorationStyle = 'dotted';
         displayEl.onclick = function() {
-            // ✅ REDIRECTION VERS LA PAGE CRÉDITS AVEC LE CLIENT PRÉ-SÉLECTIONNÉ
-            var clientName = posCurrentClient ? posCurrentClient.name : '';
-            var clientId = posCurrentClient ? posCurrentClient.id : '';
-            
-            // Sauvegarder le client sélectionné pour la page crédits
-            localStorage.setItem('posSelectedCreditClientId', clientId);
-            localStorage.setItem('posSelectedCreditClientName', clientName);
-            
-            // Naviguer vers la page crédits
-            navigateTo('credits');
+            var clientName = posCurrentClient ? posCurrentClient.name : 'ce client';
+            posOpenClientCreditsModal(clientId, clientName);
         };
     } else {
         displayEl.textContent = '✅ Aucun crédit';
@@ -1648,9 +1762,11 @@ window.posToolsVisible = posToolsVisible;
 window.applyDynamicContentScroll = applyDynamicContentScroll;
 window.forceUpdateClient = forceUpdateClient;
 window.corrigerDispositionMobile = corrigerDispositionMobile;
+window.loadClientCreditsDetails = loadClientCreditsDetails;
+window.posOpenClientCreditsModal = posOpenClientCreditsModal;
 
 console.log('🚀 E-SOLUTION - POS chargé avec corrections');
 console.log('✅ forceUpdateClient disponible');
 console.log('✅ Bouton "Afficher tout" corrigé');
 console.log('✅ Correction mobile panier en bas');
-console.log('✅ Crédit client cliquable - redirection vers page crédits');
+console.log('✅ Crédit client cliquable avec modal de détails');
