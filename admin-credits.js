@@ -4,6 +4,8 @@
 // Version FINALE - AVEC MODAL DÉTAILS FACTURE ET PAIEMENT CRÉDIT
 // ✅ PAGINATION CORRIGÉE
 // ✅ CAISSIER PEUT : MARQUER PAYÉ, MODIFIER, SUPPRIMER, ENVOYER WHATSAPP
+// ✅ RETOUR AU PAIEMENT DEPUIS LE POS
+// ✅ PRÉ-SÉLECTION DU CLIENT AVEC RECHERCHE AUTO
 
 // ========== VARIABLES GLOBALES ==========
 window.creditsPeriod = window.creditsPeriod || 'all';
@@ -12,6 +14,8 @@ window.creditSelectionMode = false;
 window.creditSelectedIds = [];
 window.allCreditsData = window.allCreditsData || [];
 window.clientsDataForSearch = window.clientsDataForSearch || [];
+window._posFilterClientId = null;
+window._posFilterClientName = null;
 
 // ========== FONCTIONS UTILITAIRES ==========
 
@@ -544,6 +548,21 @@ injectCreditsStyles();
 
 await loadClientsForSearchCredits();
 
+// ✅ Vérifier si on vient du POS avec un client pré-sélectionné
+var savedClientId = localStorage.getItem('posSelectedCreditClientId');
+var savedClientName = localStorage.getItem('posSelectedCreditClientName');
+
+if (savedClientId && savedClientName) {
+    window._posFilterClientId = savedClientId;
+    window._posFilterClientName = savedClientName;
+    // Nettoyer le localStorage après récupération
+    localStorage.removeItem('posSelectedCreditClientId');
+    localStorage.removeItem('posSelectedCreditClientName');
+} else {
+    window._posFilterClientId = null;
+    window._posFilterClientName = null;
+}
+
 window.creditsPeriod = 'all';
 window.creditsSearch = '';
 window.creditSelectionMode = false;
@@ -552,15 +571,26 @@ window.creditSelectedIds = [];
 if (!window.sortOrders.credits) window.sortOrders.credits = {};
 if (!window.sortOrders.credits.createdAt) window.sortOrders.credits.createdAt = 'desc';
 
+// ✅ Si un client est pré-sélectionné, on met son nom dans la recherche
+var searchPlaceholder = window._posFilterClientName || 'Rechercher (client, produit, description)...';
+
 c.innerHTML = `
 <div class="content-card" id="creditsPage">
 <div class="card-header">
-<h3 style="font-size:26px !important;"><i class="fas fa-credit-card"></i> Crédits</h3>
-<div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+<div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:8px;">
+    <h3 style="font-size:26px !important; margin:0;"><i class="fas fa-credit-card"></i> Crédits</h3>
+    <button id="creditsBackToPosBtn" onclick="retournerAuPaiement()" 
+            style="background:#6366f1; color:#fff; border:none; border-radius:8px; 
+                   padding:8px 20px; font-size:18px; font-weight:700; cursor:pointer; 
+                   display:flex; align-items:center; gap:8px;">
+        <i class="fas fa-arrow-left"></i> Retour au paiement
+    </button>
+</div>
+<div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:8px;">
 <div class="search-bar-pro">
 <i class="fas fa-search"></i>
 <input type="text" id="creditsSearchInput"
-placeholder="Rechercher (client, produit, description)..."
+placeholder="${searchPlaceholder}"
 onkeyup="handleCreditsSearch(this.value);">
 <button class="search-clear-btn hidden" id="creditsClearBtn" onclick="clearCreditsSearch()" title="Effacer la recherche">
 <i class="fas fa-times"></i>
@@ -593,6 +623,22 @@ ${getPeriodOptions('all')}
 `;
 
 loadCredits();
+
+// ✅ Si un client est pré-sélectionné, on remplit la barre de recherche et on lance la recherche
+if (window._posFilterClientName) {
+    setTimeout(function() {
+        var searchInput = document.getElementById('creditsSearchInput');
+        if (searchInput) {
+            searchInput.value = window._posFilterClientName;
+            // Déclencher la recherche automatiquement
+            window.creditsSearch = window._posFilterClientName;
+            applyCreditsFilters();
+            // Afficher le bouton "effacer"
+            var clearBtn = document.getElementById('creditsClearBtn');
+            if (clearBtn) clearBtn.classList.remove('hidden');
+        }
+    }, 300);
+}
 }
 
 function handleCreditsSearch(value) {
@@ -607,6 +653,9 @@ var searchField = document.getElementById('creditsSearchInput');
 if (searchField) {
 searchField.value = '';
 window.creditsSearch = '';
+// ✅ Réinitialiser aussi le filtre client
+window._posFilterClientId = null;
+window._posFilterClientName = null;
 applyCreditsFilters();
 var clearBtn = document.getElementById('creditsClearBtn');
 if (clearBtn) {
@@ -725,6 +774,14 @@ applyCreditsFilters();
 
 function applyCreditsFilters() {
 var filtered = filterByPeriod(window.allCreditsData, window.creditsPeriod);
+
+// ✅ Filtre par client pré-sélectionné depuis le POS (prioritaire sur la recherche)
+if (window._posFilterClientId) {
+    filtered = filtered.filter(function(d) {
+        return d.clientId === window._posFilterClientId;
+    });
+    // On ne réinitialise pas le nom du client pour qu'il reste dans la recherche
+}
 
 if (window.creditsSearch && window.creditsSearch.trim() !== '') {
 filtered = filterCreditsBySearchWithDescription(filtered, window.creditsSearch);
@@ -1778,6 +1835,16 @@ function validateCreditPayment() {
 }
 window.validateCreditPayment = validateCreditPayment;
 
+// ✅ FONCTION POUR RETOURNER AU PAIEMENT DEPUIS LA PAGE CRÉDITS
+function retournerAuPaiement() {
+    // Réinitialiser les variables de filtre
+    window._posFilterClientId = null;
+    window._posFilterClientName = null;
+    // Naviguer vers le POS
+    navigateTo('pos');
+}
+window.retournerAuPaiement = retournerAuPaiement;
+
 // ==================== EXPOSITION DES FONCTIONS GLOBALES ====================
 
 window.loadCreditsPage = loadCreditsPage;
@@ -1838,3 +1905,5 @@ console.log('✅ Paiement crédit avec modal - Mise à jour du crédit existant'
 console.log('✅ Pagination corrigée - Sans icônes');
 console.log('✅ Caissier peut : Marquer payé, Modifier, Supprimer, Envoyer WhatsApp');
 console.log('✅ Boutons avec texte - Ultra compacts (10px)');
+console.log('✅ Retour au paiement depuis le POS');
+console.log('✅ Pré-sélection du client avec recherche auto');
