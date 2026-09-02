@@ -1,6 +1,6 @@
 // ==================== ADMIN-VENTES.JS - E-SOLUTION ====================
 // Version : Design PRO - Facture/Date/Client en colonnes séparées
-// ✅ BOUTONS AVEC ICÔNES CORRIGÉS - Font Awesome fonctionnel
+// ✅ BOUTONS AVEC TEXTE - PAS D'ICÔNES (pour garantir l'affichage)
 // ✅ SÉLECTION EN MASSE
 // ✅ DÉTAILS FACTURE MODAL AVEC X POUR FERMER - FONT SIZE AGRANDI
 // ✅ PAGINATION CORRIGÉE - SANS ICÔNES
@@ -533,120 +533,118 @@ display: none !important;
 display: flex !important;
 align-items: center !important;
 justify-content: center !important;
-gap: 6px !important;
+gap: 4px !important;
 flex-wrap: nowrap !important;
-min-width: 180px !important;
+min-width: 160px !important;
 }
 
+/* ✅ BOUTONS AVEC TEXTE - ULTRA COMPACT (VENTES & COMMANDES) */
 #ventesPage .action-buttons .btn-edit,
 #ventesPage .action-buttons .btn-delete,
 #ventesPage .action-buttons .btn-add,
 #commandesPage .action-buttons .btn-edit,
 #commandesPage .action-buttons .btn-delete,
 #commandesPage .action-buttons .btn-add {
-width: 44px !important;
-height: 44px !important;
-min-width: 44px !important;
-min-height: 44px !important;
-border-radius: 10px !important;
-display: inline-flex !important;
-align-items: center !important;
-justify-content: center !important;
-padding: 0 !important;
-font-size: 18px !important;
-transition: all 0.2s ease !important;
-border: none !important;
-background: var(--gray-50) !important;
-color: var(--text-secondary) !important;
-cursor: pointer !important;
-flex-shrink: 0 !important;
-box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 2px 6px !important;
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    border-radius: 4px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+    text-transform: capitalize !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    line-height: 1.2 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+    min-height: 22px !important;
+    width: auto !important;
 }
 
-#ventesPage .action-buttons .btn-edit i,
-#ventesPage .action-buttons .btn-delete i,
-#ventesPage .action-buttons .btn-add i,
-#commandesPage .action-buttons .btn-edit i,
-#commandesPage .action-buttons .btn-delete i,
-#commandesPage .action-buttons .btn-add i {
-font-size: 20px !important;
-pointer-events: none !important;
-line-height: 1 !important;
+/* Bouton Imprimer / WhatsApp / Modifier / Supprimer */
+#ventesPage .action-buttons .btn-edit {
+    background: #f59e0b !important;
+    color: #fff !important;
+}
+#ventesPage .action-buttons .btn-edit:hover {
+    background: #d97706 !important;
 }
 
-#ventesPage .action-buttons .btn-edit:hover,
-#commandesPage .action-buttons .btn-edit:hover {
-background: var(--gray-200) !important;
-color: var(--black) !important;
-transform: translateY(-2px) !important;
-box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+#ventesPage .action-buttons .btn-delete {
+    background: #ef4444 !important;
+    color: #fff !important;
+}
+#ventesPage .action-buttons .btn-delete:hover {
+    background: #dc2626 !important;
 }
 
-#ventesPage .action-buttons .btn-delete,
-#commandesPage .action-buttons .btn-delete {
-color: #ef4444 !important;
-background: rgba(239, 68, 68, 0.08) !important;
+/* Bouton WhatsApp (spécifique) */
+#ventesPage .action-buttons .btn-edit.whatsapp-btn {
+    background: #25D366 !important;
+    color: #fff !important;
+}
+#ventesPage .action-buttons .btn-edit.whatsapp-btn:hover {
+    background: #128C7E !important;
 }
 
-#ventesPage .action-buttons .btn-delete:hover,
-#commandesPage .action-buttons .btn-delete:hover {
-background: rgba(239, 68, 68, 0.15) !important;
-transform: translateY(-2px) !important;
-box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15) !important;
-}
-
-#ventesPage .action-buttons .btn-add,
-#commandesPage .action-buttons .btn-add {
-background: var(--black) !important;
-color: var(--white) !important;
-}
-
-#ventesPage .action-buttons .btn-add:hover,
-#commandesPage .action-buttons .btn-add:hover {
-background: var(--primary-hover) !important;
-transform: translateY(-2px) !important;
-box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
-}
-
-#ventesPage .action-buttons .btn-edit.whatsapp-btn,
-#commandesPage .action-buttons .btn-edit.whatsapp-btn {
-color: #25D366 !important;
-background: rgba(37, 211, 102, 0.08) !important;
-}
-
-#ventesPage .action-buttons .btn-edit.whatsapp-btn:hover,
-#commandesPage .action-buttons .btn-edit.whatsapp-btn:hover {
-background: rgba(37, 211, 102, 0.15) !important;
-transform: translateY(-2px) !important;
-box-shadow: 0 4px 12px rgba(37, 211, 102, 0.15) !important;
-}
-
-#ventesPage .action-buttons .btn-edit.whatsapp-btn i,
-#commandesPage .action-buttons .btn-edit.whatsapp-btn i {
-font-size: 22px !important;
-}
-
+/* Bouton Payer - Émeraude */
 #ventesPage .action-buttons .btn-add.payer-btn,
-#commandesPage .action-buttons .btn-add.payer-btn {
-background: #10B981 !important;
-color: #fff !important;
-font-size: 14px !important;
-padding: 0 12px !important;
-width: auto !important;
-min-width: 60px !important;
-border-radius: 8px !important;
-gap: 4px !important;
+#commandesPage .action-buttons .btn-add {
+    background: #10B981 !important;
+    color: #fff !important;
 }
-
 #ventesPage .action-buttons .btn-add.payer-btn:hover,
-#commandesPage .action-buttons .btn-add.payer-btn:hover {
-background: #059669 !important;
-transform: translateY(-2px) !important;
+#commandesPage .action-buttons .btn-add:hover {
+    background: #059669 !important;
 }
 
-#ventesPage .action-buttons .btn-add.payer-btn i,
-#commandesPage .action-buttons .btn-add.payer-btn i {
-font-size: 14px !important;
+/* Bouton Valider (commandes) - Bleu */
+#commandesPage .action-buttons .btn-add.validate-btn {
+    background: #2563eb !important;
+    color: #fff !important;
+}
+#commandesPage .action-buttons .btn-add.validate-btn:hover {
+    background: #1d4ed8 !important;
+}
+
+/* Bouton Annuler (commandes) - Rouge */
+#commandesPage .action-buttons .btn-delete.cancel-btn {
+    background: #ef4444 !important;
+    color: #fff !important;
+}
+#commandesPage .action-buttons .btn-delete.cancel-btn:hover {
+    background: #dc2626 !important;
+}
+
+/* Bouton Imprimer (ventes) - Indigo via classe supplémentaire */
+#ventesPage .action-buttons .btn-edit.print-btn {
+    background: #6366f1 !important;
+    color: #fff !important;
+}
+#ventesPage .action-buttons .btn-edit.print-btn:hover {
+    background: #4f46e5 !important;
+}
+
+/* Bouton Modifier (ventes) - Orange */
+#ventesPage .action-buttons .btn-edit.modif-btn {
+    background: #f59e0b !important;
+    color: #fff !important;
+}
+#ventesPage .action-buttons .btn-edit.modif-btn:hover {
+    background: #d97706 !important;
+}
+
+/* Bouton Supprimer (ventes) - Rouge */
+#ventesPage .action-buttons .btn-delete.suppr-btn {
+    background: #ef4444 !important;
+    color: #fff !important;
+}
+#ventesPage .action-buttons .btn-delete.suppr-btn:hover {
+    background: #dc2626 !important;
 }
 
 #ventesPage .filter-group,
@@ -786,18 +784,9 @@ gap: 4px !important;
 #commandesPage .action-buttons .btn-edit,
 #commandesPage .action-buttons .btn-delete,
 #commandesPage .action-buttons .btn-add {
-width: 38px !important;
-height: 38px !important;
-min-width: 38px !important;
-min-height: 38px !important;
-font-size: 16px !important;
-}
-
-#ventesPage .action-buttons .btn-add.payer-btn,
-#commandesPage .action-buttons .btn-add.payer-btn {
-min-width: 50px !important;
-font-size: 12px !important;
-padding: 0 10px !important;
+padding: 2px 5px !important;
+font-size: 9px !important;
+min-height: 20px !important;
 }
 }
 
@@ -855,21 +844,10 @@ gap: 4px !important;
 #commandesPage .action-buttons .btn-edit,
 #commandesPage .action-buttons .btn-delete,
 #commandesPage .action-buttons .btn-add {
-width: 34px !important;
-height: 34px !important;
-min-width: 34px !important;
-min-height: 34px !important;
-font-size: 14px !important;
-border-radius: 8px !important;
-}
-
-#ventesPage .action-buttons .btn-edit i,
-#ventesPage .action-buttons .btn-delete i,
-#ventesPage .action-buttons .btn-add i,
-#commandesPage .action-buttons .btn-edit i,
-#commandesPage .action-buttons .btn-delete i,
-#commandesPage .action-buttons .btn-add i {
-font-size: 16px !important;
+padding: 1px 4px !important;
+font-size: 8px !important;
+min-height: 18px !important;
+border-radius: 4px !important;
 }
 }
 
@@ -942,29 +920,9 @@ gap: 2px !important;
 #commandesPage .action-buttons .btn-edit,
 #commandesPage .action-buttons .btn-delete,
 #commandesPage .action-buttons .btn-add {
-width: 28px !important;
-height: 28px !important;
-min-width: 28px !important;
-min-height: 28px !important;
-font-size: 12px !important;
-border-radius: 6px !important;
-}
-
-#ventesPage .action-buttons .btn-add.payer-btn,
-#commandesPage .action-buttons .btn-add.payer-btn {
-min-width: 40px !important;
-font-size: 10px !important;
-padding: 0 6px !important;
-height: 28px !important;
-}
-
-#ventesPage .action-buttons .btn-edit i,
-#ventesPage .action-buttons .btn-delete i,
-#ventesPage .action-buttons .btn-add i,
-#commandesPage .action-buttons .btn-edit i,
-#commandesPage .action-buttons .btn-delete i,
-#commandesPage .action-buttons .btn-add i {
-font-size: 12px !important;
+padding: 1px 3px !important;
+font-size: 7px !important;
+min-height: 16px !important;
 }
 }
 </style>
@@ -1123,27 +1081,20 @@ var statutMap = {
 };
 var st = statutMap[d.statut] || { class: 'status-warning', label: d.statut || 'Inconnu', icon: 'fa-question-circle' };
 
+// ✅ BOUTONS AVEC TEXTE POUR COMMANDES
 var act = '';
 if (d.statut === 'en_attente') {
 act = `
 <div class="action-buttons">
-<button class="btn-add" onclick="validateCommande('${d.id}')" title="Valider">
-<i class="fas fa-check"></i>
-</button>
-<button class="btn-edit" onclick="payCommande('${d.id}')" title="Payer" style="background:#10B981;color:#fff;">
-<i class="fas fa-money-bill-wave"></i>
-</button>
-<button class="btn-delete" onclick="cancelCommande('${d.id}')" title="Annuler">
-<i class="fas fa-times"></i>
-</button>
+<button class="btn-add validate-btn" onclick="validateCommande('${d.id}')" title="Valider">Valider</button>
+<button class="btn-add payer-btn" onclick="payCommande('${d.id}')" title="Payer">Payer</button>
+<button class="btn-delete cancel-btn" onclick="cancelCommande('${d.id}')" title="Annuler">Annuler</button>
 </div>
 `;
 } else if (d.statut === 'valide') {
 act = `
 <div class="action-buttons">
-<button class="btn-edit" onclick="payCommande('${d.id}')" title="Payer" style="background:#10B981;color:#fff;">
-<i class="fas fa-money-bill-wave"></i>
-</button>
+<button class="btn-add payer-btn" onclick="payCommande('${d.id}')" title="Payer">Payer</button>
 </div>
 `;
 } else if (d.statut === 'payé') {
@@ -1543,28 +1494,19 @@ var statutMap = {
 };
 var st = statutMap[d.statutPaiement] || { class: 'status-warning', label: d.statutPaiement || 'Inconnu', icon: 'fa-question-circle' };
 
+// ✅ BOUTONS AVEC TEXTE POUR VENTES
 var actions = `
 <div class="action-buttons">
-<button class="btn-edit" onclick="printFacture('${d.id}')" title="Imprimer / PDF">
-<i class="fas fa-print"></i>
-</button>
-<button class="btn-edit whatsapp-btn" onclick="sendWhatsApp('${d.id}')" title="Envoyer WhatsApp">
-<i class="fab fa-whatsapp"></i>
-</button>
+<button class="btn-edit print-btn" onclick="printFacture('${d.id}')" title="Imprimer / PDF">Imprimer</button>
+<button class="btn-edit whatsapp-btn" onclick="sendWhatsApp('${d.id}')" title="Envoyer WhatsApp">WhatsApp</button>
 `;
 if (!d.paid) {
-actions += `<button class="btn-add payer-btn" onclick="payerVente('${d.id}')" title="Payer">
-<i class="fas fa-check"></i> Payer
-</button>`;
+actions += `<button class="btn-add payer-btn" onclick="payerVente('${d.id}')" title="Payer">Payer</button>`;
 }
 if (isAdmin) {
 actions += `
-<button class="btn-edit" onclick="editVente('${d.id}')" title="Modifier">
-<i class="fas fa-edit"></i>
-</button>
-<button class="btn-delete" onclick="deleteVente('${d.id}')" title="Supprimer">
-<i class="fas fa-trash-alt"></i>
-</button>
+<button class="btn-edit modif-btn" onclick="editVente('${d.id}')" title="Modifier">Modifier</button>
+<button class="btn-delete suppr-btn" onclick="deleteVente('${d.id}')" title="Supprimer">Supprimer</button>
 `;
 }
 actions += `</div>`;
@@ -2260,3 +2202,4 @@ window.getPageData = getPageData;
 console.log('🚀 E-SOLUTION - Admin Ventes PRO chargé');
 console.log('✅ Détails facture modal ajouté - Font size agrandi');
 console.log('✅ Pagination corrigée - Sans icônes');
+console.log('✅ Boutons avec texte - Ultra compacts (10px)');
