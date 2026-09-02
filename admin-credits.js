@@ -184,7 +184,7 @@ return `
 `;
 }
 
-// ✅ CSS pour boutons avec texte (taille réduite)
+// ✅ CSS pour boutons avec texte - version très compacte
 function injectCreditsStyles() {
 const styleId = 'credits-pro-styles-final';
 if (document.getElementById(styleId)) return;
@@ -426,12 +426,12 @@ display: none !important;
 display: flex !important;
 align-items: center !important;
 justify-content: center !important;
-gap: 6px !important;
+gap: 4px !important;
 flex-wrap: nowrap !important;
-min-width: 180px !important;
+min-width: 160px !important;
 }
 
-/* ✅ BOUTONS AVEC TEXTE - TAILLE RÉDUITE */
+/* ✅ BOUTONS AVEC TEXTE - ULTRA COMPACT */
 #creditsPage .action-buttons .btn-print,
 #creditsPage .action-buttons .btn-whatsapp,
 #creditsPage .action-buttons .btn-payer,
@@ -440,10 +440,10 @@ min-width: 180px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 4px 10px !important;
-    font-size: 12px !important;
+    padding: 2px 6px !important;
+    font-size: 10px !important;
     font-weight: 700 !important;
-    border-radius: 6px !important;
+    border-radius: 4px !important;
     border: none !important;
     cursor: pointer !important;
     transition: all 0.2s ease !important;
@@ -452,7 +452,9 @@ min-width: 180px !important;
     visibility: visible !important;
     opacity: 1 !important;
     line-height: 1.2 !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+    min-height: 22px !important;
+    width: auto !important;
 }
 
 #creditsPage .action-buttons .btn-print {
@@ -501,8 +503,9 @@ min-width: 180px !important;
     #creditsPage .action-buttons .btn-payer,
     #creditsPage .action-buttons .btn-edit,
     #creditsPage .action-buttons .btn-delete {
-        padding: 3px 8px !important;
-        font-size: 11px !important;
+        padding: 2px 5px !important;
+        font-size: 9px !important;
+        min-height: 20px !important;
     }
 }
 
@@ -512,8 +515,9 @@ min-width: 180px !important;
     #creditsPage .action-buttons .btn-payer,
     #creditsPage .action-buttons .btn-edit,
     #creditsPage .action-buttons .btn-delete {
-        padding: 2px 6px !important;
-        font-size: 10px !important;
+        padding: 1px 4px !important;
+        font-size: 8px !important;
+        min-height: 18px !important;
     }
 }
 
@@ -523,8 +527,9 @@ min-width: 180px !important;
     #creditsPage .action-buttons .btn-payer,
     #creditsPage .action-buttons .btn-edit,
     #creditsPage .action-buttons .btn-delete {
-        padding: 2px 5px !important;
-        font-size: 9px !important;
+        padding: 1px 3px !important;
+        font-size: 7px !important;
+        min-height: 16px !important;
     }
 }
 </style>
@@ -823,18 +828,18 @@ articlesHtml = '-';
 var mode = d.paymentMethod || '-';
 var amountPaid = d.amountGiven || 0;
 
-// ✅ BOUTONS AVEC TEXTE - PAS D'ICÔNES
+// ✅ BOUTONS AVEC TEXTE - UNIQUEMENT LES CLASSES (les styles sont dans le CSS)
 var actions = `
-<div class="action-buttons" style="display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:nowrap;">
-    <button class="btn-print" onclick="printFacture('${d.id}')" title="Imprimer / PDF" style="display:inline-flex; align-items:center; justify-content:center; padding:4px 10px; font-size:12px; font-weight:700; border-radius:6px; border:none; cursor:pointer; white-space:nowrap;">Imprimer</button>
-    <button class="btn-whatsapp" onclick="sendCreditWhatsApp('${d.id}')" title="Envoyer WhatsApp" style="display:inline-flex; align-items:center; justify-content:center; padding:4px 10px; font-size:12px; font-weight:700; border-radius:6px; border:none; cursor:pointer; white-space:nowrap;">WhatsApp</button>
+<div class="action-buttons" style="display:flex; gap:4px; align-items:center; justify-content:center; flex-wrap:nowrap;">
+    <button class="btn-print" onclick="printFacture('${d.id}')" title="Imprimer / PDF">Imprimer</button>
+    <button class="btn-whatsapp" onclick="sendCreditWhatsApp('${d.id}')" title="Envoyer WhatsApp">WhatsApp</button>
     `;
 if (!d.paid) {
-    actions += `<button class="btn-payer" onclick="openCreditPaymentModal('${d.id}')" title="Marquer payé" style="display:inline-flex; align-items:center; justify-content:center; padding:4px 10px; font-size:12px; font-weight:700; border-radius:6px; border:none; cursor:pointer; white-space:nowrap;">Payer</button>`;
+    actions += `<button class="btn-payer" onclick="openCreditPaymentModal('${d.id}')" title="Marquer payé">Payer</button>`;
 }
 actions += `
-    <button class="btn-edit" onclick="editCredit('${d.id}')" title="Modifier" style="display:inline-flex; align-items:center; justify-content:center; padding:4px 10px; font-size:12px; font-weight:700; border-radius:6px; border:none; cursor:pointer; white-space:nowrap;">Modifier</button>
-    <button class="btn-delete" onclick="if(confirm('Supprimer définitivement ce crédit ?')) deleteCredit('${d.id}')" title="Supprimer" style="display:inline-flex; align-items:center; justify-content:center; padding:4px 10px; font-size:12px; font-weight:700; border-radius:6px; border:none; cursor:pointer; white-space:nowrap;">Supprimer</button>
+    <button class="btn-edit" onclick="editCredit('${d.id}')" title="Modifier">Modifier</button>
+    <button class="btn-delete" onclick="if(confirm('Supprimer définitivement ce crédit ?')) deleteCredit('${d.id}')" title="Supprimer">Supprimer</button>
 `;
 actions += `</div>`;
 
@@ -1832,4 +1837,4 @@ console.log('✅ Détails facture crédit modal ajouté - Font size agrandi');
 console.log('✅ Paiement crédit avec modal - Mise à jour du crédit existant');
 console.log('✅ Pagination corrigée - Sans icônes');
 console.log('✅ Caissier peut : Marquer payé, Modifier, Supprimer, Envoyer WhatsApp');
-console.log('✅ Boutons avec texte - Taille réduite (12px)');
+console.log('✅ Boutons avec texte - Ultra compacts (10px)');
