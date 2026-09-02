@@ -1927,3 +1927,15 @@ button .fa-brands {
         font-size: 16px !important;
     }
 }
+.fas, .far, .fab, .fa, .fa-solid, .fa-regular, .fa-brands {
+    font-family: 'Font Awesome 5 Free', 'Font Awesome 6 Free', 'Font Awesome 5 Brands', 'Font Awesome 6 Brands' !important;
+    font-weight: 900 !important;
+    font-style: normal !important;
+    line-height: 1 !important;
+    display: inline-block !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    vertical-align: middle !important;
+    text-rendering: auto !important;
+    font-size: 1.2em !important;
+}
