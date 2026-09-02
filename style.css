@@ -1801,6 +1801,12 @@ button .fa-brands {
     vertical-align: middle !important;
     text-rendering: auto !important;
     font-size: inherit !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 /* ✅ TAILLE CORRECTE DES ICÔNES DANS LES BOUTONS */
@@ -1814,6 +1820,10 @@ button .fa-brands {
     height: auto !important;
     margin: 0 !important;
     padding: 0 !important;
+    display: inline-block !important;
+    line-height: 1 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 /* ✅ BOUTONS D'ACTION - STYLES */
@@ -1831,11 +1841,14 @@ button .fa-brands {
     align-items: center !important;
     justify-content: center !important;
     padding: 0 !important;
+    font-size: 22px !important;
     transition: all 0.2s ease !important;
     border: none !important;
     cursor: pointer !important;
     flex-shrink: 0 !important;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 /* Bouton Imprimer - Indigo */
@@ -1845,7 +1858,6 @@ button .fa-brands {
 }
 .action-buttons .btn-print:hover {
     background: #4f46e5 !important;
-    transform: translateY(-2px) !important;
 }
 
 /* Bouton WhatsApp - Vert */
@@ -1855,7 +1867,6 @@ button .fa-brands {
 }
 .action-buttons .btn-whatsapp:hover {
     background: #128C7E !important;
-    transform: translateY(-2px) !important;
 }
 
 /* Bouton Payer - Émeraude */
@@ -1865,7 +1876,6 @@ button .fa-brands {
 }
 .action-buttons .btn-payer:hover {
     background: #059669 !important;
-    transform: translateY(-2px) !important;
 }
 
 /* Bouton Modifier - Orange */
@@ -1875,7 +1885,6 @@ button .fa-brands {
 }
 .action-buttons .btn-edit:hover {
     background: #d97706 !important;
-    transform: translateY(-2px) !important;
 }
 
 /* Bouton Supprimer - Rouge */
@@ -1885,7 +1894,6 @@ button .fa-brands {
 }
 .action-buttons .btn-delete:hover {
     background: #dc2626 !important;
-    transform: translateY(-2px) !important;
 }
 
 @media(max-width: 768px) {
@@ -1926,16 +1934,4 @@ button .fa-brands {
     .action-buttons .btn-delete i {
         font-size: 16px !important;
     }
-}
-.fas, .far, .fab, .fa, .fa-solid, .fa-regular, .fa-brands {
-    font-family: 'Font Awesome 5 Free', 'Font Awesome 6 Free', 'Font Awesome 5 Brands', 'Font Awesome 6 Brands' !important;
-    font-weight: 900 !important;
-    font-style: normal !important;
-    line-height: 1 !important;
-    display: inline-block !important;
-    -webkit-font-smoothing: antialiased !important;
-    -moz-osx-font-smoothing: grayscale !important;
-    vertical-align: middle !important;
-    text-rendering: auto !important;
-    font-size: 1.2em !important;
 }
