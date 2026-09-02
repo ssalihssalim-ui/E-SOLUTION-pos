@@ -1,6 +1,6 @@
 // ==================== ADMIN-CREDITS.JS - E-SOLUTION ====================
 // Version : Design PRO - Facture/Date/Client en colonnes séparées
-// BOUTONS AVEC ICÔNES CORRIGÉS - Font Awesome fonctionnel
+// BOUTONS AVEC TEXTE - PAS D'ICÔNES (pour garantir l'affichage)
 // Version FINALE - AVEC MODAL DÉTAILS FACTURE ET PAIEMENT CRÉDIT
 // ✅ PAGINATION CORRIGÉE
 // ✅ CAISSIER PEUT : MARQUER PAYÉ, MODIFIER, SUPPRIMER, ENVOYER WHATSAPP
@@ -184,7 +184,7 @@ return `
 `;
 }
 
-// ✅ CORRECTION ICI : CSS RENFORCÉ POUR LES ICÔNES
+// ✅ CSS pour boutons avec texte (pas d'icônes)
 function injectCreditsStyles() {
 const styleId = 'credits-pro-styles-final';
 if (document.getElementById(styleId)) return;
@@ -431,288 +431,101 @@ flex-wrap: nowrap !important;
 min-width: 180px !important;
 }
 
+/* ✅ BOUTONS AVEC TEXTE - STYLE COMMUN */
 #creditsPage .action-buttons .btn-print,
 #creditsPage .action-buttons .btn-whatsapp,
 #creditsPage .action-buttons .btn-payer,
 #creditsPage .action-buttons .btn-edit,
 #creditsPage .action-buttons .btn-delete {
-width: 50px !important;
-height: 50px !important;
-min-width: 50px !important;
-min-height: 50px !important;
-border-radius: 10px !important;
-display: inline-flex !important;
-align-items: center !important;
-justify-content: center !important;
-padding: 0 !important;
-font-size: 20px !important;
-transition: all 0.2s ease !important;
-border: none !important;
-cursor: pointer !important;
-flex-shrink: 0 !important;
-box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-visibility: visible !important;
-opacity: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px 14px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+    text-transform: capitalize !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    line-height: 1.2 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
 }
 
-#creditsPage .action-buttons .btn-print i,
-#creditsPage .action-buttons .btn-whatsapp i,
-#creditsPage .action-buttons .btn-payer i,
-#creditsPage .action-buttons .btn-edit i,
-#creditsPage .action-buttons .btn-delete i {
-font-family: 'Font Awesome 5 Free', 'Font Awesome 6 Free', 'Font Awesome 5 Brands', 'Font Awesome 6 Brands' !important;
-font-weight: 900 !important;
-font-style: normal !important;
-line-height: 1 !important;
-display: inline-block !important;
-font-size: 22px !important;
-width: auto !important;
-height: auto !important;
-margin: 0 !important;
-padding: 0 !important;
-pointer-events: none !important;
--webkit-font-smoothing: antialiased !important;
--moz-osx-font-smoothing: grayscale !important;
-text-rendering: auto !important;
-color: inherit !important;
-visibility: visible !important;
-opacity: 1 !important;
-}
-
-#creditsPage .action-buttons .btn-print:hover,
-#creditsPage .action-buttons .btn-whatsapp:hover,
-#creditsPage .action-buttons .btn-payer:hover,
-#creditsPage .action-buttons .btn-edit:hover,
-#creditsPage .action-buttons .btn-delete:hover {
-transform: translateY(-2px) !important;
-box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
-}
-
-/* Bouton Imprimer - Indigo */
 #creditsPage .action-buttons .btn-print {
-background: #6366f1 !important;
-color: #fff !important;
+    background: #6366f1 !important;
+    color: #fff !important;
 }
-
 #creditsPage .action-buttons .btn-print:hover {
-background: #4f46e5 !important;
+    background: #4f46e5 !important;
 }
 
-/* Bouton WhatsApp - Vert */
 #creditsPage .action-buttons .btn-whatsapp {
-background: #25D366 !important;
-color: #fff !important;
+    background: #25D366 !important;
+    color: #fff !important;
 }
-
 #creditsPage .action-buttons .btn-whatsapp:hover {
-background: #128C7E !important;
+    background: #128C7E !important;
 }
 
-/* Bouton Payer - Émeraude */
 #creditsPage .action-buttons .btn-payer {
-background: #10B981 !important;
-color: #fff !important;
+    background: #10B981 !important;
+    color: #fff !important;
 }
-
 #creditsPage .action-buttons .btn-payer:hover {
-background: #059669 !important;
+    background: #059669 !important;
 }
 
-/* Bouton Modifier - Orange */
 #creditsPage .action-buttons .btn-edit {
-background: #f59e0b !important;
-color: #fff !important;
+    background: #f59e0b !important;
+    color: #fff !important;
 }
-
 #creditsPage .action-buttons .btn-edit:hover {
-background: #d97706 !important;
+    background: #d97706 !important;
 }
 
-/* Bouton Supprimer - Rouge */
 #creditsPage .action-buttons .btn-delete {
-background: #ef4444 !important;
-color: #fff !important;
+    background: #ef4444 !important;
+    color: #fff !important;
 }
-
 #creditsPage .action-buttons .btn-delete:hover {
-background: #dc2626 !important;
+    background: #dc2626 !important;
 }
 
 @media(max-width:1024px) {
-#creditsPage .action-buttons {
-min-width: 140px !important;
-gap: 4px !important;
-}
-
-#creditsPage .action-buttons .btn-print,
-#creditsPage .action-buttons .btn-whatsapp,
-#creditsPage .action-buttons .btn-payer,
-#creditsPage .action-buttons .btn-edit,
-#creditsPage .action-buttons .btn-delete {
-width: 44px !important;
-height: 44px !important;
-min-width: 44px !important;
-min-height: 44px !important;
-font-size: 18px !important;
-}
-
-#creditsPage .action-buttons .btn-print i,
-#creditsPage .action-buttons .btn-whatsapp i,
-#creditsPage .action-buttons .btn-payer i,
-#creditsPage .action-buttons .btn-edit i,
-#creditsPage .action-buttons .btn-delete i {
-font-size: 18px !important;
-}
+    #creditsPage .action-buttons .btn-print,
+    #creditsPage .action-buttons .btn-whatsapp,
+    #creditsPage .action-buttons .btn-payer,
+    #creditsPage .action-buttons .btn-edit,
+    #creditsPage .action-buttons .btn-delete {
+        padding: 5px 10px !important;
+        font-size: 13px !important;
+    }
 }
 
 @media(max-width:768px) {
-#creditsPage .data-table tbody td {
-font-size: 18px !important;
-padding: 10px 12px !important;
-}
-
-.facture-cell {
-font-size: 18px !important;
-padding: 2px 8px !important;
-}
-
-.facture-cell .facture-number {
-font-size: 18px !important;
-}
-
-.date-cell .date-line,
-.date-cell .time-line {
-font-size: 16px !important;
-}
-
-.client-cell {
-font-size: 18px !important;
-padding: 2px 8px !important;
-}
-
-.search-bar-pro input {
-font-size: 18px !important;
-}
-
-.search-clear-btn {
-width: 32px !important;
-height: 32px !important;
-min-width: 32px !important;
-font-size: 16px !important;
-}
-
-.voice-display-field {
-font-size: 18px !important;
-width: 140px !important;
-}
-
-#creditsPage .action-buttons {
-min-width: 120px !important;
-gap: 4px !important;
-}
-
-#creditsPage .action-buttons .btn-print,
-#creditsPage .action-buttons .btn-whatsapp,
-#creditsPage .action-buttons .btn-payer,
-#creditsPage .action-buttons .btn-edit,
-#creditsPage .action-buttons .btn-delete {
-width: 38px !important;
-height: 38px !important;
-min-width: 38px !important;
-min-height: 38px !important;
-font-size: 16px !important;
-border-radius: 8px !important;
-}
-
-#creditsPage .action-buttons .btn-print i,
-#creditsPage .action-buttons .btn-whatsapp i,
-#creditsPage .action-buttons .btn-payer i,
-#creditsPage .action-buttons .btn-edit i,
-#creditsPage .action-buttons .btn-delete i {
-font-size: 16px !important;
-}
+    #creditsPage .action-buttons .btn-print,
+    #creditsPage .action-buttons .btn-whatsapp,
+    #creditsPage .action-buttons .btn-payer,
+    #creditsPage .action-buttons .btn-edit,
+    #creditsPage .action-buttons .btn-delete {
+        padding: 4px 8px !important;
+        font-size: 12px !important;
+    }
 }
 
 @media(max-width:500px) {
-#creditsPage .data-table tbody td {
-font-size: 15px !important;
-padding: 8px 10px !important;
-}
-
-.facture-cell {
-font-size: 15px !important;
-padding: 2px 6px !important;
-}
-
-.facture-cell .facture-number {
-font-size: 15px !important;
-}
-
-.date-cell .date-line,
-.date-cell .time-line {
-font-size: 13px !important;
-gap: 4px !important;
-}
-
-.date-cell .date-line i,
-.date-cell .time-line i {
-font-size: 12px !important;
-width: 14px !important;
-}
-
-.client-cell {
-font-size: 15px !important;
-padding: 2px 6px !important;
-}
-
-.search-bar-pro input {
-font-size: 15px !important;
-padding: 10px 6px !important;
-}
-
-.search-clear-btn {
-width: 28px !important;
-height: 28px !important;
-min-width: 28px !important;
-font-size: 14px !important;
-}
-
-#creditsPage .filter-group select {
-font-size: 16px !important;
-padding: 8px 12px !important;
-}
-
-.voice-display-field {
-font-size: 15px !important;
-width: 100px !important;
-padding: 6px 8px !important;
-}
-
-#creditsPage .action-buttons {
-min-width: 90px !important;
-gap: 2px !important;
-}
-
-#creditsPage .action-buttons .btn-print,
-#creditsPage .action-buttons .btn-whatsapp,
-#creditsPage .action-buttons .btn-payer,
-#creditsPage .action-buttons .btn-edit,
-#creditsPage .action-buttons .btn-delete {
-width: 32px !important;
-height: 32px !important;
-min-width: 32px !important;
-min-height: 32px !important;
-font-size: 14px !important;
-border-radius: 6px !important;
-}
-
-#creditsPage .action-buttons .btn-print i,
-#creditsPage .action-buttons .btn-whatsapp i,
-#creditsPage .action-buttons .btn-payer i,
-#creditsPage .action-buttons .btn-edit i,
-#creditsPage .action-buttons .btn-delete i {
-font-size: 14px !important;
-}
+    #creditsPage .action-buttons .btn-print,
+    #creditsPage .action-buttons .btn-whatsapp,
+    #creditsPage .action-buttons .btn-payer,
+    #creditsPage .action-buttons .btn-edit,
+    #creditsPage .action-buttons .btn-delete {
+        padding: 3px 6px !important;
+        font-size: 11px !important;
+    }
 }
 </style>
 `;
@@ -1010,28 +823,18 @@ articlesHtml = '-';
 var mode = d.paymentMethod || '-';
 var amountPaid = d.amountGiven || 0;
 
-// ✅ BOUTONS AVEC UNIQUEMENT DES ICÔNES - PAS DE TEXTE
+// ✅ BOUTONS AVEC TEXTE - PAS D'ICÔNES
 var actions = `
 <div class="action-buttons" style="display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:nowrap;">
-    <button class="btn-print" onclick="printFacture('${d.id}')" title="Imprimer / PDF" style="width:50px; height:50px; min-width:50px; min-height:50px; display:inline-flex; align-items:center; justify-content:center; background:#6366f1; color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:20px; transition:all 0.2s ease; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-        <i class="fas fa-print"></i>
-    </button>
-    <button class="btn-whatsapp" onclick="sendCreditWhatsApp('${d.id}')" title="Envoyer WhatsApp" style="width:50px; height:50px; min-width:50px; min-height:50px; display:inline-flex; align-items:center; justify-content:center; background:#25D366; color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:20px; transition:all 0.2s ease; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-        <i class="fab fa-whatsapp"></i>
-    </button>
+    <button class="btn-print" onclick="printFacture('${d.id}')" title="Imprimer / PDF" style="display:inline-flex; align-items:center; justify-content:center; padding:6px 12px; font-size:14px; font-weight:700; border-radius:6px; border:none; cursor:pointer; white-space:nowrap;">Imprimer</button>
+    <button class="btn-whatsapp" onclick="sendCreditWhatsApp('${d.id}')" title="Envoyer WhatsApp" style="display:inline-flex; align-items:center; justify-content:center; padding:6px 12px; font-size:14px; font-weight:700; border-radius:6px; border:none; cursor:pointer; white-space:nowrap;">WhatsApp</button>
     `;
 if (!d.paid) {
-    actions += `<button class="btn-payer" onclick="openCreditPaymentModal('${d.id}')" title="Marquer payé" style="width:50px; height:50px; min-width:50px; min-height:50px; display:inline-flex; align-items:center; justify-content:center; background:#10B981; color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:20px; transition:all 0.2s ease; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-        <i class="fas fa-check-circle"></i>
-    </button>`;
+    actions += `<button class="btn-payer" onclick="openCreditPaymentModal('${d.id}')" title="Marquer payé" style="display:inline-flex; align-items:center; justify-content:center; padding:6px 12px; font-size:14px; font-weight:700; border-radius:6px; border:none; cursor:pointer; white-space:nowrap;">Payer</button>`;
 }
 actions += `
-    <button class="btn-edit" onclick="editCredit('${d.id}')" title="Modifier" style="width:50px; height:50px; min-width:50px; min-height:50px; display:inline-flex; align-items:center; justify-content:center; background:#f59e0b; color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:20px; transition:all 0.2s ease; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-        <i class="fas fa-edit"></i>
-    </button>
-    <button class="btn-delete" onclick="if(confirm('Supprimer définitivement ce crédit ?')) deleteCredit('${d.id}')" title="Supprimer" style="width:50px; height:50px; min-width:50px; min-height:50px; display:inline-flex; align-items:center; justify-content:center; background:#ef4444; color:#fff; border:none; border-radius:10px; cursor:pointer; font-size:20px; transition:all 0.2s ease; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-        <i class="fas fa-trash-alt"></i>
-    </button>
+    <button class="btn-edit" onclick="editCredit('${d.id}')" title="Modifier" style="display:inline-flex; align-items:center; justify-content:center; padding:6px 12px; font-size:14px; font-weight:700; border-radius:6px; border:none; cursor:pointer; white-space:nowrap;">Modifier</button>
+    <button class="btn-delete" onclick="if(confirm('Supprimer définitivement ce crédit ?')) deleteCredit('${d.id}')" title="Supprimer" style="display:inline-flex; align-items:center; justify-content:center; padding:6px 12px; font-size:14px; font-weight:700; border-radius:6px; border:none; cursor:pointer; white-space:nowrap;">Supprimer</button>
 `;
 actions += `</div>`;
 
@@ -2029,3 +1832,4 @@ console.log('✅ Détails facture crédit modal ajouté - Font size agrandi');
 console.log('✅ Paiement crédit avec modal - Mise à jour du crédit existant');
 console.log('✅ Pagination corrigée - Sans icônes');
 console.log('✅ Caissier peut : Marquer payé, Modifier, Supprimer, Envoyer WhatsApp');
+console.log('✅ Boutons avec texte - Pas d\'icônes pour garantir l\'affichage');
