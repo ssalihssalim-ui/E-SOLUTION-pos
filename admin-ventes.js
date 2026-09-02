@@ -18,6 +18,20 @@ window.venteSelectionMode = window.venteSelectionMode || false;
 window.venteSelectedIndex = window.venteSelectedIndex || -1;
 window.clientsDataForSearch = window.clientsDataForSearch || [];
 
+// ✅ INITIALISATION DE currentPages
+if (!window.currentPages) {
+    window.currentPages = {};
+}
+if (!window.currentPages.ventes) {
+    window.currentPages.ventes = 1;
+}
+if (!window.currentPages.commandes) {
+    window.currentPages.commandes = 1;
+}
+if (!window.currentPages.credits) {
+    window.currentPages.credits = 1;
+}
+
 // ========== SELECTION EN MASSE ==========
 var ventesSelectionnees = new Set();
 
@@ -2138,13 +2152,21 @@ function printFactureDetails() {
     }
 }
 
-// ==================== PAGINATION (SANS ICÔNES) ====================
+// ==================== PAGINATION (CORRIGÉE) ====================
 
 // Fonction de pagination générique
 function getPaginationHTML(pageType, totalItems) {
     var itemsPerPage = 20;
     var totalPages = Math.ceil(totalItems / itemsPerPage);
-    var currentPage = window.currentPages ? window.currentPages[pageType] || 1 : 1;
+    
+    // ✅ Initialisation correcte de currentPages
+    if (!window.currentPages) {
+        window.currentPages = {};
+    }
+    if (!window.currentPages[pageType]) {
+        window.currentPages[pageType] = 1;
+    }
+    var currentPage = window.currentPages[pageType] || 1;
     
     if (totalPages <= 1) {
         return '';
@@ -2170,9 +2192,13 @@ function getPaginationHTML(pageType, totalItems) {
     return html;
 }
 
-// Fonction pour changer de page
+// Fonction pour changer de page (CORRIGÉE)
 function changePage(pageType, page) {
-    if (!window.currentPages) window.currentPages = {};
+    console.log('🔄 changePage appelé:', pageType, page);
+    
+    if (!window.currentPages) {
+        window.currentPages = {};
+    }
     
     var itemsPerPage = 20;
     var totalItems = 0;
@@ -2185,10 +2211,16 @@ function changePage(pageType, page) {
         totalItems = window.filteredCommandes ? window.filteredCommandes.length : 0;
     }
     
+    console.log('📊 Total items:', totalItems);
+    
     var totalPages = Math.ceil(totalItems / itemsPerPage);
-    if (page < 1 || page > totalPages) return;
+    if (page < 1 || page > totalPages) {
+        console.log('⚠️ Page invalide:', page);
+        return;
+    }
     
     window.currentPages[pageType] = page;
+    console.log('📄 Page courante:', page);
     
     // Re-rendre la page correspondante
     if (pageType === 'ventes' && typeof renderVentesTablePro === 'function') {
@@ -2202,7 +2234,12 @@ function changePage(pageType, page) {
 
 // Fonction pour obtenir les données de la page courante
 function getPageData(pageType, data) {
-    if (!window.currentPages) window.currentPages = {};
+    if (!window.currentPages) {
+        window.currentPages = {};
+    }
+    if (!window.currentPages[pageType]) {
+        window.currentPages[pageType] = 1;
+    }
     var currentPage = window.currentPages[pageType] || 1;
     var itemsPerPage = 20;
     var start = (currentPage - 1) * itemsPerPage;
