@@ -3,6 +3,7 @@
 // BOUTONS AVEC ICÔNES CORRIGÉS - Font Awesome fonctionnel
 // Version FINALE - AVEC MODAL DÉTAILS FACTURE ET PAIEMENT CRÉDIT
 // ✅ PAGINATION CORRIGÉE
+// ✅ CAISSIER PEUT : MARQUER PAYÉ, MODIFIER, SUPPRIMER, ENVOYER WHATSAPP
 
 // ========== VARIABLES GLOBALES ==========
 window.creditsPeriod = window.creditsPeriod || 'all';
@@ -432,67 +433,95 @@ min-width: 180px !important;
 #creditsPage .action-buttons .btn-edit,
 #creditsPage .action-buttons .btn-delete,
 #creditsPage .action-buttons .btn-add {
-width: 44px !important;
-height: 44px !important;
-min-width: 44px !important;
-min-height: 44px !important;
-border-radius: 10px !important;
+width: auto !important;
+height: auto !important;
+min-width: auto !important;
+min-height: auto !important;
+border-radius: 8px !important;
 display: inline-flex !important;
 align-items: center !important;
 justify-content: center !important;
-padding: 0 !important;
-font-size: 18px !important;
+padding: 8px 12px !important;
+font-size: 14px !important;
+font-weight: 700 !important;
+gap: 6px !important;
 transition: all 0.2s ease !important;
 border: none !important;
-background: var(--gray-50) !important;
-color: var(--text-secondary) !important;
 cursor: pointer !important;
 flex-shrink: 0 !important;
-box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
 }
 
 #creditsPage .action-buttons .btn-edit i,
 #creditsPage .action-buttons .btn-delete i,
 #creditsPage .action-buttons .btn-add i {
-font-size: 20px !important;
+font-size: 16px !important;
 pointer-events: none !important;
 line-height: 1 !important;
 }
 
-#creditsPage .action-buttons .btn-edit:hover {
-background: var(--gray-200) !important;
-color: var(--black) !important;
+#creditsPage .action-buttons .btn-edit:hover,
+#creditsPage .action-buttons .btn-delete:hover,
+#creditsPage .action-buttons .btn-add:hover {
 transform: translateY(-2px) !important;
-box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
 }
 
+/* Bouton Imprimer - Indigo */
+#creditsPage .action-buttons .btn-print {
+background: #6366f1 !important;
+color: #fff !important;
+}
+
+#creditsPage .action-buttons .btn-print:hover {
+background: #4f46e5 !important;
+}
+
+/* Bouton WhatsApp - Vert */
+#creditsPage .action-buttons .btn-whatsapp {
+background: #25D366 !important;
+color: #fff !important;
+}
+
+#creditsPage .action-buttons .btn-whatsapp:hover {
+background: #128C7E !important;
+}
+
+/* Bouton Payer - Émeraude */
+#creditsPage .action-buttons .btn-payer {
+background: #10B981 !important;
+color: #fff !important;
+}
+
+#creditsPage .action-buttons .btn-payer:hover {
+background: #059669 !important;
+}
+
+/* Bouton Modifier - Orange */
+#creditsPage .action-buttons .btn-edit {
+background: #f59e0b !important;
+color: #fff !important;
+}
+
+#creditsPage .action-buttons .btn-edit:hover {
+background: #d97706 !important;
+}
+
+/* Bouton Supprimer - Rouge */
 #creditsPage .action-buttons .btn-delete {
-color: #ef4444 !important;
-background: rgba(239, 68, 68, 0.08) !important;
+background: #ef4444 !important;
+color: #fff !important;
 }
 
 #creditsPage .action-buttons .btn-delete:hover {
-background: rgba(239, 68, 68, 0.15) !important;
-transform: translateY(-2px) !important;
-box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15) !important;
-}
-
-#creditsPage .action-buttons .btn-add {
-background: var(--black) !important;
-color: var(--white) !important;
-}
-
-#creditsPage .action-buttons .btn-add:hover {
-background: var(--primary-hover) !important;
-transform: translateY(-2px) !important;
-box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+background: #dc2626 !important;
 }
 
 #creditsPage .action-buttons .btn-add.payer-btn {
 background: #10B981 !important;
 color: #fff !important;
 font-size: 14px !important;
-padding: 0 12px !important;
+padding: 8px 12px !important;
 width: auto !important;
 min-width: 60px !important;
 border-radius: 8px !important;
@@ -583,11 +612,12 @@ gap: 4px !important;
 #creditsPage .action-buttons .btn-edit,
 #creditsPage .action-buttons .btn-delete,
 #creditsPage .action-buttons .btn-add {
-width: 38px !important;
-height: 38px !important;
-min-width: 38px !important;
-min-height: 38px !important;
-font-size: 16px !important;
+width: auto !important;
+height: auto !important;
+min-width: auto !important;
+min-height: auto !important;
+font-size: 13px !important;
+padding: 6px 10px !important;
 }
 
 #creditsPage .action-buttons .btn-add.payer-btn {
@@ -646,18 +676,19 @@ gap: 4px !important;
 #creditsPage .action-buttons .btn-edit,
 #creditsPage .action-buttons .btn-delete,
 #creditsPage .action-buttons .btn-add {
-width: 34px !important;
-height: 34px !important;
-min-width: 34px !important;
-min-height: 34px !important;
-font-size: 14px !important;
-border-radius: 8px !important;
+width: auto !important;
+height: auto !important;
+min-width: auto !important;
+min-height: auto !important;
+font-size: 12px !important;
+padding: 5px 8px !important;
+border-radius: 6px !important;
 }
 
 #creditsPage .action-buttons .btn-edit i,
 #creditsPage .action-buttons .btn-delete i,
 #creditsPage .action-buttons .btn-add i {
-font-size: 16px !important;
+font-size: 14px !important;
 }
 }
 
@@ -724,19 +755,20 @@ gap: 2px !important;
 #creditsPage .action-buttons .btn-edit,
 #creditsPage .action-buttons .btn-delete,
 #creditsPage .action-buttons .btn-add {
-width: 28px !important;
-height: 28px !important;
-min-width: 28px !important;
-min-height: 28px !important;
-font-size: 12px !important;
-border-radius: 6px !important;
+width: auto !important;
+height: auto !important;
+min-width: auto !important;
+min-height: auto !important;
+font-size: 11px !important;
+padding: 4px 6px !important;
+border-radius: 5px !important;
 }
 
 #creditsPage .action-buttons .btn-add.payer-btn {
 min-width: 40px !important;
 font-size: 10px !important;
-padding: 0 6px !important;
-height: 28px !important;
+padding: 0 4px !important;
+height: auto !important;
 }
 
 #creditsPage .action-buttons .btn-edit i,
@@ -1041,27 +1073,29 @@ articlesHtml = '-';
 var mode = d.paymentMethod || '-';
 var amountPaid = d.amountGiven || 0;
 
+// ✅ ACTIONS - BOUTONS CLAIRS AVEC FONT AWESOME
 var actions = `
-<div class="action-buttons">
-<button class="btn-edit" onclick="printFacture('${d.id}')" title="Imprimer / PDF">
-<i class="fas fa-print"></i>
-</button>
-`;
+<div class="action-buttons" style="display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:nowrap;">
+    <button class="btn-print" onclick="printFacture('${d.id}')" title="Imprimer / PDF" style="display:inline-flex; align-items:center; gap:4px; padding:8px 10px; background:#6366f1; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600;">
+        <i class="fas fa-print" style="font-size:16px;"></i> Imprimer
+    </button>
+    <button class="btn-whatsapp" onclick="sendCreditWhatsApp('${d.id}')" title="Envoyer WhatsApp" style="display:inline-flex; align-items:center; gap:4px; padding:8px 10px; background:#25D366; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600;">
+        <i class="fab fa-whatsapp" style="font-size:16px;"></i> WhatsApp
+    </button>
+    `;
 if (!d.paid) {
-actions += `<button class="btn-add payer-btn" onclick="openCreditPaymentModal('${d.id}')" title="Payer">
-<i class="fas fa-check"></i> Payer
-</button>`;
+    actions += `<button class="btn-payer" onclick="openCreditPaymentModal('${d.id}')" title="Marquer payé" style="display:inline-flex; align-items:center; gap:4px; padding:8px 10px; background:#10B981; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600;">
+        <i class="fas fa-check-circle" style="font-size:16px;"></i> Payer
+    </button>`;
 }
-if (isAdmin) {
 actions += `
-<button class="btn-edit" onclick="editCredit('${d.id}')" title="Modifier">
-<i class="fas fa-edit"></i>
-</button>
-<button class="btn-delete" onclick="if(confirm('Supprimer définitivement ce crédit ?')) deleteCredit('${d.id}')" title="Supprimer">
-<i class="fas fa-trash-alt"></i>
-</button>
+    <button class="btn-edit" onclick="editCredit('${d.id}')" title="Modifier" style="display:inline-flex; align-items:center; gap:4px; padding:8px 10px; background:#f59e0b; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600;">
+        <i class="fas fa-edit" style="font-size:16px;"></i> Modifier
+    </button>
+    <button class="btn-delete" onclick="if(confirm('Supprimer définitivement ce crédit ?')) deleteCredit('${d.id}')" title="Supprimer" style="display:inline-flex; align-items:center; gap:4px; padding:8px 10px; background:#ef4444; color:#fff; border:none; border-radius:8px; cursor:pointer; font-size:14px; font-weight:600;">
+        <i class="fas fa-trash-alt" style="font-size:16px;"></i> Supprimer
+    </button>
 `;
-}
 actions += `</div>`;
 
 var isSelected = window.creditSelectedIds.includes(d.id);
@@ -1579,6 +1613,89 @@ function printCreditFactureDetails() {
     }
 }
 
+// ==================== ENVOYER WHATSAPP POUR UN CRÉDIT ====================
+async function sendCreditWhatsApp(creditId) {
+    try {
+        // Récupérer les données du crédit
+        const doc = await db.collection('credits').doc(creditId).get();
+        if (!doc.exists) {
+            alert('❌ Crédit introuvable');
+            return;
+        }
+        
+        const credit = doc.data();
+        let phone = '';
+
+        // Chercher le téléphone du client
+        if (credit.clientId) {
+            const clientDoc = await db.collection('clients').doc(credit.clientId).get();
+            if (clientDoc.exists) {
+                const clientData = clientDoc.data();
+                phone = clientData.whatsapp || clientData.telephone || '';
+            }
+        }
+        
+        // Normaliser le numéro
+        phone = phone.replace(/[^\d+]/g, '').trim();
+        if (phone.startsWith('0')) {
+            phone = '+212' + phone.substring(1);
+        } else if (!phone.startsWith('+')) {
+            phone = '+' + phone;
+        }
+
+        if (!phone || phone === '+') {
+            alert('❌ Aucun numéro WhatsApp trouvé pour ce client.');
+            return;
+        }
+
+        // Construire le message
+        var msg = '🧾 *CRÉDIT E-SOLUTION*\n';
+        msg += '━━━━━━━━━━━━━━━━━━\n';
+        msg += '📄 N°: ' + (credit.factureNum || creditId.substring(0, 8)) + '\n';
+        msg += '📅 ' + (credit.createdAt ? new Date(credit.createdAt.seconds * 1000).toLocaleDateString('fr-FR') : '') + '\n';
+        msg += '👤 Client: ' + (credit.clientName || '-') + '\n';
+        msg += '━━━━━━━━━━━━━━━━━━\n';
+        
+        if (credit.items && credit.items.length > 0) {
+            credit.items.forEach(function(item) {
+                msg += item.quantite + 'x ' + item.nom + ' → ' + (item.prixVente * item.quantite).toFixed(2) + ' MAD\n';
+            });
+        }
+        
+        msg += '━━━━━━━━━━━━━━━━━━\n';
+        msg += '*💰 TOTAL: ' + credit.total.toFixed(2) + ' MAD*\n';
+        msg += '💳 Déjà payé: ' + (credit.amountGiven || 0).toFixed(2) + ' MAD\n';
+        msg += '⏳ Reste à payer: ' + (credit.remainingAmount || credit.total || 0).toFixed(2) + ' MAD\n';
+        msg += '━━━━━━━━━━━━━━━━━━\n';
+        msg += '🙏 Merci de régulariser votre crédit !\n';
+        msg += '🛒 E-SOLUTION';
+
+        var url = 'https://wa.me/' + phone + '?text=' + encodeURIComponent(msg);
+        
+        // Ouvrir WhatsApp
+        var w = window.open(url, '_blank');
+        if (!w || w.closed) {
+            // Popup bloquée, ouvrir un modal avec le lien
+            var modalHtml = `
+                <div style="text-align:center;padding:10px;">
+                    <i class="fab fa-whatsapp" style="font-size:4rem;color:#25D366;"></i>
+                    <p style="margin:16px 0;font-size:1.1rem;">Cliquez sur le bouton ci-dessous pour envoyer le rappel de crédit</p>
+                    <a href="${url}" target="_blank" rel="noopener noreferrer"
+                       style="display:inline-block;padding:14px 32px;background:#25D366;color:#fff;
+                       border-radius:12px;font-weight:700;text-decoration:none;font-size:1.1rem;">
+                        <i class="fab fa-whatsapp"></i> Envoyer sur WhatsApp
+                    </a>
+                </div>
+            `;
+            openModal('📱 Envoyer rappel WhatsApp', modalHtml);
+        }
+
+    } catch (e) {
+        console.error('Erreur envoi WhatsApp crédit:', e);
+        alert('❌ Erreur lors de l\'envoi WhatsApp');
+    }
+}
+
 // ==================== AUTRES FONCTIONS ====================
 
 async function payerCredit(creditId) {
@@ -1962,6 +2079,9 @@ window.openCreditPaymentModal = openCreditPaymentModal;
 window.confirmCreditPayment = confirmCreditPayment;
 window.validateCreditPayment = validateCreditPayment;
 
+// ✅ AJOUT DE LA FONCTION WHATSAPP
+window.sendCreditWhatsApp = sendCreditWhatsApp;
+
 // ✅ AJOUT DES FONCTIONS PAGINATION
 window.getPaginationHTML = getPaginationHTML;
 window.changePage = changePage;
@@ -1971,3 +2091,4 @@ console.log('🚀 E-SOLUTION - Admin Credits PRO chargé');
 console.log('✅ Détails facture crédit modal ajouté - Font size agrandi');
 console.log('✅ Paiement crédit avec modal - Mise à jour du crédit existant');
 console.log('✅ Pagination corrigée - Sans icônes');
+console.log('✅ Caissier peut : Marquer payé, Modifier, Supprimer, Envoyer WhatsApp');
