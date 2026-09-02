@@ -430,9 +430,11 @@ flex-wrap: nowrap !important;
 min-width: 180px !important;
 }
 
+#creditsPage .action-buttons .btn-print,
+#creditsPage .action-buttons .btn-whatsapp,
+#creditsPage .action-buttons .btn-payer,
 #creditsPage .action-buttons .btn-edit,
-#creditsPage .action-buttons .btn-delete,
-#creditsPage .action-buttons .btn-add {
+#creditsPage .action-buttons .btn-delete {
 width: 50px !important;
 height: 50px !important;
 min-width: 50px !important;
@@ -450,17 +452,21 @@ flex-shrink: 0 !important;
 box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
 }
 
+#creditsPage .action-buttons .btn-print i,
+#creditsPage .action-buttons .btn-whatsapp i,
+#creditsPage .action-buttons .btn-payer i,
 #creditsPage .action-buttons .btn-edit i,
-#creditsPage .action-buttons .btn-delete i,
-#creditsPage .action-buttons .btn-add i {
+#creditsPage .action-buttons .btn-delete i {
 font-size: 22px !important;
 pointer-events: none !important;
 line-height: 1 !important;
 }
 
+#creditsPage .action-buttons .btn-print:hover,
+#creditsPage .action-buttons .btn-whatsapp:hover,
+#creditsPage .action-buttons .btn-payer:hover,
 #creditsPage .action-buttons .btn-edit:hover,
-#creditsPage .action-buttons .btn-delete:hover,
-#creditsPage .action-buttons .btn-add:hover {
+#creditsPage .action-buttons .btn-delete:hover {
 transform: translateY(-2px) !important;
 box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
 }
@@ -521,9 +527,11 @@ min-width: 140px !important;
 gap: 4px !important;
 }
 
+#creditsPage .action-buttons .btn-print,
+#creditsPage .action-buttons .btn-whatsapp,
+#creditsPage .action-buttons .btn-payer,
 #creditsPage .action-buttons .btn-edit,
-#creditsPage .action-buttons .btn-delete,
-#creditsPage .action-buttons .btn-add {
+#creditsPage .action-buttons .btn-delete {
 width: 44px !important;
 height: 44px !important;
 min-width: 44px !important;
@@ -531,9 +539,11 @@ min-height: 44px !important;
 font-size: 18px !important;
 }
 
+#creditsPage .action-buttons .btn-print i,
+#creditsPage .action-buttons .btn-whatsapp i,
+#creditsPage .action-buttons .btn-payer i,
 #creditsPage .action-buttons .btn-edit i,
-#creditsPage .action-buttons .btn-delete i,
-#creditsPage .action-buttons .btn-add i {
+#creditsPage .action-buttons .btn-delete i {
 font-size: 18px !important;
 }
 }
@@ -584,9 +594,11 @@ min-width: 120px !important;
 gap: 4px !important;
 }
 
+#creditsPage .action-buttons .btn-print,
+#creditsPage .action-buttons .btn-whatsapp,
+#creditsPage .action-buttons .btn-payer,
 #creditsPage .action-buttons .btn-edit,
-#creditsPage .action-buttons .btn-delete,
-#creditsPage .action-buttons .btn-add {
+#creditsPage .action-buttons .btn-delete {
 width: 38px !important;
 height: 38px !important;
 min-width: 38px !important;
@@ -595,9 +607,11 @@ font-size: 16px !important;
 border-radius: 8px !important;
 }
 
+#creditsPage .action-buttons .btn-print i,
+#creditsPage .action-buttons .btn-whatsapp i,
+#creditsPage .action-buttons .btn-payer i,
 #creditsPage .action-buttons .btn-edit i,
-#creditsPage .action-buttons .btn-delete i,
-#creditsPage .action-buttons .btn-add i {
+#creditsPage .action-buttons .btn-delete i {
 font-size: 16px !important;
 }
 }
@@ -662,9 +676,11 @@ min-width: 90px !important;
 gap: 2px !important;
 }
 
+#creditsPage .action-buttons .btn-print,
+#creditsPage .action-buttons .btn-whatsapp,
+#creditsPage .action-buttons .btn-payer,
 #creditsPage .action-buttons .btn-edit,
-#creditsPage .action-buttons .btn-delete,
-#creditsPage .action-buttons .btn-add {
+#creditsPage .action-buttons .btn-delete {
 width: 32px !important;
 height: 32px !important;
 min-width: 32px !important;
@@ -673,9 +689,11 @@ font-size: 14px !important;
 border-radius: 6px !important;
 }
 
+#creditsPage .action-buttons .btn-print i,
+#creditsPage .action-buttons .btn-whatsapp i,
+#creditsPage .action-buttons .btn-payer i,
 #creditsPage .action-buttons .btn-edit i,
-#creditsPage .action-buttons .btn-delete i,
-#creditsPage .action-buttons .btn-add i {
+#creditsPage .action-buttons .btn-delete i {
 font-size: 14px !important;
 }
 }
