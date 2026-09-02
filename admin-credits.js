@@ -184,6 +184,7 @@ return `
 `;
 }
 
+// ✅ CORRECTION ICI : CSS RENFORCÉ POUR LES ICÔNES
 function injectCreditsStyles() {
 const styleId = 'credits-pro-styles-final';
 if (document.getElementById(styleId)) return;
@@ -450,6 +451,8 @@ border: none !important;
 cursor: pointer !important;
 flex-shrink: 0 !important;
 box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+visibility: visible !important;
+opacity: 1 !important;
 }
 
 #creditsPage .action-buttons .btn-print i,
@@ -457,9 +460,23 @@ box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
 #creditsPage .action-buttons .btn-payer i,
 #creditsPage .action-buttons .btn-edit i,
 #creditsPage .action-buttons .btn-delete i {
-font-size: 22px !important;
-pointer-events: none !important;
+font-family: 'Font Awesome 5 Free', 'Font Awesome 6 Free', 'Font Awesome 5 Brands', 'Font Awesome 6 Brands' !important;
+font-weight: 900 !important;
+font-style: normal !important;
 line-height: 1 !important;
+display: inline-block !important;
+font-size: 22px !important;
+width: auto !important;
+height: auto !important;
+margin: 0 !important;
+padding: 0 !important;
+pointer-events: none !important;
+-webkit-font-smoothing: antialiased !important;
+-moz-osx-font-smoothing: grayscale !important;
+text-rendering: auto !important;
+color: inherit !important;
+visibility: visible !important;
+opacity: 1 !important;
 }
 
 #creditsPage .action-buttons .btn-print:hover,
