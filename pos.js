@@ -201,12 +201,12 @@ function posToggleTools() {
             toolsContainer.style.background = 'var(--bg-page)';
             toolsContainer.style.borderRadius = '6px';
             toolsContainer.style.border = '1px solid var(--border)';
-            var children = toolsContainer.querySelectorAll('*');
-            children.forEach(function(child) {
-                child.style.display = '';
-            });
+            // ✅ AJOUT : Ajouter la classe visible pour le CSS
+            toolsContainer.classList.add('visible');
         } else {
             toolsContainer.style.display = 'none';
+            // ✅ AJOUT : Supprimer la classe visible pour le CSS
+            toolsContainer.classList.remove('visible');
         }
     }
 
@@ -217,7 +217,7 @@ function posToggleTools() {
 
     var searchInput = document.getElementById('posSearchInput');
     if (searchInput) {
-        searchInput.style.display = posToolsVisible ? '' : 'none';
+        searchInput.style.display = posToolsVisible ? 'flex' : 'none';
         if (posToolsVisible) {
             setTimeout(function() { searchInput.focus(); }, 100);
         }
@@ -225,24 +225,24 @@ function posToggleTools() {
 
     var micBtn = document.getElementById('posMicBtn');
     if (micBtn) {
-        micBtn.style.display = posToolsVisible ? '' : 'none';
+        micBtn.style.display = posToolsVisible ? 'flex' : 'none';
     }
 
     // ✅ Bouton Tables - avec ID
     var tablesBtn = document.getElementById('posTablesBtn');
     if (tablesBtn) {
-        tablesBtn.style.display = posToolsVisible ? '' : 'none';
+        tablesBtn.style.display = posToolsVisible ? 'flex' : 'none';
     }
 
     // ✅ Bouton En ligne - avec ID
     var enligneBtn = document.getElementById('posEnLigneBtn');
     if (enligneBtn) {
-        enligneBtn.style.display = posToolsVisible ? '' : 'none';
+        enligneBtn.style.display = posToolsVisible ? 'flex' : 'none';
     }
 
     var categoriesBar = document.querySelector('.pos-categories-bar');
     if (categoriesBar) {
-        categoriesBar.style.display = posToolsVisible ? '' : 'none';
+        categoriesBar.style.display = posToolsVisible ? 'flex' : 'none';
     }
 
     // ✅ Si on cache, on remet la vue catégories par défaut
