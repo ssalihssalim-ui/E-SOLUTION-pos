@@ -920,12 +920,15 @@ display: none !important;
 #posMicBtn {
 display: none !important;
 }
+
+/* ✅ LES BOUTONS TABLES ET EN LIGNE SONT MASQUÉS PAR DÉFAUT (sans !important) */
 button[onclick*="posAfficherCommandesTables"] {
-display: none !important;
+    display: none;
 }
 button[onclick*="navigateTo"] {
-display: none !important;
+    display: none;
 }
+
 .pos-categories-bar {
 display: none !important;
 }
