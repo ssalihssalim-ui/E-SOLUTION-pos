@@ -183,7 +183,7 @@ console.warn('Erreur préchargement POS:', e);
 // Lancer le préchargement immédiatement
 preloadPosData();
 
-// ==================== TOGGLE OUTILS POS - CORRIGÉ ====================
+// ==================== TOGGLE OUTILS POS - CORRIGÉ AVEC DESIGN MODERNE ====================
 function posToggleTools() {
     posToolsVisible = !posToolsVisible;
     var toolsContainer = document.getElementById('posToolsContainer');
@@ -195,12 +195,13 @@ function posToggleTools() {
         if (posToolsVisible) {
             toolsContainer.style.display = 'flex';
             toolsContainer.style.flexDirection = 'column';
-            toolsContainer.style.gap = '4px';
-            toolsContainer.style.marginBottom = '4px';
-            toolsContainer.style.padding = '5px 8px';
-            toolsContainer.style.background = 'var(--bg-page)';
-            toolsContainer.style.borderRadius = '6px';
+            toolsContainer.style.gap = '10px';
+            toolsContainer.style.marginBottom = '10px';
+            toolsContainer.style.padding = '12px 16px';
+            toolsContainer.style.background = 'var(--bg-card)';
+            toolsContainer.style.borderRadius = '12px';
             toolsContainer.style.border = '1px solid var(--border)';
+            toolsContainer.style.boxShadow = '0 2px 8px rgba(0,0,0,0.04)';
             // ✅ AJOUT : Ajouter la classe visible pour le CSS
             toolsContainer.classList.add('visible');
         } else {
@@ -215,6 +216,7 @@ function posToggleTools() {
         toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
     }
 
+    // ✅ Barre de recherche
     var searchInput = document.getElementById('posSearchInput');
     if (searchInput) {
         searchInput.style.display = posToolsVisible ? 'flex' : 'none';
@@ -223,23 +225,25 @@ function posToggleTools() {
         }
     }
 
+    // ✅ Bouton Micro
     var micBtn = document.getElementById('posMicBtn');
     if (micBtn) {
         micBtn.style.display = posToolsVisible ? 'flex' : 'none';
     }
 
-    // ✅ Bouton Tables - avec ID
+    // ✅ Bouton Tables
     var tablesBtn = document.getElementById('posTablesBtn');
     if (tablesBtn) {
-        tablesBtn.style.display = posToolsVisible ? 'flex' : 'none';
+        tablesBtn.style.display = posToolsVisible ? 'inline-flex' : 'none';
     }
 
-    // ✅ Bouton En ligne - avec ID
+    // ✅ Bouton En ligne
     var enligneBtn = document.getElementById('posEnLigneBtn');
     if (enligneBtn) {
-        enligneBtn.style.display = posToolsVisible ? 'flex' : 'none';
+        enligneBtn.style.display = posToolsVisible ? 'inline-flex' : 'none';
     }
 
+    // ✅ Barre des catégories
     var categoriesBar = document.querySelector('.pos-categories-bar');
     if (categoriesBar) {
         categoriesBar.style.display = posToolsVisible ? 'flex' : 'none';
@@ -1271,7 +1275,7 @@ return;
 buildFullPOS(c);
 }
 
-// ==================== buildFullPOS AVEC HAUTEURS CORRIGÉES ====================
+// ==================== buildFullPOS AVEC HAUTEURS CORRIGÉES ET DESIGN MODERNE ====================
 function buildFullPOS(c){
 if(posProductsList.length===0&&posCategoriesList.length===0){ c.innerHTML='<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:#14B8A6;"></i><p>Chargement...</p></div>'; return; }
 var st=posCalculateTotal(),t=st-posDiscountMAD;
@@ -1322,17 +1326,25 @@ stepIndicator +
 
 '<div id="posToolsContainer" style="display:none;flex-direction:column;gap:4px;margin-bottom:4px;padding:5px 8px;background:var(--bg-page);border-radius:6px;border:1px solid var(--border);">' +
 
-'<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">' +
-'<div style="flex:1;min-width:80px;display:flex;align-items:center;background:#fff;border:2px solid #e2e8f0;border-radius:40px;padding:1px 6px;position:relative;height:'+(isMobile?'30px':'34px')+';">' +
-'<i class="fas fa-search" style="color:#94a3b8;margin-right:3px;font-size:'+(isMobile?'12px':'14px')+';"></i>' +
-'<input type="text" id="posSearchInput" placeholder="🔍 Rechercher..." value="'+escapeHtml(posSearchQuery)+'" onkeyup="posSearchProducts(this.value); updateClearButtonVisibility();" oninput="updateClearButtonVisibility();" style="border:none;outline:none;padding:0;width:100%;background:transparent;font-size:'+(isMobile?'12px':'16px')+';padding-right:24px;height:'+(isMobile?'30px':'34px')+';">' +
-'<button id="posSearchClearBtn" onclick="clearPosSearch()" style="display:'+(posSearchQuery ? 'flex' : 'none')+';position:absolute;right:4px;background:none;border:none;cursor:pointer;padding:1px;color:#94a3b8;font-size:'+(isMobile?'14px':'16px')+';align-items:center;justify-content:center;" title="Effacer"><i class="fas fa-times-circle"></i></button>' +
-'</div>' +
-'<button id="posMicBtn" title="Micro" style="background:#dcfce7;border:2px solid #14B8A6;border-radius:50%;width:'+(isMobile?'30px':'34px')+';height:'+(isMobile?'30px':'34px')+';cursor:pointer;font-size:'+(isMobile?'12px':'14px')+';" onclick="posToggleVoiceSearch()"><i class="fas fa-microphone"></i></button>' +
+'<!-- ✅ RECHERCHE + BOUTONS À DROITE -->' +
+'<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
+'<div style="flex:1;min-width:120px;display:flex;align-items:center;background:var(--bg-page);border:2px solid var(--border);border-radius:40px;padding:2px 12px;position:relative;height:'+(isMobile?'34px':'38px')+';transition:var(--transition);">' +
+'<i class="fas fa-search" style="color:var(--text-muted);margin-right:6px;font-size:'+(isMobile?'13px':'15px')+';"></i>' +
+'<input type="text" id="posSearchInput" placeholder="🔍 Rechercher un produit..." value="'+escapeHtml(posSearchQuery)+'" onkeyup="posSearchProducts(this.value); updateClearButtonVisibility();" oninput="updateClearButtonVisibility();" style="border:none;outline:none;padding:0;width:100%;background:transparent;font-size:'+(isMobile?'13px':'15px')+';padding-right:28px;height:'+(isMobile?'34px':'38px')+';color:var(--text-primary);">' +
+'<button id="posSearchClearBtn" onclick="clearPosSearch()" style="display:'+(posSearchQuery ? 'flex' : 'none')+';position:absolute;right:8px;background:none;border:none;cursor:pointer;padding:2px;color:var(--text-muted);font-size:'+(isMobile?'14px':'16px')+';align-items:center;justify-content:center;" title="Effacer"><i class="fas fa-times-circle"></i></button>' +
 '</div>' +
 
-'<div class="pos-categories-bar" style="display:flex;flex-wrap:wrap;gap:3px;">' +
-'<button class="pos-cat-btn '+(posSelectedCategory==='all'?'active':'')+'" onclick="posFilterCategory(\'all\')" style="padding:'+(isMobile?'3px 6px':'4px 10px')+';font-size:'+(isMobile?'9px':'0.65rem')+';gap:'+(isMobile?'2px':'4px')+';border-radius:16px;border:2px solid '+(posSelectedCategory==='all'?'#14B8A6':'#e2e8f0')+';background:'+(posSelectedCategory==='all'?'#f0fdf4':'#fff')+';cursor:pointer;font-weight:600;transition:all 0.2s;">📋 Tous</button>';
+'<button id="posMicBtn" title="Recherche vocale" style="background:var(--bg-page);border:2px solid var(--border);border-radius:50%;width:'+(isMobile?'36px':'40px')+';height:'+(isMobile?'36px':'40px')+';cursor:pointer;font-size:'+(isMobile?'14px':'16px')+';display:flex;align-items:center;justify-content:center;color:var(--text-primary);transition:var(--transition);" onclick="posToggleVoiceSearch()"><i class="fas fa-microphone"></i></button>' +
+
+'<div style="display:flex;gap:6px;margin-left:auto;">' +
+'<button id="posTablesBtn" onclick="posAfficherCommandesTables()" style="background:var(--bg-page);border:2px solid var(--border);border-radius:40px;padding:6px 14px;font-weight:600;font-size:'+(isMobile?'11px':'13px')+';display:flex;align-items:center;gap:6px;color:var(--text-primary);cursor:pointer;transition:var(--transition);">🍽️ Tables <span style="background:#ef4444;color:#fff;border-radius:20px;padding:0 8px;font-size:'+(isMobile?'9px':'11px')+';font-weight:700;">'+posCommandesTablesCount+'</span></button>' +
+'<button id="posEnLigneBtn" onclick="navigateTo(\'commandes\')" style="background:var(--bg-page);border:2px solid var(--border);border-radius:40px;padding:6px 14px;font-weight:600;font-size:'+(isMobile?'11px':'13px')+';display:flex;align-items:center;gap:6px;color:var(--text-primary);cursor:pointer;transition:var(--transition);">🌐 En ligne <span style="background:#ef4444;color:#fff;border-radius:20px;padding:0 8px;font-size:'+(isMobile?'9px':'11px')+';font-weight:700;">'+posCommandesEnLigneCount+'</span></button>' +
+'</div>' +
+'</div>' +
+
+'<!-- ✅ CATÉGORIES EN DESSOUS -->' +
+'<div class="pos-categories-bar" style="display:flex;flex-wrap:wrap;gap:6px;padding-top:6px;border-top:1px solid var(--border);margin-top:4px;">' +
+'<button class="pos-cat-btn '+(posSelectedCategory==='all'?'active':'')+'" onclick="posFilterCategory(\'all\')" style="padding:5px 14px;font-size:12px;gap:4px;border-radius:40px;border:2px solid '+(posSelectedCategory==='all'?'#14B8A6':'var(--border)')+';background:'+(posSelectedCategory==='all'?'#f0fdf4':'var(--bg-card)')+';cursor:pointer;font-weight:600;transition:all 0.2s;display:inline-flex;align-items:center;">📋 Tous</button>';
 var sortedCategories = posCategoriesList.slice().sort(function(a, b) {
 var ordreA = (a.ordre !== undefined && a.ordre !== null) ? parseInt(a.ordre) : 9999;
 var ordreB = (b.ordre !== undefined && b.ordre !== null) ? parseInt(b.ordre) : 9999;
@@ -1342,17 +1354,11 @@ return (a.nom || '').localeCompare(b.nom || '');
 for(var i=0;i<sortedCategories.length;i++){
 var ca = sortedCategories[i];
 var ac = posSelectedCategory===ca.nom?'active':'';
-var ih = ca.imageBase64?'<img src="'+escapeHtml(ca.imageBase64)+'" loading="lazy" style="max-width:18px;max-height:18px;border-radius:4px;">':'<i class="fas fa-folder" style="font-size:'+(isMobile?'9px':'11px')+';"></i>';
-h+='<button class="pos-cat-btn '+ac+'" onclick="posFilterCategory(\''+escapeHtml(ca.nom).replace(/'/g,"\\'")+'\')" style="padding:'+(isMobile?'3px 6px':'4px 10px')+';font-size:'+(isMobile?'9px':'0.65rem')+';gap:'+(isMobile?'2px':'4px')+';border-radius:16px;border:2px solid '+(posSelectedCategory===ca.nom?'#14B8A6':'#e2e8f0')+';background:'+(posSelectedCategory===ca.nom?'#f0fdf4':'#fff')+';cursor:pointer;font-weight:600;transition:all 0.2s;display:flex;align-items:center;">'+ih+' '+escapeHtml(ca.nom)+'</button>';
+var ih = ca.imageBase64?'<img src="'+escapeHtml(ca.imageBase64)+'" loading="lazy" style="max-width:20px;max-height:20px;border-radius:4px;object-fit:contain;">':'<i class="fas fa-folder" style="font-size:'+(isMobile?'11px':'13px')+';"></i>';
+h+='<button class="pos-cat-btn '+ac+'" onclick="posFilterCategory(\''+escapeHtml(ca.nom).replace(/'/g,"\\'")+'\')" style="padding:5px 14px;font-size:12px;gap:4px;border-radius:40px;border:2px solid '+(posSelectedCategory===ca.nom?'#14B8A6':'var(--border)')+';background:'+(posSelectedCategory===ca.nom?'#f0fdf4':'var(--bg-card)')+';cursor:pointer;font-weight:600;transition:all 0.2s;display:inline-flex;align-items:center;">'+ih+' '+escapeHtml(ca.nom)+'</button>';
 }
-h+='</div>';
 h+='</div>' +
-'</div>' +
-
-// ✅ BOUTONS TABLES ET EN LIGNE - EN DEHORS DU CONTENEUR
-'<div id="posToolsButtons" style="display:flex;gap:4px;margin-top:2px;flex-wrap:wrap;">' +
-'<button id="posTablesBtn" onclick="posAfficherCommandesTables()" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:3px 10px;font-weight:600;font-size:'+(isMobile?'0.5rem':'0.6rem')+';">🍽️ Tables <span id="posTablesCount" style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 6px;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">'+posCommandesTablesCount+'</span></button>' +
-'<button id="posEnLigneBtn" onclick="navigateTo(\'commandes\')" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:3px 10px;font-weight:600;font-size:'+(isMobile?'0.5rem':'0.6rem')+';">🌐 En ligne <span id="posEnLigneCount" style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 6px;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">'+posCommandesEnLigneCount+'</span></button>' +
+'</div>' + // Fin posToolsContainer
 '</div>' +
 
 '<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:hidden;overflow-y:auto;flex-wrap:wrap;align-content:start;flex:1;"></div>' +
