@@ -920,11 +920,12 @@ display: none !important;
 #posMicBtn {
 display: none !important;
 }
+/* ✅ CORRECTION : Suppression du !important pour permettre au JS de contrôler l'affichage */
 button[onclick*="posAfficherCommandesTables"] {
-display: none !important;
+display: none;
 }
 button[onclick*="navigateTo"] {
-display: none !important;
+display: none;
 }
 .pos-categories-bar {
 display: none !important;
