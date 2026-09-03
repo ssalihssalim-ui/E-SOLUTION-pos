@@ -185,63 +185,92 @@ preloadPosData();
 
 // ==================== TOGGLE OUTILS POS - CORRIGÉ ====================
 function posToggleTools() {
-posToolsVisible = !posToolsVisible;
-var toolsContainer = document.getElementById('posToolsContainer');
-var toggleBtn = document.getElementById('posToggleToolsBtn');
+    posToolsVisible = !posToolsVisible;
+    var toolsContainer = document.getElementById('posToolsContainer');
+    var toggleBtn = document.getElementById('posToggleToolsBtn');
 
-console.log('🔍 Toggle outils POS - État:', posToolsVisible);
+    console.log('🔍 Toggle outils POS - État:', posToolsVisible);
 
-if (toolsContainer) {
-if (posToolsVisible) {
-toolsContainer.style.display = 'flex';
-toolsContainer.style.flexDirection = 'column';
-toolsContainer.style.gap = '4px';
-toolsContainer.style.marginBottom = '4px';
-toolsContainer.style.padding = '5px 8px';
-toolsContainer.style.background = 'var(--bg-page)';
-toolsContainer.style.borderRadius = '6px';
-toolsContainer.style.border = '1px solid var(--border)';
-var children = toolsContainer.querySelectorAll('*');
-children.forEach(function(child) {
-child.style.display = '';
-});
-} else {
-toolsContainer.style.display = 'none';
-}
-}
+    if (toolsContainer) {
+        if (posToolsVisible) {
+            toolsContainer.style.display = 'flex';
+            toolsContainer.style.flexDirection = 'column';
+            toolsContainer.style.gap = '4px';
+            toolsContainer.style.marginBottom = '4px';
+            toolsContainer.style.padding = '5px 8px';
+            toolsContainer.style.background = 'var(--bg-page)';
+            toolsContainer.style.borderRadius = '6px';
+            toolsContainer.style.border = '1px solid var(--border)';
+            var children = toolsContainer.querySelectorAll('*');
+            children.forEach(function(child) {
+                child.style.display = '';
+            });
+        } else {
+            toolsContainer.style.display = 'none';
+        }
+    }
 
-if (toggleBtn) {
-toggleBtn.innerHTML = posToolsVisible ? '✕ Masquer tout' : '🔍 Afficher tout';
-toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
-}
+    if (toggleBtn) {
+        toggleBtn.innerHTML = posToolsVisible ? '✕ Masquer tout' : '🔍 Afficher tout';
+        toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
+    }
 
-var searchInput = document.getElementById('posSearchInput');
-if (searchInput) {
-searchInput.style.display = posToolsVisible ? '' : 'none';
-if (posToolsVisible) {
-setTimeout(function() { searchInput.focus(); }, 100);
-}
-}
+    var searchInput = document.getElementById('posSearchInput');
+    if (searchInput) {
+        searchInput.style.display = posToolsVisible ? '' : 'none';
+        if (posToolsVisible) {
+            setTimeout(function() { searchInput.focus(); }, 100);
+        }
+    }
 
-var micBtn = document.getElementById('posMicBtn');
-if (micBtn) {
-micBtn.style.display = posToolsVisible ? '' : 'none';
-}
+    var micBtn = document.getElementById('posMicBtn');
+    if (micBtn) {
+        micBtn.style.display = posToolsVisible ? '' : 'none';
+    }
 
-var tablesBtn = document.querySelector('button[onclick*="posAfficherCommandesTables"]');
-if (tablesBtn) {
-tablesBtn.style.display = posToolsVisible ? '' : 'none';
-}
+    // ✅ Bouton Tables - avec ID
+    var tablesBtn = document.getElementById('posTablesBtn');
+    if (tablesBtn) {
+        tablesBtn.style.display = posToolsVisible ? '' : 'none';
+    }
 
-var enligneBtn = document.querySelector('button[onclick*="navigateTo(\'commandes\')"]');
-if (enligneBtn) {
-enligneBtn.style.display = posToolsVisible ? '' : 'none';
-}
+    // ✅ Bouton En ligne - avec ID
+    var enligneBtn = document.getElementById('posEnLigneBtn');
+    if (enligneBtn) {
+        enligneBtn.style.display = posToolsVisible ? '' : 'none';
+    }
 
-var categoriesBar = document.querySelector('.pos-categories-bar');
-if (categoriesBar) {
-categoriesBar.style.display = posToolsVisible ? '' : 'none';
-}
+    var categoriesBar = document.querySelector('.pos-categories-bar');
+    if (categoriesBar) {
+        categoriesBar.style.display = posToolsVisible ? '' : 'none';
+    }
+
+    // ✅ Si on cache, on remet la vue catégories par défaut
+    if (!posToolsVisible) {
+        posViewMode = 'categories';
+        posSelectedCategoryForView = null;
+        posSelectedCategory = 'all';
+        posSearchQuery = '';
+        posProductOffset = 0;
+        
+        var catBtns = document.querySelectorAll('.pos-cat-btn');
+        catBtns.forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+        var allBtn = document.querySelector('.pos-cat-btn[onclick*="all"]');
+        if (allBtn) allBtn.classList.add('active');
+        
+        var searchInput2 = document.getElementById('posSearchInput');
+        if (searchInput2) {
+            searchInput2.value = '';
+        }
+        var clearBtn = document.getElementById('posSearchClearBtn');
+        if (clearBtn) clearBtn.style.display = 'none';
+        
+        if (isOnPOSPage()) {
+            filterProductGrid();
+        }
+    }
 }
 
 // ==================== APPLIQUER LE SCROLL SUR DYNAMICCONTENT ====================
@@ -1300,7 +1329,6 @@ stepIndicator +
 '<button id="posSearchClearBtn" onclick="clearPosSearch()" style="display:'+(posSearchQuery ? 'flex' : 'none')+';position:absolute;right:4px;background:none;border:none;cursor:pointer;padding:1px;color:#94a3b8;font-size:'+(isMobile?'14px':'16px')+';align-items:center;justify-content:center;" title="Effacer"><i class="fas fa-times-circle"></i></button>' +
 '</div>' +
 '<button id="posMicBtn" title="Micro" style="background:#dcfce7;border:2px solid #14B8A6;border-radius:50%;width:'+(isMobile?'30px':'34px')+';height:'+(isMobile?'30px':'34px')+';cursor:pointer;font-size:'+(isMobile?'12px':'14px')+';" onclick="posToggleVoiceSearch()"><i class="fas fa-microphone"></i></button>' +
-'<div style="display:flex;gap:2px;"><button onclick="posAfficherCommandesTables()" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:2px 6px;font-weight:600;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">🍽️ Tables <span style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 4px;font-size:'+(isMobile?'0.3rem':'0.4rem')+';">'+posCommandesTablesCount+'</span></button><button onclick="navigateTo(\'commandes\')" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:2px 6px;font-weight:600;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">🌐 En ligne <span style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 4px;font-size:'+(isMobile?'0.3rem':'0.4rem')+';">'+posCommandesEnLigneCount+'</span></button></div>' +
 '</div>' +
 
 '<div class="pos-categories-bar" style="display:flex;flex-wrap:wrap;gap:3px;">' +
@@ -1318,8 +1346,14 @@ var ih = ca.imageBase64?'<img src="'+escapeHtml(ca.imageBase64)+'" loading="lazy
 h+='<button class="pos-cat-btn '+ac+'" onclick="posFilterCategory(\''+escapeHtml(ca.nom).replace(/'/g,"\\'")+'\')" style="padding:'+(isMobile?'3px 6px':'4px 10px')+';font-size:'+(isMobile?'9px':'0.65rem')+';gap:'+(isMobile?'2px':'4px')+';border-radius:16px;border:2px solid '+(posSelectedCategory===ca.nom?'#14B8A6':'#e2e8f0')+';background:'+(posSelectedCategory===ca.nom?'#f0fdf4':'#fff')+';cursor:pointer;font-weight:600;transition:all 0.2s;display:flex;align-items:center;">'+ih+' '+escapeHtml(ca.nom)+'</button>';
 }
 h+='</div>';
-h+='</div>';
 h+='</div>' +
+'</div>' +
+
+// ✅ BOUTONS TABLES ET EN LIGNE - EN DEHORS DU CONTENEUR
+'<div id="posToolsButtons" style="display:flex;gap:4px;margin-top:2px;flex-wrap:wrap;">' +
+'<button id="posTablesBtn" onclick="posAfficherCommandesTables()" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:3px 10px;font-weight:600;font-size:'+(isMobile?'0.5rem':'0.6rem')+';">🍽️ Tables <span id="posTablesCount" style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 6px;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">'+posCommandesTablesCount+'</span></button>' +
+'<button id="posEnLigneBtn" onclick="navigateTo(\'commandes\')" style="background:#fff;border:2px solid #e2e8f0;border-radius:50px;padding:3px 10px;font-weight:600;font-size:'+(isMobile?'0.5rem':'0.6rem')+';">🌐 En ligne <span id="posEnLigneCount" style="background:#ef4444;color:#fff;border-radius:20px;padding:1px 6px;font-size:'+(isMobile?'0.4rem':'0.5rem')+';">'+posCommandesEnLigneCount+'</span></button>' +
+'</div>' +
 
 '<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:hidden;overflow-y:auto;flex-wrap:wrap;align-content:start;flex:1;"></div>' +
 '</div>' +
