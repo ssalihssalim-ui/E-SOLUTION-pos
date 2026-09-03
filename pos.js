@@ -230,17 +230,17 @@ function posToggleTools() {
         micBtn.style.display = posToolsVisible ? '' : 'none';
     }
 
-    // ❌ NE PAS CACHER le bouton Tables - toujours visible
-    // var tablesBtn = document.querySelector('button[onclick*="posAfficherCommandesTables"]');
-    // if (tablesBtn) {
-    //     tablesBtn.style.display = posToolsVisible ? '' : 'none';
-    // }
+    // ✅ Bouton Tables - AFFICHÉ/MASQUÉ
+    var tablesBtn = document.querySelector('button[onclick*="posAfficherCommandesTables"]');
+    if (tablesBtn) {
+        tablesBtn.style.display = posToolsVisible ? '' : 'none';
+    }
 
-    // ❌ NE PAS CACHER le bouton En ligne - toujours visible
-    // var enligneBtn = document.querySelector('button[onclick*="navigateTo(\'commandes\')"]');
-    // if (enligneBtn) {
-    //     enligneBtn.style.display = posToolsVisible ? '' : 'none';
-    // }
+    // ✅ Bouton En ligne - AFFICHÉ/MASQUÉ
+    var enligneBtn = document.querySelector('button[onclick*="navigateTo(\'commandes\')"]');
+    if (enligneBtn) {
+        enligneBtn.style.display = posToolsVisible ? '' : 'none';
+    }
 
     // ✅ Barre des catégories
     var categoriesBar = document.querySelector('.pos-categories-bar');
