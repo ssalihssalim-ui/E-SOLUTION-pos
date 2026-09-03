@@ -4,7 +4,7 @@
 // Version FINALE - AVEC MODAL DÉTAILS FACTURE ET PAIEMENT CRÉDIT
 // ✅ PAGINATION CORRIGÉE
 // ✅ CAISSIER PEUT : MARQUER PAYÉ, MODIFIER, SUPPRIMER, ENVOYER WHATSAPP
-// ✅ RETOUR AU PAIEMENT DEPUIS LE POS
+// ✅ RETOUR AU PAIEMENT DEPUIS LE POS (UNIQUEMENT SI VENU DU POS)
 // ✅ PRÉ-SÉLECTION DU CLIENT AVEC RECHERCHE AUTO
 // ✅ STATISTIQUES EN HAUT DE PAGE AVEC FILTRES DE DATE
 
@@ -17,6 +17,7 @@ window.allCreditsData = window.allCreditsData || [];
 window.clientsDataForSearch = window.clientsDataForSearch || [];
 window._posFilterClientId = null;
 window._posFilterClientName = null;
+window._fromPos = false;  // ✅ Indique si on vient du POS
 window.creditsDateDebut = window.creditsDateDebut || '';
 window.creditsDateFin = window.creditsDateFin || '';
 
@@ -710,12 +711,14 @@ var savedClientName = localStorage.getItem('posSelectedCreditClientName');
 if (savedClientId && savedClientName) {
     window._posFilterClientId = savedClientId;
     window._posFilterClientName = savedClientName;
+    window._fromPos = true;  // ✅ On vient du POS
     // Nettoyer le localStorage après récupération
     localStorage.removeItem('posSelectedCreditClientId');
     localStorage.removeItem('posSelectedCreditClientName');
 } else {
     window._posFilterClientId = null;
     window._posFilterClientName = null;
+    window._fromPos = false;  // ✅ Navigation normale
 }
 
 window.creditsPeriod = 'all';
@@ -731,18 +734,26 @@ if (!window.sortOrders.credits.createdAt) window.sortOrders.credits.createdAt = 
 // ✅ Si un client est pré-sélectionné, on met son nom dans la recherche
 var searchPlaceholder = window._posFilterClientName || 'Rechercher (client, produit, description)...';
 
+// ✅ Afficher le bouton uniquement si on vient du POS
+var showBackButton = window._fromPos ? '' : 'display:none;';
+var filterMessage = window._posFilterClientName ? 
+    `<div style="padding:8px 12px; background:#f0fdf4; border-radius:8px; margin-top:8px; border:2px solid #14B8A6; font-size:18px; font-weight:600; color:#0D9488;">
+        🔍 Client filtré : <strong>${escapeHtml(window._posFilterClientName)}</strong>
+    </div>` : '';
+
 c.innerHTML = `
 <div class="content-card" id="creditsPage">
 <div class="card-header">
 <div style="display:flex; justify-content:space-between; align-items:center; width:100%; flex-wrap:wrap; gap:8px;">
     <h3 style="font-size:26px !important; margin:0;"><i class="fas fa-credit-card"></i> Crédits</h3>
     <button id="creditsBackToPosBtn" onclick="retournerAuPaiement()" 
-            style="background:#6366f1; color:#fff; border:none; border-radius:8px; 
+            style="${showBackButton} background:#6366f1; color:#fff; border:none; border-radius:8px; 
                    padding:8px 20px; font-size:18px; font-weight:700; cursor:pointer; 
                    display:flex; align-items:center; gap:8px;">
         <i class="fas fa-arrow-left"></i> Retour au paiement
     </button>
 </div>
+${filterMessage}
 <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:8px;">
 <div class="search-bar-pro">
 <i class="fas fa-search"></i>
@@ -856,7 +867,10 @@ document.getElementById('creditsSearchInput').value = '';
 window.creditsSearch = '';
 window._posFilterClientId = null;
 window._posFilterClientName = null;
+window._fromPos = false;
 applyCreditsFilters();
+// ✅ Recharger la page pour enlever le bouton
+loadCreditsPage(document.getElementById('dynamicContent'));
 }
 window.reinitialiserFiltresCredits = reinitialiserFiltresCredits;
 
@@ -875,11 +889,14 @@ window.creditsSearch = '';
 // ✅ Réinitialiser aussi le filtre client
 window._posFilterClientId = null;
 window._posFilterClientName = null;
+window._fromPos = false;
 applyCreditsFilters();
 var clearBtn = document.getElementById('creditsClearBtn');
 if (clearBtn) {
 clearBtn.classList.add('hidden');
 }
+// ✅ Recharger la page pour enlever le bouton
+loadCreditsPage(document.getElementById('dynamicContent'));
 }
 }
 
@@ -2100,6 +2117,7 @@ function retournerAuPaiement() {
     // Réinitialiser les variables de filtre
     window._posFilterClientId = null;
     window._posFilterClientName = null;
+    window._fromPos = false;
     // Naviguer vers le POS
     navigateTo('pos');
 }
@@ -2171,7 +2189,7 @@ console.log('✅ Paiement crédit avec modal - Mise à jour du crédit existant'
 console.log('✅ Pagination corrigée - Utilise window.itemsPerPage');
 console.log('✅ Caissier peut : Marquer payé, Modifier, Supprimer, Envoyer WhatsApp');
 console.log('✅ Boutons avec texte - Ultra compacts (10px)');
-console.log('✅ Retour au paiement depuis le POS');
+console.log('✅ Retour au paiement depuis le POS (uniquement si venu du POS)');
 console.log('✅ Pré-sélection du client avec recherche auto');
 console.log('✅ Statistiques en haut de page avec filtres de date');
 console.log('✅ Filtres rapides : Aujourd\'hui, 3j, 7j, 15j, 30j, 90j, 365j');
