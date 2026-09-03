@@ -334,41 +334,62 @@ async function updateClientCreditDisplay(clientId) {
     }
 }
 
+// ============================================================
+// ✅ loadPosPage - VERSION CORRIGÉE AVEC RESTAURATION AVANT RESET
+// ============================================================
 async function loadPosPage(c){
 applyDynamicContentScroll();
 
-posResetCart(); posStep=1; posCommandesFilterText=''; posCommandesSortField='createdAt'; posCommandesSortOrder='desc'; posSearchQuery=''; productIndexBuilt=false; posProductOffset=0; posToolsVisible=false;
-posCategoriesList=[]; posProductsList=[]; posAllClients=[]; posFilteredClients=[];
-c.innerHTML='<div style="text-align:center;padding:60px;"><i class="fas fa-spinner fa-spin" style="font-size:2.5rem;color:#14B8A6;"></i><p style="margin-top:15px;color:#64748b;">Chargement du POS...</p></div>';
-setStaticBackButtonVisibility(false);
-
-// ✅ Vérifier s'il y a un état POS sauvegardé (retour depuis la page crédits)
+// ✅ RESTAURER L'ÉTAT POS AVANT TOUT
 var savedState = localStorage.getItem('posSavedState');
+var shouldRestore = false;
+var restoredState = null;
+
 if (savedState) {
     try {
         var state = JSON.parse(savedState);
-        // Vérifier que l'état n'est pas trop vieux (plus de 5 minutes)
         if (state.timestamp && (Date.now() - state.timestamp) < 300000) {
-            console.log('🔄 Restauration de l\'état POS:', state);
-            // Restaurer le panier
-            posCart = state.cart || [];
-            posStep = state.step || 1;
-            posCurrentClient = state.client || null;
-            posCurrentTable = state.table || '';
-            posPaymentMethod = state.paymentMethod || 'espece';
-            posDiscountMAD = state.discountMAD || 0;
-            posAmountGiven = state.amountGiven || 0;
-            
-            console.log('✅ État POS restauré avec succès');
-            console.log('📦 Panier:', posCart.length, 'articles');
-            console.log('👤 Client:', posCurrentClient ? posCurrentClient.name : 'Aucun');
+            shouldRestore = true;
+            restoredState = state;
+            console.log('🔄 État POS trouvé pour restauration:', state);
         } else {
             localStorage.removeItem('posSavedState');
         }
     } catch(e) {
-        console.warn('⚠️ Erreur restauration état POS:', e);
+        console.warn('⚠️ Erreur lecture état POS:', e);
         localStorage.removeItem('posSavedState');
     }
+}
+
+// ✅ Si on restaure, on NE réinitialise PAS le panier
+if (!shouldRestore) {
+    posResetCart();
+    posStep = 1;
+} else {
+    // ✅ Restaurer l'état sans réinitialiser
+    posCart = restoredState.cart || [];
+    posStep = restoredState.step || 1;
+    posCurrentClient = restoredState.client || null;
+    posCurrentTable = restoredState.table || '';
+    posPaymentMethod = restoredState.paymentMethod || 'espece';
+    posDiscountMAD = restoredState.discountMAD || 0;
+    posAmountGiven = restoredState.amountGiven || 0;
+    
+    console.log('✅ État POS restauré avec succès');
+    console.log('📦 Panier:', posCart.length, 'articles');
+    console.log('👤 Client:', posCurrentClient ? posCurrentClient.name : 'Aucun');
+    console.log('💳 Mode paiement:', posPaymentMethod);
+    console.log('💰 Montant donné:', posAmountGiven);
+}
+
+posCommandesFilterText=''; posCommandesSortField='createdAt'; posCommandesSortOrder='desc'; posSearchQuery=''; productIndexBuilt=false; posProductOffset=0; posToolsVisible=false;
+posCategoriesList=[]; posProductsList=[]; posAllClients=[]; posFilteredClients=[];
+c.innerHTML='<div style="text-align:center;padding:60px;"><i class="fas fa-spinner fa-spin" style="font-size:2.5rem;color:#14B8A6;"></i><p style="margin-top:15px;color:#64748b;">Chargement du POS...</p></div>';
+setStaticBackButtonVisibility(false);
+
+// ✅ Nettoyer l'état sauvegardé après restauration (pour éviter double restauration)
+if (shouldRestore) {
+    localStorage.removeItem('posSavedState');
 }
 
 // ✅ OPTIMISATION : Charger depuis le cache en PRIORITÉ (RAPIDE)
@@ -437,6 +458,26 @@ if (typeof window.setVoiceMode === 'function') { window.setVoiceMode('payment', 
 } catch(e) { console.warn('❌ Erreur chargement crédit:', e); }
 }
 if(isOnPOSPage()) renderPOS();
+
+// ✅ Si on a restauré l'état et qu'on est à l'étape 2, remplir les champs
+if (shouldRestore && posStep === 2) {
+    setTimeout(function() {
+        var amountInput = document.getElementById('posAmountGiven');
+        if (amountInput && posAmountGiven > 0) {
+            amountInput.value = posAmountGiven.toFixed(2);
+            if (typeof posCalculateChange === 'function') posCalculateChange();
+        }
+        if (posCurrentClient && posCurrentClient.id) {
+            updateClientCreditDisplay(posCurrentClient.id);
+        }
+        if (posCurrentClient && posCurrentClient.name) { 
+            var ci = document.getElementById('posClientSearchInput'); 
+            if (ci) ci.value = posCurrentClient.name; 
+        }
+        if (typeof window.updatePaymentButtons === 'function') window.updatePaymentButtons();
+    }, 500);
+}
+
 if (posStep === 2 && posAmountGiven > 0) {
 setTimeout(function() {
 var input = document.getElementById('posAmountGiven');
