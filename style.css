@@ -921,13 +921,8 @@ display: none !important;
 display: none !important;
 }
 
-/* ✅ BOUTONS TABLES ET EN LIGNE - CONTRÔLÉS PAR JAVASCRIPT (sans !important) */
-#posTablesBtn {
-display: none;
-}
-#posEnLigneBtn {
-display: none;
-}
+/* ✅ BOUTONS TABLES ET EN LIGNE - CONTRÔLÉS PAR JAVASCRIPT */
+/* Suppression des règles display pour ces boutons - JS les contrôle */
 
 .pos-categories-bar {
 display: none !important;
