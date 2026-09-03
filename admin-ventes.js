@@ -3,13 +3,16 @@
 // ✅ BOUTONS AVEC ICÔNES CORRIGÉS - Font Awesome fonctionnel
 // ✅ SÉLECTION EN MASSE
 // ✅ DÉTAILS FACTURE MODAL AVEC X POUR FERMER - FONT SIZE AGRANDI
-// ✅ PAGINATION CORRIGÉE - SANS ICÔNES (utilise window.itemsPerPage)
+// ✅ PAGINATION CORRIGÉE - SANS ICÔNES
+// ✅ STATISTIQUES EN HAUT DE PAGE AVEC FILTRES DE DATE
 
 // ========== VARIABLES GLOBALES ==========
 window.commandesSearch = window.commandesSearch || '';
 window.commandesPeriod = window.commandesPeriod || 'all';
 window.ventesSearch = window.ventesSearch || '';
 window.ventesPeriod = window.ventesPeriod || 'all';
+window.ventesDateDebut = window.ventesDateDebut || '';
+window.ventesDateFin = window.ventesDateFin || '';
 window.allVentesData = window.allVentesData || [];
 window.allCommandesData = window.allCommandesData || [];
 window.filteredVentes = window.filteredVentes || null;
@@ -18,7 +21,7 @@ window.venteSelectionMode = window.venteSelectionMode || false;
 window.venteSelectedIndex = window.venteSelectedIndex || -1;
 window.clientsDataForSearch = window.clientsDataForSearch || [];
 
-// ✅ INITIALISATION DE currentPages (comme admin-crud)
+// ✅ INITIALISATION DE currentPages
 window.currentPages = window.currentPages || {};
 window.currentPages.ventes = window.currentPages.ventes || 1;
 window.currentPages.commandes = window.currentPages.commandes || 1;
@@ -779,198 +782,155 @@ background: #dc2626;
 transform: scale(1.02);
 }
 
-@media(max-width:1024px) {
-#ventesPage .action-buttons,
-#commandesPage .action-buttons {
-min-width: 140px !important;
-gap: 4px !important;
+/* ✅ STATS EN HAUT DE PAGE */
+.ventes-stats-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 16px;
+margin-bottom: 20px;
+padding: 16px 20px;
+background: var(--bg-card);
+border-radius: var(--radius-xl);
+border: 1px solid var(--border);
 }
 
-#ventesPage .action-buttons .btn-edit,
-#ventesPage .action-buttons .btn-delete,
-#ventesPage .action-buttons .btn-add,
-#commandesPage .action-buttons .btn-edit,
-#commandesPage .action-buttons .btn-delete,
-#commandesPage .action-buttons .btn-add {
-width: 38px !important;
-height: 38px !important;
-min-width: 38px !important;
-min-height: 38px !important;
-font-size: 16px !important;
+.ventes-stat-card {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 12px 16px;
+background: var(--bg-page);
+border-radius: var(--radius);
+text-align: center;
 }
 
-#ventesPage .action-buttons .btn-add.payer-btn,
-#commandesPage .action-buttons .btn-add.payer-btn {
-min-width: 50px !important;
-font-size: 12px !important;
-padding: 0 10px !important;
+.ventes-stat-card .stat-value {
+font-size: 28px !important;
+font-weight: 900 !important;
+color: var(--black);
+letter-spacing: -0.3px;
 }
+
+.ventes-stat-card .stat-value.green {
+color: #14B8A6;
+}
+.ventes-stat-card .stat-value.blue {
+color: #2563eb;
+}
+.ventes-stat-card .stat-value.orange {
+color: #f59e0b;
+}
+.ventes-stat-card .stat-value.red {
+color: #ef4444;
+}
+
+.ventes-stat-card .stat-label {
+font-size: 14px !important;
+font-weight: 600;
+color: var(--text-secondary);
+text-transform: uppercase;
+letter-spacing: 0.5px;
+margin-top: 4px;
+}
+
+.date-filter-group {
+display: flex;
+align-items: center;
+gap: 8px;
+flex-wrap: wrap;
+}
+
+.date-filter-group input[type="date"] {
+padding: 10px 14px;
+border: 2px solid var(--border);
+border-radius: 10px;
+font-size: 18px !important;
+font-family: 'Inter', sans-serif;
+background: var(--white);
+color: var(--text-primary);
+min-width: 140px;
+}
+
+.date-filter-group input[type="date"]:focus {
+border-color: var(--black);
+outline: none;
+box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
+}
+
+.date-filter-group .btn-filter {
+padding: 10px 20px;
+background: #2563eb;
+color: #fff;
+border: none;
+border-radius: 10px;
+font-size: 18px !important;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.date-filter-group .btn-filter:hover {
+background: #1d4ed8;
+transform: translateY(-2px);
+}
+
+.date-filter-group .btn-clear-filter {
+padding: 10px 20px;
+background: #ef4444;
+color: #fff;
+border: none;
+border-radius: 10px;
+font-size: 18px !important;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.date-filter-group .btn-clear-filter:hover {
+background: #dc2626;
+transform: translateY(-2px);
 }
 
 @media(max-width:768px) {
-#ventesPage .data-table tbody td,
-#commandesPage .data-table tbody td {
-font-size: 18px !important;
-padding: 10px 12px !important;
+.ventes-stats-grid {
+grid-template-columns: repeat(2, 1fr);
+gap: 10px;
+padding: 12px;
 }
-
-.facture-cell {
-font-size: 18px !important;
-padding: 2px 8px !important;
+.ventes-stat-card .stat-value {
+font-size: 22px !important;
 }
-
-.facture-cell .facture-number {
-font-size: 18px !important;
-}
-
-.date-cell .date-line,
-.date-cell .time-line {
+.date-filter-group input[type="date"] {
+min-width: 100px;
 font-size: 16px !important;
+padding: 8px 10px;
 }
-
-.client-cell {
-font-size: 18px !important;
-padding: 2px 8px !important;
-}
-
-.search-bar-pro input {
-font-size: 18px !important;
-}
-
-.search-clear-btn {
-width: 32px !important;
-height: 32px !important;
-min-width: 32px !important;
-font-size: 16px !important;
-}
-
-.voice-display-field {
-font-size: 18px !important;
-width: 140px !important;
-}
-
-#ventesPage .action-buttons,
-#commandesPage .action-buttons {
-min-width: 120px !important;
-gap: 4px !important;
-}
-
-#ventesPage .action-buttons .btn-edit,
-#ventesPage .action-buttons .btn-delete,
-#ventesPage .action-buttons .btn-add,
-#commandesPage .action-buttons .btn-edit,
-#commandesPage .action-buttons .btn-delete,
-#commandesPage .action-buttons .btn-add {
-width: 34px !important;
-height: 34px !important;
-min-width: 34px !important;
-min-height: 34px !important;
-font-size: 14px !important;
-border-radius: 8px !important;
-}
-
-#ventesPage .action-buttons .btn-edit i,
-#ventesPage .action-buttons .btn-delete i,
-#ventesPage .action-buttons .btn-add i,
-#commandesPage .action-buttons .btn-edit i,
-#commandesPage .action-buttons .btn-delete i,
-#commandesPage .action-buttons .btn-add i {
+.date-filter-group .btn-filter,
+.date-filter-group .btn-clear-filter {
+padding: 8px 14px;
 font-size: 16px !important;
 }
 }
 
 @media(max-width:500px) {
-#ventesPage .data-table tbody td,
-#commandesPage .data-table tbody td {
-font-size: 15px !important;
-padding: 8px 10px !important;
+.ventes-stats-grid {
+grid-template-columns: 1fr 1fr;
+gap: 8px;
+padding: 8px;
 }
-
-.facture-cell {
-font-size: 15px !important;
-padding: 2px 6px !important;
+.ventes-stat-card .stat-value {
+font-size: 18px !important;
 }
-
-.facture-cell .facture-number {
-font-size: 15px !important;
-}
-
-.date-cell .date-line,
-.date-cell .time-line {
-font-size: 13px !important;
-gap: 4px !important;
-}
-
-.date-cell .date-line i,
-.date-cell .time-line i {
-font-size: 12px !important;
-width: 14px !important;
-}
-
-.client-cell {
-font-size: 15px !important;
-padding: 2px 6px !important;
-}
-
-.search-bar-pro input {
-font-size: 15px !important;
-padding: 10px 6px !important;
-}
-
-.search-clear-btn {
-width: 28px !important;
-height: 28px !important;
-min-width: 28px !important;
+.date-filter-group input[type="date"] {
+min-width: 80px;
 font-size: 14px !important;
+padding: 6px 8px;
 }
-
-#ventesPage .filter-group select,
-#commandesPage .filter-group select {
-font-size: 16px !important;
-padding: 8px 12px !important;
-}
-
-.voice-display-field {
-font-size: 15px !important;
-width: 100px !important;
-padding: 6px 8px !important;
-}
-
-#ventesPage .action-buttons,
-#commandesPage .action-buttons {
-min-width: 90px !important;
-gap: 2px !important;
-}
-
-#ventesPage .action-buttons .btn-edit,
-#ventesPage .action-buttons .btn-delete,
-#ventesPage .action-buttons .btn-add,
-#commandesPage .action-buttons .btn-edit,
-#commandesPage .action-buttons .btn-delete,
-#commandesPage .action-buttons .btn-add {
-width: 28px !important;
-height: 28px !important;
-min-width: 28px !important;
-min-height: 28px !important;
-font-size: 12px !important;
-border-radius: 6px !important;
-}
-
-#ventesPage .action-buttons .btn-add.payer-btn,
-#commandesPage .action-buttons .btn-add.payer-btn {
-min-width: 40px !important;
-font-size: 10px !important;
-padding: 0 6px !important;
-height: 28px !important;
-}
-
-#ventesPage .action-buttons .btn-edit i,
-#ventesPage .action-buttons .btn-delete i,
-#ventesPage .action-buttons .btn-add i,
-#commandesPage .action-buttons .btn-edit i,
-#commandesPage .action-buttons .btn-delete i,
-#commandesPage .action-buttons .btn-add i {
-font-size: 12px !important;
+.date-filter-group .btn-filter,
+.date-filter-group .btn-clear-filter {
+padding: 6px 10px;
+font-size: 14px !important;
 }
 }
 </style>
@@ -1062,7 +1022,6 @@ data.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
 } else {
 data = applySort('commandes', data, 'createdAt');
 }
-// ✅ Utiliser window.itemsPerPage (comme admin-crud)
 var itemsPerPage = window.itemsPerPage || 15;
 var currentPage = window.currentPages.commandes || 1;
 var start = (currentPage - 1) * itemsPerPage;
@@ -1189,7 +1148,6 @@ h += `
 </div>
 `;
 cont.innerHTML = h;
-// ✅ Utiliser getPaginationHTML (comme admin-crud)
 document.getElementById('commandesPagination').innerHTML = getPaginationHTML('commandes', data.length);
 }
 
@@ -1249,10 +1207,15 @@ loadClientsForSearch();
 
 window.ventesPeriod = 'all';
 window.ventesSearch = '';
+window.ventesDateDebut = '';
+window.ventesDateFin = '';
 window.venteSelectionMode = false;
 window.venteSelectedIndex = -1;
 if (!window.sortOrders.ventes) window.sortOrders.ventes = {};
 if (!window.sortOrders.ventes.createdAt) { window.sortOrders.ventes.createdAt = 'desc'; }
+
+// Obtenir la date d'aujourd'hui pour les inputs
+var today = new Date().toISOString().split('T')[0];
 
 c.innerHTML = `
 <div class="content-card" id="ventesPage">
@@ -1272,8 +1235,22 @@ onkeyup="handleVentesSearch(this.value);">
 <div class="filter-group">
 <label><i class="far fa-calendar-alt"></i> Période</label>
 <select id="ventesPeriodSelect" onchange="window.ventesPeriod = this.value; window.currentPages.ventes=1; applyVentesFilters();">
-${getPeriodOptions('all')}
+<option value="all">Toutes les dates</option>
+<option value="today">Aujourd'hui</option>
+<option value="3">3 jours</option>
+<option value="7">7 jours</option>
+<option value="15">15 jours</option>
+<option value="30">30 jours</option>
+<option value="90">3 mois</option>
+<option value="365">1 an</option>
 </select>
+</div>
+<div class="date-filter-group">
+<input type="date" id="ventesDateDebut" value="" placeholder="Date début" onchange="window.ventesDateDebut = this.value; applyVentesFilters();">
+<span style="font-weight:600; color:var(--text-secondary);">à</span>
+<input type="date" id="ventesDateFin" value="" placeholder="Date fin" onchange="window.ventesDateFin = this.value; applyVentesFilters();">
+<button class="btn-filter" onclick="appliquerFiltreDatePersonnalise()"><i class="fas fa-filter"></i> Filtrer</button>
+<button class="btn-clear-filter" onclick="reinitialiserFiltres()"><i class="fas fa-undo"></i> Réinitialiser</button>
 </div>
 <div class="filter-group">
 <label><i class="fas fa-filter"></i> Statut</label>
@@ -1290,6 +1267,25 @@ ${getPeriodOptions('all')}
 </button>
 </div>
 </div>
+<!-- ✅ STATISTIQUES EN HAUT DE PAGE -->
+<div class="ventes-stats-grid" id="ventesStatsGrid">
+<div class="ventes-stat-card">
+<span class="stat-value blue" id="ventesStatsTotal">0.00</span>
+<span class="stat-label">💰 Total Ventes</span>
+</div>
+<div class="ventes-stat-card">
+<span class="stat-value green" id="ventesStatsProfit">0.00</span>
+<span class="stat-label">📈 Profit</span>
+</div>
+<div class="ventes-stat-card">
+<span class="stat-value orange" id="ventesStatsCount">0</span>
+<span class="stat-label">📊 Nombre de ventes</span>
+</div>
+<div class="ventes-stat-card">
+<span class="stat-value" id="ventesStatsAchat" style="color:#6b7280;">0.00</span>
+<span class="stat-label">📦 Total Achat</span>
+</div>
+</div>
 <div id="ventesTableContainer"></div>
 <div id="ventesPagination" style="margin-top:12px;"></div>
 </div>
@@ -1298,6 +1294,34 @@ ${getPeriodOptions('all')}
 ajouterBoutonsSelectionVentes();
 loadVentes();
 }
+
+// ✅ Fonction pour appliquer le filtre de date personnalisé
+function appliquerFiltreDatePersonnalise() {
+var debut = document.getElementById('ventesDateDebut').value;
+var fin = document.getElementById('ventesDateFin').value;
+window.ventesDateDebut = debut;
+window.ventesDateFin = fin;
+// Réinitialiser le select de période
+document.getElementById('ventesPeriodSelect').value = 'all';
+window.ventesPeriod = 'all';
+applyVentesFilters();
+}
+
+// ✅ Fonction pour réinitialiser tous les filtres
+function reinitialiserFiltres() {
+document.getElementById('ventesDateDebut').value = '';
+document.getElementById('ventesDateFin').value = '';
+window.ventesDateDebut = '';
+window.ventesDateFin = '';
+document.getElementById('ventesPeriodSelect').value = 'all';
+window.ventesPeriod = 'all';
+document.getElementById('ventesSearchInput').value = '';
+window.ventesSearch = '';
+document.getElementById('ventesStatusFilter').value = 'all';
+applyVentesFilters();
+}
+window.appliquerFiltreDatePersonnalise = appliquerFiltreDatePersonnalise;
+window.reinitialiserFiltres = reinitialiserFiltres;
 
 function ajouterBoutonsSelectionVentes() {
 var header = document.querySelector('#ventesPage .card-header');
@@ -1432,7 +1456,20 @@ applyVentesFilters();
 }
 
 function applyVentesFilters() {
-var filtered = filterByPeriod(window.allVentesData, window.ventesPeriod);
+var filtered = filterByPeriodWithDates(window.allVentesData, window.ventesPeriod);
+
+// ✅ Filtre par date personnalisée
+if (window.ventesDateDebut && window.ventesDateFin) {
+var debut = new Date(window.ventesDateDebut);
+debut.setHours(0, 0, 0, 0);
+var fin = new Date(window.ventesDateFin);
+fin.setHours(23, 59, 59, 999);
+filtered = filtered.filter(function(d) {
+if (!d.createdAt) return false;
+var date = new Date(d.createdAt.seconds * 1000);
+return date >= debut && date <= fin;
+});
+}
 
 if (window.ventesSearch && window.ventesSearch.trim() !== '') {
 filtered = filterVentesBySearchWithDescription(filtered, window.ventesSearch);
@@ -1459,7 +1496,43 @@ return db - da;
 filtered = applySort('ventes', filtered, 'createdAt');
 }
 window.filteredVentes = filtered;
+
+// ✅ Mettre à jour les statistiques
+updateVentesStats(filtered);
+
 renderVentesTablePro();
+}
+
+// ✅ Filtre par période avec les nouvelles options (3 jours, 15 jours)
+function filterByPeriodWithDates(data, period) {
+if (!period || period === 'all') return data;
+var now = new Date(), cutoff;
+if (period === 'today') {
+cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+} else {
+var days = parseInt(period);
+if (isNaN(days)) return data;
+cutoff = new Date(now.getTime() - days * 86400000);
+}
+return data.filter(function(d) {
+var date = d.createdAt ? new Date(d.createdAt.seconds * 1000) : null;
+return date && date >= cutoff;
+});
+}
+
+// ✅ Mettre à jour les statistiques en haut de page
+function updateVentesStats(data) {
+var total = 0, profit = 0, achat = 0;
+data.forEach(function(d) {
+total += d.total || 0;
+profit += d.profit || 0;
+achat += d.achat || 0;
+});
+
+document.getElementById('ventesStatsTotal').textContent = total.toFixed(2);
+document.getElementById('ventesStatsProfit').textContent = profit.toFixed(2);
+document.getElementById('ventesStatsCount').textContent = data.length;
+document.getElementById('ventesStatsAchat').textContent = achat.toFixed(2);
 }
 
 function renderVentesTablePro() {
@@ -1478,7 +1551,6 @@ return db - da;
 });
 }
 
-// ✅ Utiliser window.itemsPerPage (comme admin-crud)
 var itemsPerPage = window.itemsPerPage || 15;
 var currentPage = window.currentPages.ventes || 1;
 var start = (currentPage - 1) * itemsPerPage;
@@ -1614,27 +1686,8 @@ h += `
 </tbody>
 </table>
 </div>
-<div class="total-row-pro">
-<div style="display:flex;gap:32px;flex-wrap:wrap;justify-content:flex-end;width:100%;">
-<div>
-<span class="total-label">Total Ventes</span>
-<span class="total-amount"><i class="fas fa-dollar-sign"></i> ${tv.toFixed(2)} MAD</span>
-</div>
-${isAdmin ? `
-<div>
-<span class="total-label">Total Achat</span>
-<span class="total-amount" style="color:#6b7280;"><i class="fas fa-coins"></i> ${tAchat.toFixed(2)} MAD</span>
-</div>
-<div>
-<span class="total-label">Profit Total</span>
-<span class="total-amount" style="color:#14B8A6;"><i class="fas fa-chart-line"></i> ${tProfit.toFixed(2)} MAD</span>
-</div>
-` : ''}
-</div>
-</div>
 `;
 cont.innerHTML = h;
-// ✅ Utiliser getPaginationHTML (comme admin-crud)
 document.getElementById('ventesPagination').innerHTML = getPaginationHTML('ventes', data.length);
 updateVenteSelectionUI();
 }
@@ -2238,6 +2291,10 @@ window.toggleAllVentesSelection = toggleAllVentesSelection;
 window.deleteSelectedVentes = deleteSelectedVentes;
 window.updateVenteSelectionUI = updateVenteSelectionUI;
 window.ajouterBoutonsSelectionVentes = ajouterBoutonsSelectionVentes;
+window.filterByPeriodWithDates = filterByPeriodWithDates;
+window.updateVentesStats = updateVentesStats;
+window.appliquerFiltreDatePersonnalise = appliquerFiltreDatePersonnalise;
+window.reinitialiserFiltres = reinitialiserFiltres;
 
 // ✅ AJOUT DES FONCTIONS MODAL FACTURE
 window.openFactureDetails = openFactureDetails;
@@ -2246,7 +2303,7 @@ window.loadFactureDetails = loadFactureDetails;
 window.renderFactureDetails = renderFactureDetails;
 window.printFactureDetails = printFactureDetails;
 
-// ✅ AJOUT DES FONCTIONS PAGINATION (utilise getPaginationHTML de admin.js)
+// ✅ AJOUT DES FONCTIONS PAGINATION
 window.getPaginationHTML = window.getPaginationHTML || getPaginationHTML;
 window.changePage = window.changePage || changePage;
 
@@ -2258,3 +2315,5 @@ window.renderCreditsTable = window.renderCreditsTablePro;
 console.log('🚀 E-SOLUTION - Admin Ventes PRO chargé');
 console.log('✅ Détails facture modal ajouté - Font size agrandi');
 console.log('✅ Pagination corrigée - Utilise window.itemsPerPage');
+console.log('✅ Statistiques en haut de page avec filtres de date');
+console.log('✅ Filtres rapides : Aujourd\'hui, 3j, 7j, 15j, 30j, 90j, 365j');
