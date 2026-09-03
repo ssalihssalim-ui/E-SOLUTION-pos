@@ -215,6 +215,7 @@ function posToggleTools() {
         toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
     }
 
+    // ✅ Barre de recherche
     var searchInput = document.getElementById('posSearchInput');
     if (searchInput) {
         searchInput.style.display = posToolsVisible ? '' : 'none';
@@ -223,24 +224,57 @@ function posToggleTools() {
         }
     }
 
+    // ✅ Bouton micro
     var micBtn = document.getElementById('posMicBtn');
     if (micBtn) {
         micBtn.style.display = posToolsVisible ? '' : 'none';
     }
 
-    var tablesBtn = document.querySelector('button[onclick*="posAfficherCommandesTables"]');
-    if (tablesBtn) {
-        tablesBtn.style.display = posToolsVisible ? '' : 'none';
-    }
+    // ❌ NE PAS CACHER le bouton Tables - toujours visible
+    // var tablesBtn = document.querySelector('button[onclick*="posAfficherCommandesTables"]');
+    // if (tablesBtn) {
+    //     tablesBtn.style.display = posToolsVisible ? '' : 'none';
+    // }
 
-    var enligneBtn = document.querySelector('button[onclick*="navigateTo(\'commandes\')"]');
-    if (enligneBtn) {
-        enligneBtn.style.display = posToolsVisible ? '' : 'none';
-    }
+    // ❌ NE PAS CACHER le bouton En ligne - toujours visible
+    // var enligneBtn = document.querySelector('button[onclick*="navigateTo(\'commandes\')"]');
+    // if (enligneBtn) {
+    //     enligneBtn.style.display = posToolsVisible ? '' : 'none';
+    // }
 
+    // ✅ Barre des catégories
     var categoriesBar = document.querySelector('.pos-categories-bar');
     if (categoriesBar) {
         categoriesBar.style.display = posToolsVisible ? '' : 'none';
+    }
+
+    // ✅ Si on cache, on remet la vue catégories par défaut
+    if (!posToolsVisible) {
+        posViewMode = 'categories';
+        posSelectedCategoryForView = null;
+        posSelectedCategory = 'all';
+        posSearchQuery = '';
+        posProductOffset = 0;
+        
+        // Réinitialiser les boutons de catégories
+        var catBtns = document.querySelectorAll('.pos-cat-btn');
+        catBtns.forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+        var allBtn = document.querySelector('.pos-cat-btn[onclick*="all"]');
+        if (allBtn) allBtn.classList.add('active');
+        
+        // Vider la recherche
+        var searchInput2 = document.getElementById('posSearchInput');
+        if (searchInput2) {
+            searchInput2.value = '';
+        }
+        var clearBtn = document.getElementById('posSearchClearBtn');
+        if (clearBtn) clearBtn.style.display = 'none';
+        
+        if (isOnPOSPage()) {
+            filterProductGrid();
+        }
     }
 }
 
