@@ -169,6 +169,8 @@ return html;
 
 // ✅ CORRECTION FINALE changePage - Ne recharge PAS les données
 window.changePage = window.changePage || function(collection, newPage) {
+    console.log('🔄 changePage appelé:', collection, newPage);
+    
     var dataArrays = {
         categories: window.allCategoriesData || [],
         products: window.allProductsData || [],
@@ -183,9 +185,13 @@ window.changePage = window.changePage || function(collection, newPage) {
 
     var totalItems = (dataArrays[collection] || []).length;
     var totalPages = Math.ceil(totalItems / (window.itemsPerPage || 15));
-    if (newPage < 1 || newPage > totalPages) return;
+    if (newPage < 1 || newPage > totalPages) {
+        console.log('⚠️ Page invalide:', newPage);
+        return;
+    }
 
     window.currentPages[collection] = newPage;
+    console.log('📄 Nouvelle page:', newPage);
 
     // ✅ Appel DIRECT des fonctions de rendu SANS recharger les données
     if (collection === 'products' && typeof window.renderProductsTable === 'function') {
@@ -200,20 +206,23 @@ window.changePage = window.changePage || function(collection, newPage) {
     else if (collection === 'fournisseurs' && typeof window.renderFournisseursTable === 'function') {
         window.renderFournisseursTable();
     }
-    else if (collection === 'ventes' && typeof window.renderVentesTable === 'function') {
-        window.renderVentesTable();
+    // ✅ CORRECTION : utiliser les bons noms de fonctions
+    else if (collection === 'ventes' && typeof window.renderVentesTablePro === 'function') {
+        window.renderVentesTablePro();
     }
-    else if (collection === 'credits' && typeof window.renderCreditsTable === 'function') {
-        window.renderCreditsTable();
+    else if (collection === 'credits' && typeof window.renderCreditsTablePro === 'function') {
+        window.renderCreditsTablePro();
+    }
+    else if (collection === 'commandes' && typeof window.renderCommandesTablePro === 'function') {
+        window.renderCommandesTablePro();
     }
     else if (collection === 'depenses' && typeof window.renderDepensesTable === 'function') {
         window.renderDepensesTable();
     }
-    else if (collection === 'commandes' && typeof window.renderCommandesTable === 'function') {
-        window.renderCommandesTable();
-    }
     else if (collection === 'users' && typeof window.renderUsersTable === 'function') {
         window.renderUsersTable();
+    } else {
+        console.log('⚠️ Aucune fonction de rendu trouvée pour:', collection);
     }
 };
 
