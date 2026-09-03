@@ -6,6 +6,7 @@
 // ✅ CAISSIER PEUT : MARQUER PAYÉ, MODIFIER, SUPPRIMER, ENVOYER WHATSAPP
 // ✅ RETOUR AU PAIEMENT DEPUIS LE POS
 // ✅ PRÉ-SÉLECTION DU CLIENT AVEC RECHERCHE AUTO
+// ✅ STATISTIQUES EN HAUT DE PAGE AVEC FILTRES DE DATE
 
 // ========== VARIABLES GLOBALES ==========
 window.creditsPeriod = window.creditsPeriod || 'all';
@@ -16,6 +17,8 @@ window.allCreditsData = window.allCreditsData || [];
 window.clientsDataForSearch = window.clientsDataForSearch || [];
 window._posFilterClientId = null;
 window._posFilterClientName = null;
+window.creditsDateDebut = window.creditsDateDebut || '';
+window.creditsDateFin = window.creditsDateFin || '';
 
 // ========== FONCTIONS UTILITAIRES ==========
 
@@ -188,7 +191,7 @@ return `
 `;
 }
 
-// ✅ CSS pour boutons avec texte - version très compacte
+// ✅ CSS pour boutons avec texte + stats
 function injectCreditsStyles() {
 const styleId = 'credits-pro-styles-final';
 if (document.getElementById(styleId)) return;
@@ -536,6 +539,158 @@ min-width: 160px !important;
         min-height: 16px !important;
     }
 }
+
+/* ✅ STATS EN HAUT DE PAGE - COMME ADMIN VENTES */
+.credits-stats-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap: 16px;
+margin-bottom: 20px;
+padding: 16px 20px;
+background: var(--bg-card);
+border-radius: var(--radius-xl);
+border: 1px solid var(--border);
+}
+
+.credits-stat-card {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 12px 16px;
+background: var(--bg-page);
+border-radius: var(--radius);
+text-align: center;
+}
+
+.credits-stat-card .stat-value {
+font-size: 28px !important;
+font-weight: 900 !important;
+color: var(--black);
+letter-spacing: -0.3px;
+}
+
+.credits-stat-card .stat-value.green {
+color: #14B8A6;
+}
+.credits-stat-card .stat-value.blue {
+color: #2563eb;
+}
+.credits-stat-card .stat-value.orange {
+color: #f59e0b;
+}
+.credits-stat-card .stat-value.red {
+color: #ef4444;
+}
+
+.credits-stat-card .stat-label {
+font-size: 14px !important;
+font-weight: 600;
+color: var(--text-secondary);
+text-transform: uppercase;
+letter-spacing: 0.5px;
+margin-top: 4px;
+}
+
+.date-filter-group {
+display: flex;
+align-items: center;
+gap: 8px;
+flex-wrap: wrap;
+}
+
+.date-filter-group input[type="date"] {
+padding: 10px 14px;
+border: 2px solid var(--border);
+border-radius: 10px;
+font-size: 18px !important;
+font-family: 'Inter', sans-serif;
+background: var(--white);
+color: var(--text-primary);
+min-width: 140px;
+}
+
+.date-filter-group input[type="date"]:focus {
+border-color: var(--black);
+outline: none;
+box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
+}
+
+.date-filter-group .btn-filter {
+padding: 10px 20px;
+background: #2563eb;
+color: #fff;
+border: none;
+border-radius: 10px;
+font-size: 18px !important;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.date-filter-group .btn-filter:hover {
+background: #1d4ed8;
+transform: translateY(-2px);
+}
+
+.date-filter-group .btn-clear-filter {
+padding: 10px 20px;
+background: #ef4444;
+color: #fff;
+border: none;
+border-radius: 10px;
+font-size: 18px !important;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.date-filter-group .btn-clear-filter:hover {
+background: #dc2626;
+transform: translateY(-2px);
+}
+
+@media(max-width:768px) {
+.credits-stats-grid {
+grid-template-columns: repeat(2, 1fr);
+gap: 10px;
+padding: 12px;
+}
+.credits-stat-card .stat-value {
+font-size: 22px !important;
+}
+.date-filter-group input[type="date"] {
+min-width: 100px;
+font-size: 16px !important;
+padding: 8px 10px;
+}
+.date-filter-group .btn-filter,
+.date-filter-group .btn-clear-filter {
+padding: 8px 14px;
+font-size: 16px !important;
+}
+}
+
+@media(max-width:500px) {
+.credits-stats-grid {
+grid-template-columns: 1fr 1fr;
+gap: 8px;
+padding: 8px;
+}
+.credits-stat-card .stat-value {
+font-size: 18px !important;
+}
+.date-filter-group input[type="date"] {
+min-width: 80px;
+font-size: 14px !important;
+padding: 6px 8px;
+}
+.date-filter-group .btn-filter,
+.date-filter-group .btn-clear-filter {
+padding: 6px 10px;
+font-size: 14px !important;
+}
+}
 </style>
 `;
 
@@ -565,6 +720,8 @@ if (savedClientId && savedClientName) {
 
 window.creditsPeriod = 'all';
 window.creditsSearch = '';
+window.creditsDateDebut = '';
+window.creditsDateFin = '';
 window.creditSelectionMode = false;
 window.creditSelectedIds = [];
 
@@ -600,8 +757,22 @@ onkeyup="handleCreditsSearch(this.value);">
 <div class="filter-group">
 <label><i class="far fa-calendar-alt"></i> Période</label>
 <select id="creditsPeriodSelect" onchange="window.creditsPeriod = this.value; window.currentPages.credits=1; applyCreditsFilters();">
-${getPeriodOptions('all')}
+<option value="all">Toutes les dates</option>
+<option value="today">Aujourd'hui</option>
+<option value="3">3 jours</option>
+<option value="7">7 jours</option>
+<option value="15">15 jours</option>
+<option value="30">30 jours</option>
+<option value="90">3 mois</option>
+<option value="365">1 an</option>
 </select>
+</div>
+<div class="date-filter-group">
+<input type="date" id="creditsDateDebut" value="" placeholder="Date début" onchange="window.creditsDateDebut = this.value; applyCreditsFilters();">
+<span style="font-weight:600; color:var(--text-secondary);">à</span>
+<input type="date" id="creditsDateFin" value="" placeholder="Date fin" onchange="window.creditsDateFin = this.value; applyCreditsFilters();">
+<button class="btn-filter" onclick="appliquerFiltreDatePersonnaliseCredits()"><i class="fas fa-filter"></i> Filtrer</button>
+<button class="btn-clear-filter" onclick="reinitialiserFiltresCredits()"><i class="fas fa-undo"></i> Réinitialiser</button>
 </div>
 <button class="btn-add" onclick="loadCredits()" style="font-size:20px !important;padding:10px 20px !important;">
 <i class="fas fa-sync-alt"></i> Actualiser
@@ -615,6 +786,25 @@ ${getPeriodOptions('all')}
 <button id="deleteSelectedBtn" class="btn-delete" onclick="deleteSelectedCredits()" style="display:none; background:#fee2e2; color:#b91c1c; font-size:18px !important;padding:10px 16px !important;">
 <i class="fas fa-trash"></i> Supprimer
 </button>
+</div>
+</div>
+<!-- ✅ STATISTIQUES EN HAUT DE PAGE -->
+<div class="credits-stats-grid" id="creditsStatsGrid">
+<div class="credits-stat-card">
+<span class="stat-value blue" id="creditsStatsTotal">0.00</span>
+<span class="stat-label">💰 Total Crédits</span>
+</div>
+<div class="credits-stat-card">
+<span class="stat-value red" id="creditsStatsImpayes">0.00</span>
+<span class="stat-label">⏳ Total Impayés</span>
+</div>
+<div class="credits-stat-card">
+<span class="stat-value orange" id="creditsStatsCount">0</span>
+<span class="stat-label">📊 Nombre de crédits</span>
+</div>
+<div class="credits-stat-card">
+<span class="stat-value green" id="creditsStatsPaye">0.00</span>
+<span class="stat-label">✅ Total Payé</span>
 </div>
 </div>
 <div id="creditsTableContainer"></div>
@@ -640,6 +830,35 @@ if (window._posFilterClientName) {
     }, 300);
 }
 }
+
+// ✅ Fonction pour appliquer le filtre de date personnalisé
+function appliquerFiltreDatePersonnaliseCredits() {
+var debut = document.getElementById('creditsDateDebut').value;
+var fin = document.getElementById('creditsDateFin').value;
+window.creditsDateDebut = debut;
+window.creditsDateFin = fin;
+// Réinitialiser le select de période
+document.getElementById('creditsPeriodSelect').value = 'all';
+window.creditsPeriod = 'all';
+applyCreditsFilters();
+}
+window.appliquerFiltreDatePersonnaliseCredits = appliquerFiltreDatePersonnaliseCredits;
+
+// ✅ Fonction pour réinitialiser tous les filtres
+function reinitialiserFiltresCredits() {
+document.getElementById('creditsDateDebut').value = '';
+document.getElementById('creditsDateFin').value = '';
+window.creditsDateDebut = '';
+window.creditsDateFin = '';
+document.getElementById('creditsPeriodSelect').value = 'all';
+window.creditsPeriod = 'all';
+document.getElementById('creditsSearchInput').value = '';
+window.creditsSearch = '';
+window._posFilterClientId = null;
+window._posFilterClientName = null;
+applyCreditsFilters();
+}
+window.reinitialiserFiltresCredits = reinitialiserFiltresCredits;
 
 function handleCreditsSearch(value) {
 window.creditsSearch = value;
@@ -773,7 +992,20 @@ applyCreditsFilters();
 }
 
 function applyCreditsFilters() {
-var filtered = filterByPeriod(window.allCreditsData, window.creditsPeriod);
+var filtered = filterByPeriodWithDatesCredits(window.allCreditsData, window.creditsPeriod);
+
+// ✅ Filtre par date personnalisée
+if (window.creditsDateDebut && window.creditsDateFin) {
+var debut = new Date(window.creditsDateDebut);
+debut.setHours(0, 0, 0, 0);
+var fin = new Date(window.creditsDateFin);
+fin.setHours(23, 59, 59, 999);
+filtered = filtered.filter(function(d) {
+if (!d.createdAt) return false;
+var date = new Date(d.createdAt.seconds * 1000);
+return date >= debut && date <= fin;
+});
+}
 
 // ✅ Filtre par client pré-sélectionné depuis le POS (prioritaire sur la recherche)
 if (window._posFilterClientId) {
@@ -802,7 +1034,45 @@ filtered = applySort('credits', filtered, 'createdAt');
 }
 
 window.filteredCredits = filtered;
+
+// ✅ Mettre à jour les statistiques
+updateCreditsStats(filtered);
+
 renderCreditsTablePro();
+}
+
+// ✅ Filtre par période avec les nouvelles options (3 jours, 15 jours)
+function filterByPeriodWithDatesCredits(data, period) {
+if (!period || period === 'all') return data;
+var now = new Date(), cutoff;
+if (period === 'today') {
+cutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+} else {
+var days = parseInt(period);
+if (isNaN(days)) return data;
+cutoff = new Date(now.getTime() - days * 86400000);
+}
+return data.filter(function(d) {
+var date = d.createdAt ? new Date(d.createdAt.seconds * 1000) : null;
+return date && date >= cutoff;
+});
+}
+
+// ✅ Mettre à jour les statistiques en haut de page
+function updateCreditsStats(data) {
+var total = 0, totalImpayes = 0, totalPaye = 0;
+data.forEach(function(d) {
+total += d.total || 0;
+if (!d.paid) {
+totalImpayes += d.remainingAmount || d.total || 0;
+}
+totalPaye += d.amountGiven || 0;
+});
+
+document.getElementById('creditsStatsTotal').textContent = total.toFixed(2);
+document.getElementById('creditsStatsImpayes').textContent = totalImpayes.toFixed(2);
+document.getElementById('creditsStatsCount').textContent = data.length;
+document.getElementById('creditsStatsPaye').textContent = totalPaye.toFixed(2);
 }
 
 // ==================== RENDER CREDITS TABLE PRO ====================
@@ -822,7 +1092,10 @@ return db - da;
 });
 }
 
-var pageData = getPageData('credits', data);
+var itemsPerPage = window.itemsPerPage || 15;
+var currentPage = window.currentPages.credits || 1;
+var start = (currentPage - 1) * itemsPerPage;
+var pageData = data.slice(start, start + itemsPerPage);
 
 if (pageData.length === 0) {
 cont.innerHTML = `
@@ -1668,64 +1941,51 @@ throw e;
 }
 }
 
-// ==================== PAGINATION (SANS ICÔNES) ====================
+// ==================== PAGINATION ====================
 
 // Fonction de pagination générique
 function getPaginationHTML(pageType, totalItems) {
-    var itemsPerPage = 20;
-    var totalPages = Math.ceil(totalItems / itemsPerPage);
-    var currentPage = window.currentPages ? window.currentPages[pageType] || 1 : 1;
-    
-    if (totalPages <= 1) {
-        return '';
-    }
-    
-    var html = `
-        <div style="display:flex;justify-content:center;align-items:center;gap:8px;margin-top:16px;flex-wrap:wrap;">
-            <button onclick="changePage('${pageType}', 1)" class="btn-add" style="padding:6px 12px;font-size:0.75rem;background:var(--black);color:var(--white);border:none;border-radius:8px;cursor:pointer;${currentPage === 1 ? 'opacity:0.4;cursor:not-allowed;' : ''}">
-                <<
-            </button>
-            <button onclick="changePage('${pageType}', ${currentPage - 1})" class="btn-add" style="padding:6px 12px;font-size:0.75rem;background:var(--black);color:var(--white);border:none;border-radius:8px;cursor:pointer;${currentPage === 1 ? 'opacity:0.4;cursor:not-allowed;' : ''}">
-                <
-            </button>
-            <span style="font-size:0.85rem;color:var(--text-secondary);font-weight:600;">Page ${currentPage} / ${totalPages}</span>
-            <button onclick="changePage('${pageType}', ${currentPage + 1})" class="btn-add" style="padding:6px 12px;font-size:0.75rem;background:var(--black);color:var(--white);border:none;border-radius:8px;cursor:pointer;${currentPage === totalPages ? 'opacity:0.4;cursor:not-allowed;' : ''}">
-                >
-            </button>
-            <button onclick="changePage('${pageType}', ${totalPages})" class="btn-add" style="padding:6px 12px;font-size:0.75rem;background:var(--black);color:var(--white);border:none;border-radius:8px;cursor:pointer;${currentPage === totalPages ? 'opacity:0.4;cursor:not-allowed;' : ''}">
-                >>
-            </button>
-        </div>
-    `;
+    var perPage = window.itemsPerPage || 15;
+    var totalPages = Math.ceil(totalItems / perPage);
+    var cp = window.currentPages[pageType] || 1;
+    if (totalPages <= 1) return '';
+    var html = '<div style="display:flex;justify-content:center;gap:8px;margin-top:10px;flex-wrap:wrap;">';
+    html += '<button onclick="changePage(\'' + pageType + '\', 1)" ' + (cp <= 1 ? 'disabled' : '') + ' style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;">⏮</button>';
+    html += '<button onclick="changePage(\'' + pageType + '\', ' + Math.max(1, cp - 1) + ')" ' + (cp <= 1 ? 'disabled' : '') + ' style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;">◀</button>';
+    html += '<span style="padding:6px 12px;">' + cp + ' / ' + totalPages + '</span>';
+    html += '<button onclick="changePage(\'' + pageType + '\', ' + Math.min(totalPages, cp + 1) + ')" ' + (cp >= totalPages ? 'disabled' : '') + ' style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;">▶</button>';
+    html += '<button onclick="changePage(\'' + pageType + '\', ' + totalPages + ')" ' + (cp >= totalPages ? 'disabled' : '') + ' style="padding:6px 12px;border:1px solid #e2e8f0;border-radius:6px;">⏭</button>';
+    html += '</div>';
     return html;
 }
 
 // Fonction pour changer de page
 function changePage(pageType, page) {
-    if (!window.currentPages) window.currentPages = {};
+    console.log('🔄 changePage crédits appelé:', pageType, page);
     
-    var itemsPerPage = 20;
     var totalItems = 0;
-    
     if (pageType === 'credits') {
-        totalItems = window.filteredCredits ? window.filteredCredits.length : 0;
+        totalItems = window.filteredCredits ? window.filteredCredits.length : (window.allCreditsData || []).length;
     } else if (pageType === 'ventes') {
-        totalItems = window.filteredVentes ? window.filteredVentes.length : 0;
+        totalItems = window.filteredVentes ? window.filteredVentes.length : (window.allVentesData || []).length;
     } else if (pageType === 'commandes') {
-        totalItems = window.filteredCommandes ? window.filteredCommandes.length : 0;
+        totalItems = window.filteredCommandes ? window.filteredCommandes.length : (window.allCommandesData || []).length;
     }
     
-    var totalPages = Math.ceil(totalItems / itemsPerPage);
+    var perPage = window.itemsPerPage || 15;
+    var totalPages = Math.ceil(totalItems / perPage);
     if (page < 1 || page > totalPages) return;
     
     window.currentPages[pageType] = page;
+    console.log('📄 Page courante crédits:', page);
     
-    if (pageType === 'credits' && typeof renderCreditsTablePro === 'function') {
-        renderCreditsTablePro();
-    } else if (pageType === 'ventes' && typeof renderVentesTablePro === 'function') {
-        renderVentesTablePro();
-    } else if (pageType === 'commandes' && typeof renderCommandesTablePro === 'function') {
-        renderCommandesTablePro();
+    // Re-rendre la page correspondante
+    if (pageType === 'credits' && typeof window.renderCreditsTablePro === 'function') {
+        window.renderCreditsTablePro();
+    } else if (pageType === 'ventes' && typeof window.renderVentesTablePro === 'function') {
+        window.renderVentesTablePro();
+    } else if (pageType === 'commandes' && typeof window.renderCommandesTablePro === 'function') {
+        window.renderCommandesTablePro();
     }
 }
 
@@ -1733,7 +1993,7 @@ function changePage(pageType, page) {
 function getPageData(pageType, data) {
     if (!window.currentPages) window.currentPages = {};
     var currentPage = window.currentPages[pageType] || 1;
-    var itemsPerPage = 20;
+    var itemsPerPage = window.itemsPerPage || 15;
     var start = (currentPage - 1) * itemsPerPage;
     var end = start + itemsPerPage;
     return data.slice(start, end);
@@ -1845,6 +2105,12 @@ function retournerAuPaiement() {
 }
 window.retournerAuPaiement = retournerAuPaiement;
 
+// ✅ EXPOSER LES NOUVELLES FONCTIONS
+window.filterByPeriodWithDatesCredits = filterByPeriodWithDatesCredits;
+window.updateCreditsStats = updateCreditsStats;
+window.appliquerFiltreDatePersonnaliseCredits = appliquerFiltreDatePersonnaliseCredits;
+window.reinitialiserFiltresCredits = reinitialiserFiltresCredits;
+
 // ==================== EXPOSITION DES FONCTIONS GLOBALES ====================
 
 window.loadCreditsPage = loadCreditsPage;
@@ -1895,15 +2161,17 @@ window.validateCreditPayment = validateCreditPayment;
 window.sendCreditWhatsApp = sendCreditWhatsApp;
 
 // ✅ AJOUT DES FONCTIONS PAGINATION
-window.getPaginationHTML = getPaginationHTML;
-window.changePage = changePage;
-window.getPageData = getPageData;
+window.getPaginationHTML = window.getPaginationHTML || getPaginationHTML;
+window.changePage = window.changePage || changePage;
+window.getPageData = window.getPageData || getPageData;
 
 console.log('🚀 E-SOLUTION - Admin Credits PRO chargé');
 console.log('✅ Détails facture crédit modal ajouté - Font size agrandi');
 console.log('✅ Paiement crédit avec modal - Mise à jour du crédit existant');
-console.log('✅ Pagination corrigée - Sans icônes');
+console.log('✅ Pagination corrigée - Utilise window.itemsPerPage');
 console.log('✅ Caissier peut : Marquer payé, Modifier, Supprimer, Envoyer WhatsApp');
 console.log('✅ Boutons avec texte - Ultra compacts (10px)');
 console.log('✅ Retour au paiement depuis le POS');
 console.log('✅ Pré-sélection du client avec recherche auto');
+console.log('✅ Statistiques en haut de page avec filtres de date');
+console.log('✅ Filtres rapides : Aujourd\'hui, 3j, 7j, 15j, 30j, 90j, 365j');
