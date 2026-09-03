@@ -19,18 +19,10 @@ window.venteSelectedIndex = window.venteSelectedIndex || -1;
 window.clientsDataForSearch = window.clientsDataForSearch || [];
 
 // ✅ INITIALISATION DE currentPages
-if (!window.currentPages) {
-    window.currentPages = {};
-}
-if (!window.currentPages.ventes) {
-    window.currentPages.ventes = 1;
-}
-if (!window.currentPages.commandes) {
-    window.currentPages.commandes = 1;
-}
-if (!window.currentPages.credits) {
-    window.currentPages.credits = 1;
-}
+window.currentPages = window.currentPages || {};
+window.currentPages.ventes = window.currentPages.ventes || 1;
+window.currentPages.commandes = window.currentPages.commandes || 1;
+window.currentPages.credits = window.currentPages.credits || 1;
 
 // ========== SELECTION EN MASSE ==========
 var ventesSelectionnees = new Set();
