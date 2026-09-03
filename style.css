@@ -920,13 +920,15 @@ display: none !important;
 #posMicBtn {
 display: none !important;
 }
-/* ✅ CORRECTION : Suppression du !important pour permettre au JS de contrôler l'affichage */
-button[onclick*="posAfficherCommandesTables"] {
+
+/* ✅ BOUTONS TABLES ET EN LIGNE - CONTRÔLÉS PAR JAVASCRIPT (sans !important) */
+#posTablesBtn {
 display: none;
 }
-button[onclick*="navigateTo"] {
+#posEnLigneBtn {
 display: none;
 }
+
 .pos-categories-bar {
 display: none !important;
 }
@@ -934,8 +936,8 @@ display: none !important;
 /* ✅ QUAND LE CONTENEUR EST VISIBLE - TOUT AFFICHÉ */
 #posToolsContainer.visible #posSearchInput,
 #posToolsContainer.visible #posMicBtn,
-#posToolsContainer.visible button[onclick*="posAfficherCommandesTables"],
-#posToolsContainer.visible button[onclick*="navigateTo"],
+#posToolsContainer.visible #posTablesBtn,
+#posToolsContainer.visible #posEnLigneBtn,
 #posToolsContainer.visible .pos-categories-bar {
 display: flex !important;
 }
