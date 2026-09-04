@@ -3,11 +3,12 @@
 // BOUTONS AVEC TEXTE - PAS D'ICÔNES (pour garantir l'affichage)
 // Version FINALE - AVEC MODAL DÉTAILS FACTURE ET PAIEMENT CRÉDIT
 // ✅ PAGINATION CORRIGÉE
-// ✅ CAISSIER PEUT : MARQUER PAYÉ, MODIFIER, SUPPRIMER, ENVOYER WHATSAPP
+// ✅ CAISSIER PEUT : MARQUER PAYÉ, MODIFIER, ENVOYER WHATSAPP
 // ✅ RETOUR AU PAIEMENT DEPUIS LE POS (UNIQUEMENT SI VENU DU POS)
 // ✅ PRÉ-SÉLECTION DU CLIENT AVEC RECHERCHE AUTO
 // ✅ STATISTIQUES EN HAUT DE PAGE AVEC FILTRES DE DATE
 // ✅ SYNCHRONISATION AVEC ADMIN VENTES : Quand un crédit est payé, la vente se met à jour
+// ✅ SEUL L'ADMIN PEUT SUPPRIMER - LE CAISSIER N'A PAS LE BOUTON SUPPRIMER
 
 // ========== VARIABLES GLOBALES ==========
 window.creditsPeriod = window.creditsPeriod || 'all';
@@ -1187,8 +1188,11 @@ if (!d.paid) {
 }
 actions += `
     <button class="btn-edit" onclick="editCredit('${d.id}')" title="Modifier">Modifier</button>
-    <button class="btn-delete" onclick="if(confirm('Supprimer définitivement ce crédit ?')) deleteCredit('${d.id}')" title="Supprimer">Supprimer</button>
-`;
+    `;
+// ✅ SEUL L'ADMIN PEUT SUPPRIMER - LE CAISSIER N'A PAS LE BOUTON SUPPRIMER
+if (isAdmin) {
+    actions += `<button class="btn-delete" onclick="if(confirm('Supprimer définitivement ce crédit ?')) deleteCredit('${d.id}')" title="Supprimer">Supprimer</button>`;
+}
 actions += `</div>`;
 
 var isSelected = window.creditSelectedIds.includes(d.id);
@@ -2229,7 +2233,8 @@ console.log('🚀 E-SOLUTION - Admin Credits PRO chargé');
 console.log('✅ Détails facture crédit modal ajouté - Font size agrandi');
 console.log('✅ Paiement crédit avec modal - Mise à jour du crédit existant');
 console.log('✅ Pagination corrigée - Utilise window.itemsPerPage');
-console.log('✅ Caissier peut : Marquer payé, Modifier, Supprimer, Envoyer WhatsApp');
+console.log('✅ Caissier peut : Marquer payé, Modifier, Envoyer WhatsApp');
+console.log('✅ SEUL L\'ADMIN PEUT SUPPRIMER - Le caissier n\'a PAS le bouton Supprimer');
 console.log('✅ Boutons avec texte - Ultra compacts (10px)');
 console.log('✅ Retour au paiement depuis le POS (uniquement si venu du POS)');
 console.log('✅ Pré-sélection du client avec recherche auto');
