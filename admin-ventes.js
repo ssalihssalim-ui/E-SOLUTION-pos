@@ -31,6 +31,7 @@ window.currentPages.credits = window.currentPages.credits || 1;
 
 // ========== SELECTION EN MASSE ==========
 var ventesSelectionnees = new Set();
+var selectAllVentesBtnState = false;
 
 function toggleVenteSelection(id) {
 if (ventesSelectionnees.has(id)) {
@@ -79,6 +80,80 @@ var checkboxes = document.querySelectorAll('.vente-checkbox');
 var allChecked = checkboxes.length > 0 && Array.from(checkboxes).every(cb => cb.checked);
 selectAllBtn.textContent = allChecked ? '❌ Désélectionner tout' : '✅ Tout sélectionner';
 }
+}
+
+// ✅ FONCTION POUR ACTIVER/DÉSACTIVER LE MODE SÉLECTION (COMME DANS LES CRÉDITS)
+function toggleVenteSelectionMode() {
+    window.venteSelectionMode = !window.venteSelectionMode;
+    window.venteSelectedIds = [];
+    var selectAllBtn = document.getElementById('selectAllVentesBtn');
+    if (selectAllBtn) {
+        selectAllBtn.innerHTML = '<i class="fas fa-check-double"></i> Tout sélectionner';
+        selectAllBtn.style.background = '#4f46e5';
+    }
+    selectAllVentesBtnState = false;
+
+    var selectBtn = document.getElementById('toggleVenteSelectionBtn');
+    var deleteBtn = document.getElementById('deleteSelectedVentesBtn');
+    if (selectBtn) {
+        if (window.venteSelectionMode) {
+            selectBtn.innerHTML = '<i class="fas fa-times-circle"></i> Annuler';
+        } else {
+            selectBtn.innerHTML = '<i class="fas fa-check-square"></i> Sélectionner';
+        }
+    }
+    if (selectAllBtn) {
+        selectAllBtn.style.display = window.venteSelectionMode ? 'inline-block' : 'none';
+    }
+    if (deleteBtn) {
+        deleteBtn.style.display = 'none';
+    }
+    renderVentesTablePro();
+}
+
+// ✅ FONCTION POUR TOUT SÉLECTIONNER LES VENTES VISIBLES
+function selectAllVisibleVentes() {
+    var data = window.filteredVentes || window.allVentesData;
+    var pageData = getPageData('ventes', data);
+    window.venteSelectedIds = pageData.map(function(d) { return d.id; });
+    // Ajouter aux ventesSelectionnees
+    window.venteSelectedIds.forEach(function(id) {
+        ventesSelectionnees.add(id);
+    });
+    updateVenteSelectionUI();
+    renderVentesTablePro();
+}
+
+// ✅ FONCTION POUR TOUT DÉSÉLECTIONNER
+function deselectAllVisibleVentes() {
+    window.venteSelectedIds = [];
+    // Supprimer les IDs de la sélection
+    var ids = Array.from(ventesSelectionnees);
+    ids.forEach(function(id) {
+        ventesSelectionnees.delete(id);
+    });
+    updateVenteSelectionUI();
+    renderVentesTablePro();
+}
+
+// ✅ FONCTION POUR BASCULER TOUT SÉLECTIONNER/DÉSÉLECTIONNER
+function toggleSelectAllVisibleVentes() {
+    if (selectAllVentesBtnState) {
+        deselectAllVisibleVentes();
+    } else {
+        selectAllVisibleVentes();
+    }
+    selectAllVentesBtnState = !selectAllVentesBtnState;
+    var btn = document.getElementById('selectAllVentesBtn');
+    if (btn) {
+        if (selectAllVentesBtnState) {
+            btn.innerHTML = '<i class="fas fa-times"></i> Tout décocher';
+            btn.style.background = '#ef4444';
+        } else {
+            btn.innerHTML = '<i class="fas fa-check-double"></i> Tout sélectionner';
+            btn.style.background = '#4f46e5';
+        }
+    }
 }
 
 async function deleteSelectedVentes() {
@@ -805,16 +880,17 @@ border-radius: 20px;
 #selectAllVentesBtn {
 font-size: 16px;
 padding: 8px 16px;
-background: #2563eb;
+background: #4f46e5;
 color: #fff;
 border: none;
 border-radius: 8px;
 cursor: pointer;
+display: none;
 transition: all 0.2s;
 }
 
 #selectAllVentesBtn:hover {
-background: #1d4ed8;
+background: #4338ca;
 transform: scale(1.02);
 }
 
@@ -1311,6 +1387,15 @@ onkeyup="handleVentesSearch(this.value);">
 <button class="btn-add" onclick="loadVentes()" style="font-size:20px !important;padding:10px 20px !important;">
 <i class="fas fa-sync-alt"></i> Actualiser
 </button>
+<button id="toggleVenteSelectionBtn" class="btn-add" onclick="toggleVenteSelectionMode()" style="font-size:18px !important;padding:10px 16px !important;background:#14B8A6;color:#fff;border:none;border-radius:8px;cursor:pointer;">
+<i class="fas fa-check-square"></i> Sélectionner
+</button>
+<button id="selectAllVentesBtn" class="btn-add" onclick="toggleSelectAllVisibleVentes()" style="display:none; background:#4f46e5; font-size:18px !important;padding:10px 16px !important;color:#fff;border:none;border-radius:8px;cursor:pointer;">
+<i class="fas fa-check-double"></i> Tout sélectionner
+</button>
+<button id="deleteSelectedVentesBtn" class="btn-delete" onclick="deleteSelectedVentes()" style="display:none; background:#fee2e2; color:#b91c1c; font-size:18px !important;padding:10px 16px !important;border:none;border-radius:8px;cursor:pointer;">
+<i class="fas fa-trash"></i> Supprimer
+</button>
 </div>
 </div>
 <!-- ✅ STATISTIQUES EN HAUT DE PAGE -->
@@ -1337,7 +1422,6 @@ onkeyup="handleVentesSearch(this.value);">
 </div>
 `;
 
-ajouterBoutonsSelectionVentes();
 loadVentes();
 }
 
@@ -1368,41 +1452,6 @@ applyVentesFilters();
 }
 window.appliquerFiltreDatePersonnalise = appliquerFiltreDatePersonnalise;
 window.reinitialiserFiltres = reinitialiserFiltres;
-
-function ajouterBoutonsSelectionVentes() {
-var header = document.querySelector('#ventesPage .card-header');
-if (!header) {
-setTimeout(ajouterBoutonsSelectionVentes, 500);
-return;
-}
-
-if (document.getElementById('selectAllVentesBtn')) return;
-
-var btnContainer = document.createElement('div');
-btnContainer.className = 'ventes-select-buttons';
-btnContainer.style.cssText = 'display:flex; gap:8px; align-items:center; flex-wrap:wrap; margin-left:auto;';
-
-var countSpan = document.createElement('span');
-countSpan.id = 'selectedVentesCount';
-countSpan.textContent = '0 sélectionnée(s)';
-
-var selectAllBtn = document.createElement('button');
-selectAllBtn.id = 'selectAllVentesBtn';
-selectAllBtn.textContent = '✅ Tout sélectionner';
-selectAllBtn.onclick = toggleAllVentesSelection;
-
-var deleteBtn = document.createElement('button');
-deleteBtn.id = 'deleteSelectedVentesBtn';
-deleteBtn.textContent = '🗑️ Supprimer les sélectionnés';
-deleteBtn.style.display = 'none';
-deleteBtn.onclick = deleteSelectedVentes;
-
-btnContainer.appendChild(selectAllBtn);
-btnContainer.appendChild(deleteBtn);
-btnContainer.appendChild(countSpan);
-
-header.appendChild(btnContainer);
-}
 
 function handleVentesSearch(value) {
 window.ventesSearch = value;
@@ -1731,7 +1780,7 @@ var h = `
 <thead>
 <tr>
 <th style="width:40px; text-align:center;">
-<input type="checkbox" id="ventesSelectAllCheckbox" onchange="toggleAllVentesSelection()" title="Tout sélectionner">
+${window.venteSelectionMode ? '<input type="checkbox" id="ventesSelectAllCheckbox" onchange="toggleAllVentesSelection()" title="Tout sélectionner">' : ''}
 </th>
 <th style="min-width:160px;"><i class="fas fa-receipt"></i> Facture</th>
 <th style="min-width:150px;"><i class="far fa-calendar-alt"></i> Date / Heure</th>
@@ -1827,7 +1876,7 @@ var restantColor = (d.remainingAmount || 0) > 0 ? '#ef4444' : '#14B8A6';
 h += `
 <tr>
 <td style="text-align:center; vertical-align:middle;">
-<input type="checkbox" class="vente-checkbox" data-id="${d.id}" ${isChecked} onchange="toggleVenteSelection('${d.id}')">
+${window.venteSelectionMode ? '<input type="checkbox" class="vente-checkbox" data-id="' + d.id + '" ' + isChecked + ' onchange="toggleVenteSelection(\'' + d.id + '\')" style="transform:scale(1.3);width:20px;height:20px;">' : ''}
 </td>
 <td onclick="openFactureDetails('${d.id}', '${escapeHtml(factureNum)}')" style="cursor:pointer;">
 ${factureHtml}
@@ -2463,7 +2512,6 @@ window.toggleVenteSelection = toggleVenteSelection;
 window.toggleAllVentesSelection = toggleAllVentesSelection;
 window.deleteSelectedVentes = deleteSelectedVentes;
 window.updateVenteSelectionUI = updateVenteSelectionUI;
-window.ajouterBoutonsSelectionVentes = ajouterBoutonsSelectionVentes;
 window.filterByPeriodWithDates = filterByPeriodWithDates;
 window.updateVentesStats = updateVentesStats;
 window.appliquerFiltreDatePersonnalise = appliquerFiltreDatePersonnalise;
@@ -2488,6 +2536,13 @@ window.renderVentesTable = window.renderVentesTablePro;
 window.renderCommandesTable = window.renderCommandesTablePro;
 window.renderCreditsTable = window.renderCreditsTablePro;
 
+// ✅ AJOUT DES FONCTIONS SÉLECTION (COMME DANS LES CRÉDITS)
+window.toggleVenteSelectionMode = toggleVenteSelectionMode;
+window.selectAllVisibleVentes = selectAllVisibleVentes;
+window.deselectAllVisibleVentes = deselectAllVisibleVentes;
+window.toggleSelectAllVisibleVentes = toggleSelectAllVisibleVentes;
+window.selectAllVentesBtnState = selectAllVentesBtnState;
+
 console.log('🚀 E-SOLUTION - Admin Ventes PRO chargé');
 console.log('✅ Détails facture modal ajouté - Font size agrandi');
 console.log('✅ Pagination corrigée - Utilise window.itemsPerPage');
@@ -2497,4 +2552,4 @@ console.log('✅ Boutons avec texte - Comme admin credits');
 console.log('✅ Synchronisation avec admin credits : Quand un crédit est payé, la vente devient "Payé"');
 console.log('✅ Nouveau champ "Restant" dans les ventes - Diminue avec le paiement');
 console.log('✅ Champ "Donné" augmente avec le paiement');
-console.log('✅ Sélection en masse avec boutons "Sélectionner", "Tout sélectionner" et "Supprimer"');
+console.log('✅ Sélection en masse comme admin credits - Bouton "Sélectionner" pour activer/désactiver');
