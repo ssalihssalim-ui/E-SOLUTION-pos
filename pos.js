@@ -1697,12 +1697,20 @@ var creditDisplay = '';
 if (posCurrentClient && posCurrentClient.id) {
 creditDisplay = '<div id="clientCreditDisplay" style="font-size:20px;font-weight:700;padding:2px 0;text-align:right;"></div>';
 }
-h+='<div class="pos-cart-header" style="padding:6px 10px;border-bottom:1px solid var(--border);flex-shrink:0;"><h3 style="font-size:'+(isMobile?'16px':'0.85rem')+';"><i class="fas fa-credit-card"></i> Paiement</h3></div><div class="pos-payment-form" style="padding:6px 10px;flex:1;overflow-y:auto;max-height:400px;"><div style="margin-bottom:3px;"><label style="font-size:'+(isMobile?'12px':'0.7rem')+';font-weight:600;">Client</label><div style="position:relative;">' +
+h+='<div class="pos-cart-header" style="padding:6px 10px;border-bottom:1px solid var(--border);flex-shrink:0;"><h3 style="font-size:'+(isMobile?'16px':'0.85rem')+';"><i class="fas fa-credit-card"></i> Paiement</h3></div><div class="pos-payment-form" style="padding:6px 10px;flex:1;overflow-y:auto;max-height:400px;"><div style="margin-bottom:3px;">' +
+'<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px;">' +
+'<label style="font-size:'+(isMobile?'12px':'0.7rem')+';font-weight:600;flex-shrink:0;">Client</label>' +
+'<button onclick="posAjouterNouveauClient()" style="background:#8B5CF6;color:#fff;border:none;border-radius:6px;padding:4px 12px;font-size:'+(isMobile?'11px':'0.7rem')+';font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;flex-shrink:0;transition:all 0.2s;" onmouseover="this.style.transform=\'scale(1.05)\';" onmouseout="this.style.transform=\'scale(1)\';">' +
+'<i class="fas fa-plus" style="font-size:'+(isMobile?'10px':'0.65rem')+';"></i> Nouveau' +
+'</button>' +
+'</div>' +
+'<div style="position:relative;">' +
 '<div style="display:flex;align-items:center;background:#fff;border:2px solid #e2e8f0;border-radius:6px;padding:2px 8px;position:relative;">' +
 '<input type="text" id="posClientSearchInput" placeholder="🔍 Cliquez et tapez..." onkeyup="posSearchClient(this.value)" onfocus="if(this.value)posSearchClient(this.value)" autocomplete="off" value="'+(posCurrentClient?escapeHtml(posCurrentClient.name):'')+'" style="border:none;outline:none;padding:4px 0;width:100%;background:transparent;font-size:18px !important;font-weight:700 !important;padding-right:24px;">' +
 '<button id="posClientClearBtn" onclick="clearClientSearch()" style="display:'+((posCurrentClient && posCurrentClient.name) ? 'flex' : 'none')+';position:absolute;right:4px;background:none;border:none;cursor:pointer;padding:2px;color:#94a3b8;font-size:1rem;align-items:center;justify-content:center;" title="Effacer le client"><i class="fas fa-times-circle"></i></button>' +
 '</div>' +
-'<div id="posClientDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:2px solid #e2e8f0;border-radius:0 0 6px 6px;max-height:150px;overflow-y:auto;z-index:50;"></div></div>'+creditDisplay+'</div><div style="margin:2px 0;font-size:0.5rem;text-align:center;">— OU —</div><div style="margin-bottom:3px;"><label style="font-size:'+(isMobile?'12px':'0.7rem')+';font-weight:600;">Table</label><input type="text" id="posTableNum" value="'+escapeHtml(posCurrentTable)+'" onchange="posSetTable(this.value)" style="width:100%;padding:4px;border:2px solid #e2e8f0;border-radius:4px;font-size:'+(isMobile?'14px':'0.85rem')+';"></div><div style="margin-bottom:3px;"><div style="padding:4px;background:#f8fafc;border-radius:4px;">' +
+'<div id="posClientDropdown" style="display:none;position:absolute;top:100%;left:0;right:0;background:#fff;border:2px solid #e2e8f0;border-radius:0 0 6px 6px;max-height:150px;overflow-y:auto;z-index:50;"></div>' +
+'</div>'+creditDisplay+'</div><div style="margin:2px 0;font-size:0.5rem;text-align:center;">— OU —</div><div style="margin-bottom:3px;"><label style="font-size:'+(isMobile?'12px':'0.7rem')+';font-weight:600;">Table</label><input type="text" id="posTableNum" value="'+escapeHtml(posCurrentTable)+'" onchange="posSetTable(this.value)" style="width:100%;padding:4px;border:2px solid #e2e8f0;border-radius:4px;font-size:'+(isMobile?'14px':'0.85rem')+';"></div><div style="margin-bottom:3px;"><div style="padding:4px;background:#f8fafc;border-radius:4px;">' +
 '<div style="font-size:'+(isMobile?'18px':'20px')+';font-weight:600;">Articles: '+posCart.length+'</div>' +
 (posDiscountMAD>0?'<div style="color:#ef4444;font-size:'+(isMobile?'16px':'18px')+';">Remise: -'+posDiscountMAD.toFixed(2)+'</div>':'') +
 '<div style="font-size:'+(isMobile?'18px':'20px')+';font-weight:700;">Total: '+t.toFixed(2)+' MAD</div></div></div><div style="margin-bottom:3px;"><label style="font-size:'+(isMobile?'12px':'0.7rem')+';font-weight:600;">Vendeur</label><input type="text" id="posVendeur" value="'+(window.currentUserData?escapeHtml(window.currentUserData.userData.prenom+' '+window.currentUserData.userData.nom):'')+'" style="width:100%;padding:4px;border:2px solid #e2e8f0;border-radius:4px;font-size:'+(isMobile?'14px':'0.85rem')+';"></div><div style="margin-bottom:3px;"><div style="display:flex;gap:3px;">' +
@@ -2013,6 +2021,190 @@ btn.style.display = (input.value && input.value.length > 0) ? 'flex' : 'none';
 
 function goBackToPOS(){ if(window.currentUserData&&(window.currentUserData.userData.role==='caissier'||window.currentUserData.userData.role==='admin')){ if(posCart.length>0&&posStep===1){ if(!confirm('⚠️ '+posCart.length+' article(s) dans le panier. Garder ?')) posResetCart(); } navigateTo('pos'); } }
 
+// ==================== AJOUT RAPIDE D'UN NOUVEAU CLIENT (COMPATIBLE ADMIN-CRUD) ====================
+function posAjouterNouveauClient() {
+    var modalHtml = `
+        <div style="padding:10px;">
+            <h3 style="margin-bottom:15px;font-size:1.3rem;display:flex;align-items:center;gap:10px;">
+                <i class="fas fa-user-plus" style="color:#14B8A6;"></i> Ajouter un nouveau client
+            </h3>
+            <p style="color:#64748b;font-size:0.9rem;margin-bottom:15px;">Remplissez les informations ci-dessous. Seuls le nom et prénom sont obligatoires.</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <div>
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:4px;">Prénom *</label>
+                    <input type="text" id="posNewClientPrenom" placeholder="Prénom" style="width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:8px;font-size:1rem;">
+                </div>
+                <div>
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:4px;">Nom *</label>
+                    <input type="text" id="posNewClientNom" placeholder="Nom" style="width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:8px;font-size:1rem;">
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px;">
+                <div>
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:4px;">Téléphone</label>
+                    <input type="text" id="posNewClientTelephone" placeholder="Téléphone" style="width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:8px;font-size:1rem;">
+                </div>
+                <div>
+                    <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:4px;">Email</label>
+                    <input type="email" id="posNewClientEmail" placeholder="Email" style="width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:8px;font-size:1rem;">
+                </div>
+            </div>
+            <div style="margin-top:10px;">
+                <label style="font-weight:600;font-size:0.85rem;display:block;margin-bottom:4px;">Adresse</label>
+                <input type="text" id="posNewClientAdresse" placeholder="Adresse" style="width:100%;padding:12px;border:2px solid #e2e8f0;border-radius:8px;font-size:1rem;">
+            </div>
+            <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:18px;">
+                <button class="btn-cancel" onclick="closeModal()" style="padding:12px 24px;border:none;border-radius:8px;cursor:pointer;font-weight:600;font-size:1rem;background:#e2e8f0;">Annuler</button>
+                <button id="posConfirmNewClientBtn" style="background:#14B8A6;color:#fff;border:none;border-radius:8px;padding:12px 28px;cursor:pointer;font-weight:700;font-size:1rem;display:flex;align-items:center;gap:8px;">
+                    <i class="fas fa-check"></i> Ajouter
+                </button>
+            </div>
+        </div>
+    `;
+    
+    openModal('➕ Nouveau client', modalHtml);
+    
+    setTimeout(function() {
+        var prenomInput = document.getElementById('posNewClientPrenom');
+        if (prenomInput) prenomInput.focus();
+    }, 300);
+    
+    document.getElementById('posConfirmNewClientBtn').addEventListener('click', function() {
+        posConfirmerAjoutClient();
+    });
+    
+    ['posNewClientPrenom', 'posNewClientNom', 'posNewClientTelephone', 'posNewClientEmail', 'posNewClientAdresse'].forEach(function(id) {
+        var input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    posConfirmerAjoutClient();
+                }
+            });
+        }
+    });
+}
+
+async function posConfirmerAjoutClient() {
+    var prenom = document.getElementById('posNewClientPrenom');
+    var nom = document.getElementById('posNewClientNom');
+    var telephone = document.getElementById('posNewClientTelephone');
+    var email = document.getElementById('posNewClientEmail');
+    var adresse = document.getElementById('posNewClientAdresse');
+    
+    var prenomVal = prenom ? prenom.value.trim() : '';
+    var nomVal = nom ? nom.value.trim() : '';
+    var telephoneVal = telephone ? telephone.value.trim() : '';
+    var emailVal = email ? email.value.trim() : '';
+    var adresseVal = adresse ? adresse.value.trim() : '';
+    
+    if (!prenomVal || !nomVal) {
+        alert('❌ Veuillez saisir le prénom et le nom.');
+        if (!prenomVal && prenom) prenom.focus();
+        else if (!nomVal && nom) nom.focus();
+        return;
+    }
+    
+    try {
+        // Vérifier si le client existe déjà (même nom + prénom)
+        var existing = posAllClients.find(function(c) {
+            return (c.nom || '').toLowerCase() === nomVal.toLowerCase() && 
+                   (c.prenom || '').toLowerCase() === prenomVal.toLowerCase();
+        });
+        
+        if (existing) {
+            alert('⚠️ Ce client existe déjà : ' + prenomVal + ' ' + nomVal);
+            closeModal();
+            // Sélectionner automatiquement le client existant
+            posCurrentClient = { id: existing.id, name: existing.nom + ' ' + existing.prenom };
+            var input = document.getElementById('posClientSearchInput');
+            if (input) input.value = posCurrentClient.name;
+            updateClientCreditDisplay(existing.id);
+            updatePaymentButtons();
+            if (isOnPOSPage()) renderPOS();
+            return;
+        }
+        
+        // Créer le client dans Firestore (STRUCTURE COMPATIBLE ADMIN-CRUD)
+        var newClientData = {
+            nom: nomVal,
+            prenom: prenomVal,
+            telephone: telephoneVal || '',
+            email: emailVal || '',
+            adresse: adresseVal || '',
+            username: '',
+            genre: '',
+            whatsapp: '',
+            facebook: '',
+            instagram: '',
+            ca: 0,
+            profit: 0,
+            pointsFidelite: 0,
+            allergies: [],
+            aime: [],
+            deteste: [],
+            description: '',
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        var docRef = await db.collection('clients').add(newClientData);
+        var newClient = {
+            id: docRef.id,
+            nom: nomVal,
+            prenom: prenomVal,
+            telephone: telephoneVal || '',
+            email: emailVal || '',
+            adresse: adresseVal || '',
+            username: '',
+            genre: '',
+            whatsapp: '',
+            facebook: '',
+            instagram: '',
+            ca: 0,
+            profit: 0,
+            pointsFidelite: 0,
+            allergies: [],
+            aime: [],
+            deteste: [],
+            description: ''
+        };
+        
+        // Ajouter à la liste locale
+        posAllClients.push(newClient);
+        posFilteredClients.push(newClient);
+        if (window.allClientsData) window.allClientsData.push(newClient);
+        
+        // Sauvegarder dans le cache
+        if (typeof CacheDB !== 'undefined' && CacheDB.set) {
+            CacheDB.set('clients', docRef.id, newClient);
+        }
+        
+        // Sauvegarder la collection complète
+        if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+            setTimeout(function() {
+                CacheDB.saveCollection('clients');
+            }, 500);
+        }
+        
+        // Sélectionner automatiquement le nouveau client
+        posCurrentClient = { id: docRef.id, name: nomVal + ' ' + prenomVal };
+        var input = document.getElementById('posClientSearchInput');
+        if (input) input.value = posCurrentClient.name;
+        
+        updateClientCreditDisplay(docRef.id);
+        updatePaymentButtons();
+        
+        closeModal();
+        if (isOnPOSPage()) renderPOS();
+        
+        console.log('✅ Nouveau client ajouté:', prenomVal, nomVal);
+        
+    } catch(e) {
+        console.error('❌ Erreur ajout client:', e);
+        alert('❌ Erreur lors de l\'ajout du client: ' + e.message);
+    }
+}
+
 // ==================== CORRECTION MOBILE PANIER EN BAS ====================
 function corrigerDispositionMobile() {
 if (window.innerWidth <= 700) {
@@ -2084,6 +2276,9 @@ window.posGetTotalAllCarts = posGetTotalAllCarts;
 window.posSauvegarderDonneesPanier = posSauvegarderDonneesPanier;
 window.posRestaurerDonneesPanier = posRestaurerDonneesPanier;
 window.posChargerToutesDonneesPaniers = posChargerToutesDonneesPaniers;
+// Ajout rapide client
+window.posAjouterNouveauClient = posAjouterNouveauClient;
+window.posConfirmerAjoutClient = posConfirmerAjoutClient;
 
 console.log('🚀 E-SOLUTION - POS chargé avec corrections');
 console.log('✅ forceUpdateClient disponible');
@@ -2093,3 +2288,4 @@ console.log('✅ Crédit client cliquable - REDIRECTION VERS PAGE CRÉDITS AVEC 
 console.log('✅ Catégories actives : texte noir sur fond blanc');
 console.log('✅ Multi-paniers activé - ' + Object.keys(posMultiCarts).length + ' panier(s) disponible(s)');
 console.log('✅ Chaque panier sauvegarde son propre client, table, paiement, remise, montant donné');
+console.log('✅ Ajout rapide de client avec bouton "Nouveau" dans la section paiement');
