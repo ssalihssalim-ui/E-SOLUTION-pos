@@ -1150,7 +1150,7 @@ ${window.creditSelectionMode ? '<th style="width:40px;">☑️</th>' : ''}
 `;
 
 pageData.forEach(function(d, index) {
-var reste = d.remainingAmount || d.total || 0;
+var reste = d.paid ? 0 : (d.remainingAmount || d.total || 0);
 if (!d.paid) tc += reste;
 
 const factureNum = d.factureNum || d.id?.substring(0, 8) || '---';
@@ -1364,6 +1364,7 @@ function openCreditPaymentModal(creditId) {
 
     var restant = credit.remainingAmount || credit.total || 0;
     var currentPaye = credit.amountGiven || 0;
+    var total = credit.total || 0;
 
     var modalHtml = `
         <div style="padding:10px;">
@@ -1381,7 +1382,7 @@ function openCreditPaymentModal(creditId) {
                 </div>
                 <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:1rem;">
                     <span style="color:var(--text-secondary);">Total</span>
-                    <span style="font-weight:600;color:var(--text-primary);">${credit.total.toFixed(2)} MAD</span>
+                    <span style="font-weight:600;color:var(--text-primary);">${total.toFixed(2)} MAD</span>
                 </div>
                 <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:1rem;">
                     <span style="color:var(--text-secondary);">Déjà payé</span>
@@ -1389,7 +1390,7 @@ function openCreditPaymentModal(creditId) {
                 </div>
                 <div style="display:flex;justify-content:space-between;padding:4px 0;font-size:1.1rem;font-weight:700;border-top:1px solid var(--border);margin-top:4px;padding-top:8px;">
                     <span style="color:var(--text-secondary);">Reste à payer</span>
-                    <span style="color:var(--danger);">${restant.toFixed(2)} MAD</span>
+                    <span style="color:var(--danger);font-size:1.3rem;">${restant.toFixed(2)} MAD</span>
                 </div>
             </div>
             <div class="form-group" style="margin-bottom:14px;">
@@ -1399,6 +1400,9 @@ function openCreditPaymentModal(creditId) {
                 <input type="number" id="creditPaymentAmount" value="${restant.toFixed(2)}" 
                     step="0.01" min="0.01" max="${restant}"
                     style="width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:var(--radius);font-size:1.3rem;font-weight:700;background:var(--bg-card);color:var(--text-primary);">
+                <div style="margin-top:4px;font-size:0.8rem;color:var(--text-muted);">
+                    💡 Montant maximum : ${restant.toFixed(2)} MAD
+                </div>
             </div>
             <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;">
                 <button onclick="closeModal()" class="btn-cancel" style="padding:10px 24px;border-radius:var(--radius);border:none;background:var(--gray-100);color:var(--text-secondary);font-weight:600;cursor:pointer;font-size:0.9rem;">
@@ -1444,37 +1448,44 @@ async function confirmCreditPayment(creditId) {
 
     try {
         var nouveauPaye = (credit.amountGiven || 0) + montant;
-        var nouveauRestant = restant - montant;
+        var nouveauRestant = Math.max(0, restant - montant);
         var estPaye = nouveauRestant <= 0.01;
         
         await db.collection('credits').doc(creditId).update({
             amountGiven: nouveauPaye,
-            remainingAmount: Math.max(0, nouveauRestant),
+            remainingAmount: nouveauRestant,
             paid: estPaye,
             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
             lastPaymentAt: firebase.firestore.FieldValue.serverTimestamp(),
             lastPaymentAmount: montant
         });
 
+        // ✅ Mettre à jour dans le cache
         var updatedCredit = {
             ...credit,
             amountGiven: nouveauPaye,
-            remainingAmount: Math.max(0, nouveauRestant),
+            remainingAmount: nouveauRestant,
             paid: estPaye
         };
         await CacheDB.set('credits', creditId, updatedCredit);
         
+        // ✅ Mettre à jour dans allCreditsData
         var index = window.allCreditsData.findIndex(function(c) { return c.id === creditId; });
         if (index !== -1) {
             window.allCreditsData[index] = updatedCredit;
         }
         
-        closeModal();
-        alert('✅ Paiement enregistré !\n' +
-              'Montant payé: ' + montant.toFixed(2) + ' MAD\n' +
-              'Reste à payer: ' + Math.max(0, nouveauRestant).toFixed(2) + ' MAD');
+        // ✅ Mettre à jour dans filteredCredits
+        var fIndex = (window.filteredCredits || []).findIndex(function(c) { return c.id === creditId; });
+        if (fIndex !== -1) {
+            window.filteredCredits[fIndex] = updatedCredit;
+        }
         
-        loadCredits();
+        closeModal();
+        
+        // ✅ Rafraîchir l'affichage
+        updateCreditsStats(window.filteredCredits || window.allCreditsData);
+        renderCreditsTablePro();
         CacheDB.sync();
 
         // ✅ AJOUT : Sauvegarde du cache
@@ -1482,6 +1493,16 @@ async function confirmCreditPayment(creditId) {
             CacheDB.saveCollection('credits');
             CacheDB.saveCollection('ventes');
         }
+
+        // Afficher un message de succès
+        var message = '✅ Paiement enregistré !\n';
+        message += '💰 Montant payé: ' + montant.toFixed(2) + ' MAD\n';
+        if (estPaye) {
+            message += '✅ Ce crédit est maintenant entièrement payé !';
+        } else {
+            message += '⏳ Reste à payer: ' + nouveauRestant.toFixed(2) + ' MAD';
+        }
+        alert(message);
 
     } catch(e) {
         console.error('Erreur paiement crédit:', e);
@@ -2193,3 +2214,4 @@ console.log('✅ Retour au paiement depuis le POS (uniquement si venu du POS)');
 console.log('✅ Pré-sélection du client avec recherche auto');
 console.log('✅ Statistiques en haut de page avec filtres de date');
 console.log('✅ Filtres rapides : Aujourd\'hui, 3j, 7j, 15j, 30j, 90j, 365j');
+console.log('✅ Paiement crédit : Le champ "Reste à payer" diminue correctement');
