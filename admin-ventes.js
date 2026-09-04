@@ -5,6 +5,7 @@
 // ✅ DÉTAILS FACTURE MODAL AVEC X POUR FERMER - FONT SIZE AGRANDI
 // ✅ PAGINATION CORRIGÉE - SANS ICÔNES
 // ✅ STATISTIQUES EN HAUT DE PAGE AVEC FILTRES DE DATE
+// ✅ SYNCHRONISATION AVEC ADMIN CREDITS : Quand un crédit est payé, la vente devient "Payé"
 
 // ========== VARIABLES GLOBALES ==========
 window.commandesSearch = window.commandesSearch || '';
@@ -1572,6 +1573,96 @@ document.getElementById('ventesStatsCount').textContent = data.length;
 document.getElementById('ventesStatsAchat').textContent = achat.toFixed(2);
 }
 
+// ✅ FONCTION POUR SYNCHRONISER UNE VENTE DEPUIS UN CRÉDIT
+// Appelée depuis admin-credits.js quand un crédit est payé
+async function synchroVenteDepuisCredit(creditData) {
+    try {
+        // Chercher la vente correspondante par factureNum
+        var factureNum = creditData.factureNum;
+        if (!factureNum) return;
+
+        // Chercher dans allVentesData
+        var vente = window.allVentesData.find(function(v) {
+            return v.factureNum === factureNum || v.id === creditData.id;
+        });
+
+        if (!vente) {
+            // Essayer de charger depuis Firestore
+            var snapshot = await db.collection('ventes')
+                .where('factureNum', '==', factureNum)
+                .limit(1)
+                .get();
+            
+            if (snapshot.empty) {
+                console.log('⚠️ Aucune vente trouvée pour la facture:', factureNum);
+                return;
+            }
+            
+            snapshot.forEach(function(doc) {
+                vente = doc.data();
+                vente.id = doc.id;
+            });
+        }
+
+        if (vente) {
+            // ✅ Mettre à jour la vente : statut = payé, mais garder le mode de paiement
+            var updateData = {
+                paid: true,
+                statutPaiement: 'payé',
+                amountGiven: creditData.amountGiven || vente.total || 0,
+                remainingAmount: 0,
+                change: (creditData.amountGiven || vente.total || 0) - (vente.total || 0),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                paidAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            await db.collection('ventes').doc(vente.id).update(updateData);
+            
+            // ✅ Mettre à jour le cache
+            var updatedVente = {
+                ...vente,
+                ...updateData,
+                paid: true,
+                statutPaiement: 'payé',
+                remainingAmount: 0
+            };
+            await CacheDB.set('ventes', vente.id, updatedVente);
+            
+            // ✅ Mettre à jour dans allVentesData
+            var index = window.allVentesData.findIndex(function(v) {
+                return v.id === vente.id;
+            });
+            if (index !== -1) {
+                window.allVentesData[index] = updatedVente;
+            }
+            
+            // ✅ Mettre à jour dans filteredVentes
+            var fIndex = (window.filteredVentes || []).findIndex(function(v) {
+                return v.id === vente.id;
+            });
+            if (fIndex !== -1) {
+                window.filteredVentes[fIndex] = updatedVente;
+            }
+            
+            console.log('✅ Vente synchronisée depuis crédit:', factureNum, '→ statut: payé');
+            
+            // ✅ Rafraîchir l'affichage
+            updateVentesStats(window.filteredVentes || window.allVentesData);
+            renderVentesTablePro();
+            
+            // ✅ Sauvegarde du cache
+            if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+                CacheDB.saveCollection('ventes');
+            }
+        }
+    } catch(e) {
+        console.error('❌ Erreur synchronisation vente depuis crédit:', e);
+    }
+}
+
+// ✅ Exposer la fonction pour admin-credits.js
+window.synchroVenteDepuisCredit = synchroVenteDepuisCredit;
+
 function renderVentesTablePro() {
 var cont = document.getElementById('ventesTableContainer');
 if (!cont) return;
@@ -1661,13 +1752,24 @@ tv += d.total || 0;
 tProfit += d.profit || 0;
 tAchat += d.achat || 0;
 
+// ✅ Statut : si le crédit est payé via admin-credits, statut = payé
+var statutPaiement = d.statutPaiement || (d.paid ? 'payé' : 'crédit');
+// ✅ Si le crédit est payé mais que le statut n'est pas "payé", on le corrige
+if (d.paid && statutPaiement !== 'payé') {
+    statutPaiement = 'payé';
+}
+
 var statutMap = {
 'payé': { class: 'status-success', label: 'Payé', icon: 'fa-check-circle' },
 'crédit': { class: 'status-warning', label: 'Crédit', icon: 'fa-hand-holding-usd' },
 'partiel': { class: 'status-warning', label: 'Partiel', icon: 'fa-clock' },
-'en_attente': { class: 'status-danger', label: 'En attente', icon: 'fa-hourglass-half' }
+'en_attente': { class: 'status-danger', label: 'En attente', icon: 'fa-hourglass-half' },
+'impayé': { class: 'status-danger', label: 'Impayé', icon: 'fa-times-circle' }
 };
-var st = statutMap[d.statutPaiement] || { class: 'status-warning', label: d.statutPaiement || 'Inconnu', icon: 'fa-question-circle' };
+var st = statutMap[statutPaiement] || { class: 'status-warning', label: statutPaiement || 'Inconnu', icon: 'fa-question-circle' };
+
+// ✅ Mode de paiement : garder le mode original (crédit, espèces, etc.)
+var paymentMethod = d.paymentMethod || 'crédit';
 
 // ✅ BOUTONS AVEC TEXTE - COMME ADMIN CREDITS
 var actions = `
@@ -1703,7 +1805,7 @@ ${isAdmin ? `<td>${(d.achat || 0).toFixed(2)}</td><td style="color:#14B8A6;font-
 <td>${(d.amountGiven || 0).toFixed(2)}</td>
 <td>${(d.change || 0).toFixed(2)}</td>
 ${isAdmin ? `<td>${escapeHtml(d.vendeur || '-')}</td>` : ''}
-<td>${escapeHtml(d.paymentMethod || '-')}</td>
+<td>${escapeHtml(paymentMethod)}</td>
 <td><span class="${st.class}"><i class="fas ${st.icon}"></i> ${st.label}</span></td>
 <td>${actions}</td>
 </tr>
@@ -2116,8 +2218,14 @@ function renderFactureDetails(data) {
     var dateStr = date.toLocaleDateString('fr-FR');
     var timeStr = date.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
     
-    var statusBg = data.statutPaiement === 'payé' ? '#ECFDF5' : data.statutPaiement === 'crédit' ? '#FEF3C7' : '#FEE2E2';
-    var statusColor = data.statutPaiement === 'payé' ? '#065F46' : data.statutPaiement === 'crédit' ? '#92400E' : '#991B1B';
+    // ✅ Statut : si le crédit est payé via admin-credits, statut = payé
+    var statutPaiement = data.statutPaiement || (data.paid ? 'payé' : 'crédit');
+    if (data.paid && statutPaiement !== 'payé') {
+        statutPaiement = 'payé';
+    }
+    
+    var statusBg = statutPaiement === 'payé' ? '#ECFDF5' : statutPaiement === 'crédit' ? '#FEF3C7' : '#FEE2E2';
+    var statusColor = statutPaiement === 'payé' ? '#065F46' : statutPaiement === 'crédit' ? '#92400E' : '#991B1B';
     
     var html = `
         <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;padding-bottom:16px;border-bottom:2px solid var(--border);">
@@ -2128,7 +2236,7 @@ function renderFactureDetails(data) {
                 </p>
             </div>
             <span style="display:inline-block;padding:6px 18px;border-radius:20px;font-size:1rem;font-weight:600;text-transform:uppercase;background:${statusBg};color:${statusColor};">
-                ${data.statutPaiement || 'N/A'}
+                ${statutPaiement || 'N/A'}
             </span>
         </div>
         
@@ -2324,6 +2432,9 @@ window.updateVentesStats = updateVentesStats;
 window.appliquerFiltreDatePersonnalise = appliquerFiltreDatePersonnalise;
 window.reinitialiserFiltres = reinitialiserFiltres;
 
+// ✅ AJOUT DE LA FONCTION DE SYNCHRONISATION
+window.synchroVenteDepuisCredit = synchroVenteDepuisCredit;
+
 // ✅ AJOUT DES FONCTIONS MODAL FACTURE
 window.openFactureDetails = openFactureDetails;
 window.closeFactureDetails = closeFactureDetails;
@@ -2346,3 +2457,4 @@ console.log('✅ Pagination corrigée - Utilise window.itemsPerPage');
 console.log('✅ Statistiques en haut de page avec filtres de date');
 console.log('✅ Filtres rapides : Aujourd\'hui, 3j, 7j, 15j, 30j, 90j, 365j');
 console.log('✅ Boutons avec texte - Comme admin credits');
+console.log('✅ Synchronisation avec admin credits : Quand un crédit est payé, la vente devient "Payé"');
