@@ -2497,3 +2497,4 @@ console.log('✅ Boutons avec texte - Comme admin credits');
 console.log('✅ Synchronisation avec admin credits : Quand un crédit est payé, la vente devient "Payé"');
 console.log('✅ Nouveau champ "Restant" dans les ventes - Diminue avec le paiement');
 console.log('✅ Champ "Donné" augmente avec le paiement');
+console.log('✅ Sélection en masse avec boutons "Sélectionner", "Tout sélectionner" et "Supprimer"');
