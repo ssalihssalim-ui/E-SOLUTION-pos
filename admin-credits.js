@@ -7,6 +7,7 @@
 // ✅ RETOUR AU PAIEMENT DEPUIS LE POS (UNIQUEMENT SI VENU DU POS)
 // ✅ PRÉ-SÉLECTION DU CLIENT AVEC RECHERCHE AUTO
 // ✅ STATISTIQUES EN HAUT DE PAGE AVEC FILTRES DE DATE
+// ✅ SYNCHRONISATION AVEC ADMIN VENTES : Quand un crédit est payé, la vente se met à jour
 
 // ========== VARIABLES GLOBALES ==========
 window.creditsPeriod = window.creditsPeriod || 'all';
@@ -1481,6 +1482,24 @@ async function confirmCreditPayment(creditId) {
             window.filteredCredits[fIndex] = updatedCredit;
         }
         
+        // ✅ SYNCHRONISATION AVEC ADMIN VENTES
+        if (typeof window.synchroVenteDepuisCredit === 'function') {
+            var creditData = {
+                id: creditId,
+                factureNum: credit.factureNum,
+                amountGiven: nouveauPaye,
+                total: credit.total,
+                paid: estPaye,
+                remainingAmount: nouveauRestant,
+                clientId: credit.clientId,
+                clientName: credit.clientName
+            };
+            await window.synchroVenteDepuisCredit(creditData);
+            console.log('✅ Vente synchronisée avec le crédit');
+        } else {
+            console.warn('⚠️ fonction synchroVenteDepuisCredit non disponible');
+        }
+        
         closeModal();
         
         // ✅ Rafraîchir l'affichage
@@ -1498,9 +1517,11 @@ async function confirmCreditPayment(creditId) {
         var message = '✅ Paiement enregistré !\n';
         message += '💰 Montant payé: ' + montant.toFixed(2) + ' MAD\n';
         if (estPaye) {
-            message += '✅ Ce crédit est maintenant entièrement payé !';
+            message += '✅ Ce crédit est maintenant entièrement payé !\n';
+            message += '📊 La vente a été mise à jour avec le statut "Payé".';
         } else {
-            message += '⏳ Reste à payer: ' + nouveauRestant.toFixed(2) + ' MAD';
+            message += '⏳ Reste à payer: ' + nouveauRestant.toFixed(2) + ' MAD\n';
+            message += '📊 La vente a été mise à jour avec le statut "Partiel".';
         }
         alert(message);
 
@@ -2215,3 +2236,4 @@ console.log('✅ Pré-sélection du client avec recherche auto');
 console.log('✅ Statistiques en haut de page avec filtres de date');
 console.log('✅ Filtres rapides : Aujourd\'hui, 3j, 7j, 15j, 30j, 90j, 365j');
 console.log('✅ Paiement crédit : Le champ "Reste à payer" diminue correctement');
+console.log('✅ Synchronisation avec admin ventes : Quand un crédit est payé, la vente se met à jour');
