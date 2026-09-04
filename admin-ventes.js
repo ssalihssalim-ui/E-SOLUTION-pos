@@ -7,6 +7,7 @@
 // ✅ STATISTIQUES EN HAUT DE PAGE AVEC FILTRES DE DATE
 // ✅ SYNCHRONISATION AVEC ADMIN CREDITS : Quand un crédit est payé, la vente devient "Payé"
 // ✅ NOUVEAU CHAMP "RESTANT" DANS LES VENTES
+// ✅ ARTICLES ET OPTIONS VISIBLES POUR TOUT LE MONDE (ADMIN ET CAISSIER)
 
 // ========== VARIABLES GLOBALES ==========
 window.commandesSearch = window.commandesSearch || '';
@@ -1773,7 +1774,7 @@ return;
 
 var tv = 0, tProfit = 0, tAchat = 0;
 
-// ✅ AJOUT DE LA COLONNE "RESTANT"
+// ✅ AJOUT DE LA COLONNE "RESTANT" - ARTICLES VISIBLES POUR TOUS
 var h = `
 <div class="table-container">
 <table class="data-table">
@@ -1785,7 +1786,8 @@ ${window.venteSelectionMode ? '<input type="checkbox" id="ventesSelectAllCheckbo
 <th style="min-width:160px;"><i class="fas fa-receipt"></i> Facture</th>
 <th style="min-width:150px;"><i class="far fa-calendar-alt"></i> Date / Heure</th>
 <th style="min-width:180px;"><i class="fas fa-user"></i> Client</th>
-${isAdmin ? `<th><i class="fas fa-box"></i> Articles</th><th><i class="fas fa-cog"></i> Options</th>` : ''}
+<th><i class="fas fa-box"></i> Articles</th>
+<th><i class="fas fa-cog"></i> Options</th>
 ${isAdmin ? `<th><i class="fas fa-coins"></i> Achat</th><th><i class="fas fa-chart-line"></i> Profit</th>` : ''}
 <th><i class="fas fa-tag"></i> Total</th>
 <th><i class="fas fa-percent"></i> Remise</th>
@@ -1883,7 +1885,8 @@ ${factureHtml}
 </td>
 <td>${dateHtml}</td>
 <td>${clientHtml}</td>
-${isAdmin ? `<td>${arts}</td><td>${opts}</td>` : ''}
+<td>${arts}</td>
+<td>${opts}</td>
 ${isAdmin ? `<td>${(d.achat || 0).toFixed(2)}</td><td style="color:#14B8A6;font-weight:700;">${(d.profit || 0).toFixed(2)}</td>` : ''}
 <td><span class="amount-total">${(d.total || 0).toFixed(2)} MAD</span></td>
 <td>${(d.discountMAD || 0).toFixed(2)}</td>
@@ -2553,3 +2556,4 @@ console.log('✅ Synchronisation avec admin credits : Quand un crédit est payé
 console.log('✅ Nouveau champ "Restant" dans les ventes - Diminue avec le paiement');
 console.log('✅ Champ "Donné" augmente avec le paiement');
 console.log('✅ Sélection en masse comme admin credits - Bouton "Sélectionner" pour activer/désactiver');
+console.log('✅ Articles et Options visibles pour tout le monde (admin ET caissier)');
