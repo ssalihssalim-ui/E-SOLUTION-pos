@@ -607,7 +607,7 @@ html += '<button onclick="retournerCategories()" style="display:flex;align-items
 html += '<i class="fas fa-arrow-left"></i> Retour aux catégories';
 html += '</button>';
 if (posSelectedCategoryForView) {
-html += '<span style="font-weight:700;font-size:0.9rem;color:var(--text-primary);">📂 ' + escapeHtml(posSelectedCategoryForView) + '</span>';
+html += '<span style="font-weight:700;font-size:0.9rem;color:#000000;background:#FFFFFF;padding:4px 12px;border-radius:6px;border:1px solid #14B8A6;">📂 ' + escapeHtml(posSelectedCategoryForView) + '</span>';
 }
 html += '</div>';
 
@@ -768,7 +768,7 @@ var cardStyle = 'min-height:' + cardMinHeight + ';max-height:' + cardMaxHeight +
 'padding:8px 4px;border-radius:10px;' +
 'border:2px solid transparent;' +
 'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
-'width:100%;background:#FFFFFF;cursor:pointer;' +  // ✅ FOND BLANC PAR DÉFAUT
+'width:100%;background:#FFFFFF;cursor:pointer;' +
 'transition:all 0.2s cubic-bezier(0.4, 0, 0.2, 1);gap:2px;';
 
 var imgStyle = 'width:' + imgSize + ';height:' + imgSize + ';' +
@@ -778,7 +778,7 @@ var imgStyle = 'width:' + imgSize + ';height:' + imgSize + ';' +
 
 var nameStyle = 'font-size:' + nameSize + ';font-weight:700;text-align:center;' +
 'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' +
-'max-width:100%;color:#000000;margin-top:2px;line-height:1.2;display:block;';  // ✅ TEXTE NOIR
+'max-width:100%;color:#000000;margin-top:2px;line-height:1.2;display:block;';
 
 var countStyle = 'font-size:' + countSize + ';color:var(--text-muted);' +
 'font-weight:500;display:block;margin-top:0px;';
@@ -799,25 +799,23 @@ grid.innerHTML = html;
 
 // ==================== SÉLECTIONNER UNE CATÉGORIE - AVEC TEXTE NOIR SUR FOND BLANC ====================
 function selectionnerCategorie(catName) {
-// ✅ Reset toutes les cartes
 document.querySelectorAll('.pos-category-card').forEach(function(card) {
 card.classList.remove('active');
 card.style.borderColor = 'transparent';
 card.style.transform = 'translateY(0)';
 card.style.boxShadow = 'none';
-card.style.background = '#FFFFFF';   // ✅ Fond blanc
-card.style.color = '#000000';        // ✅ Texte noir
+card.style.background = '#FFFFFF';
+card.style.color = '#000000';
 });
 
-// ✅ Appliquer le style actif
 document.querySelectorAll('.pos-category-card').forEach(function(card) {
 var nameSpan = card.querySelector('span:first-of-type');
 var catNameAttr = card.getAttribute('data-cat-name');
 if (nameSpan && nameSpan.textContent.trim() === catName) {
 card.classList.add('active');
-card.style.borderColor = '#14B8A6';        // Bordure verte
-card.style.background = '#FFFFFF';         // ✅ Fond BLANC
-card.style.color = '#000000';              // ✅ Texte NOIR
+card.style.borderColor = '#14B8A6';
+card.style.background = '#FFFFFF';
+card.style.color = '#000000';
 card.style.transform = 'translateY(-2px)';
 card.style.boxShadow = '0 4px 12px rgba(20,184,166,0.25)';
 }
@@ -855,8 +853,8 @@ card.classList.remove('active');
 card.style.borderColor = 'transparent';
 card.style.transform = 'translateY(0)';
 card.style.boxShadow = 'none';
-card.style.background = '#FFFFFF';   // ✅ Fond blanc
-card.style.color = '#000000';        // ✅ Texte noir
+card.style.background = '#FFFFFF';
+card.style.color = '#000000';
 });
 
 posViewMode = 'categories';
