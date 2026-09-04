@@ -6,6 +6,7 @@
 // ✅ PAGINATION CORRIGÉE - SANS ICÔNES
 // ✅ STATISTIQUES EN HAUT DE PAGE AVEC FILTRES DE DATE
 // ✅ SYNCHRONISATION AVEC ADMIN CREDITS : Quand un crédit est payé, la vente devient "Payé"
+// ✅ NOUVEAU CHAMP "RESTANT" DANS LES VENTES
 
 // ========== VARIABLES GLOBALES ==========
 window.commandesSearch = window.commandesSearch || '';
@@ -465,6 +466,13 @@ background: var(--gray-50);
 font-weight: 800 !important;
 font-size: 24px !important;
 color: var(--black) !important;
+letter-spacing: -0.3px;
+}
+
+.amount-remaining {
+font-weight: 800 !important;
+font-size: 24px !important;
+color: var(--danger) !important;
 letter-spacing: -0.3px;
 }
 
@@ -1605,16 +1613,32 @@ async function synchroVenteDepuisCredit(creditData) {
         }
 
         if (vente) {
-            // ✅ Mettre à jour la vente : statut = payé, mais garder le mode de paiement
+            var totalVente = vente.total || 0;
+            var montantPaye = creditData.amountGiven || 0;
+            var restantCredit = creditData.remainingAmount || 0;
+            var estPaye = creditData.paid || (restantCredit <= 0.01);
+            
+            // ✅ Déterminer le statut correct
+            var statutPaiement = 'crédit';
+            if (estPaye) {
+                statutPaiement = 'payé';
+            } else if (montantPaye > 0 && restantCredit > 0) {
+                statutPaiement = 'partiel';
+            }
+
+            // ✅ Mettre à jour la vente
             var updateData = {
-                paid: true,
-                statutPaiement: 'payé',
-                amountGiven: creditData.amountGiven || vente.total || 0,
-                remainingAmount: 0,
-                change: (creditData.amountGiven || vente.total || 0) - (vente.total || 0),
-                updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                paidAt: firebase.firestore.FieldValue.serverTimestamp()
+                paid: estPaye,
+                statutPaiement: statutPaiement,
+                amountGiven: montantPaye, // ✅ Montant total payé (augmente)
+                remainingAmount: restantCredit, // ✅ Reste à payer (diminue)
+                change: Math.max(0, montantPaye - totalVente),
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
+            
+            if (estPaye) {
+                updateData.paidAt = firebase.firestore.FieldValue.serverTimestamp();
+            }
 
             await db.collection('ventes').doc(vente.id).update(updateData);
             
@@ -1622,9 +1646,10 @@ async function synchroVenteDepuisCredit(creditData) {
             var updatedVente = {
                 ...vente,
                 ...updateData,
-                paid: true,
-                statutPaiement: 'payé',
-                remainingAmount: 0
+                paid: estPaye,
+                statutPaiement: statutPaiement,
+                amountGiven: montantPaye,
+                remainingAmount: restantCredit
             };
             await CacheDB.set('ventes', vente.id, updatedVente);
             
@@ -1644,7 +1669,9 @@ async function synchroVenteDepuisCredit(creditData) {
                 window.filteredVentes[fIndex] = updatedVente;
             }
             
-            console.log('✅ Vente synchronisée depuis crédit:', factureNum, '→ statut: payé');
+            var statusLabel = statutPaiement === 'payé' ? 'Payé ✅' : 
+                             statutPaiement === 'partiel' ? 'Partiel ⏳' : 'Crédit 💳';
+            console.log('✅ Vente synchronisée depuis crédit:', factureNum, '→ statut:', statusLabel, '| Donné:', montantPaye.toFixed(2), '| Restant:', restantCredit.toFixed(2));
             
             // ✅ Rafraîchir l'affichage
             updateVentesStats(window.filteredVentes || window.allVentesData);
@@ -1697,6 +1724,7 @@ return;
 
 var tv = 0, tProfit = 0, tAchat = 0;
 
+// ✅ AJOUT DE LA COLONNE "RESTANT"
 var h = `
 <div class="table-container">
 <table class="data-table">
@@ -1713,6 +1741,7 @@ ${isAdmin ? `<th><i class="fas fa-coins"></i> Achat</th><th><i class="fas fa-cha
 <th><i class="fas fa-tag"></i> Total</th>
 <th><i class="fas fa-percent"></i> Remise</th>
 <th><i class="fas fa-hand-holding-usd"></i> Donné</th>
+<th><i class="fas fa-hourglass-half"></i> Restant</th>
 <th><i class="fas fa-undo-alt"></i> Rendu</th>
 ${isAdmin ? `<th><i class="fas fa-user-tie"></i> Vendeur</th>` : ''}
 <th><i class="fas fa-credit-card"></i> Paiement</th>
@@ -1758,6 +1787,10 @@ var statutPaiement = d.statutPaiement || (d.paid ? 'payé' : 'crédit');
 if (d.paid && statutPaiement !== 'payé') {
     statutPaiement = 'payé';
 }
+// ✅ Si montant donné > 0 et restant > 0, c'est partiel
+if (d.amountGiven > 0 && d.remainingAmount > 0 && statutPaiement !== 'partiel') {
+    statutPaiement = 'partiel';
+}
 
 var statutMap = {
 'payé': { class: 'status-success', label: 'Payé', icon: 'fa-check-circle' },
@@ -1788,6 +1821,9 @@ if (isAdmin) {
 }
 actions += `</div>`;
 
+// ✅ Affichage du restant avec couleur
+var restantColor = (d.remainingAmount || 0) > 0 ? '#ef4444' : '#14B8A6';
+
 h += `
 <tr>
 <td style="text-align:center; vertical-align:middle;">
@@ -1802,7 +1838,8 @@ ${isAdmin ? `<td>${arts}</td><td>${opts}</td>` : ''}
 ${isAdmin ? `<td>${(d.achat || 0).toFixed(2)}</td><td style="color:#14B8A6;font-weight:700;">${(d.profit || 0).toFixed(2)}</td>` : ''}
 <td><span class="amount-total">${(d.total || 0).toFixed(2)} MAD</span></td>
 <td>${(d.discountMAD || 0).toFixed(2)}</td>
-<td>${(d.amountGiven || 0).toFixed(2)}</td>
+<td><span style="font-weight:700;color:#2563eb;">${(d.amountGiven || 0).toFixed(2)}</span></td>
+<td><span style="font-weight:700;color:${restantColor};">${(d.remainingAmount || 0).toFixed(2)} MAD</span></td>
 <td>${(d.change || 0).toFixed(2)}</td>
 ${isAdmin ? `<td>${escapeHtml(d.vendeur || '-')}</td>` : ''}
 <td>${escapeHtml(paymentMethod)}</td>
@@ -2458,3 +2495,5 @@ console.log('✅ Statistiques en haut de page avec filtres de date');
 console.log('✅ Filtres rapides : Aujourd\'hui, 3j, 7j, 15j, 30j, 90j, 365j');
 console.log('✅ Boutons avec texte - Comme admin credits');
 console.log('✅ Synchronisation avec admin credits : Quand un crédit est payé, la vente devient "Payé"');
+console.log('✅ Nouveau champ "Restant" dans les ventes - Diminue avec le paiement');
+console.log('✅ Champ "Donné" augmente avec le paiement');
