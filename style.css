@@ -408,15 +408,16 @@ overflow-y: auto;
 overflow-x: hidden;
 }
 
+/* ✅ PAGE HEADER - VERSION CORRIGÉE AVEC HAUTEUR RÉDUITE SUR MOBILE */
 .page-header {
 display: flex !important;
 justify-content: flex-start !important;
 align-items: center !important;
 margin-top: calc(0px + env(safe-area-inset-top, 0px)) !important;
-margin-bottom: 4px !important;
-padding: 2px 8px !important;
-min-height: 30px !important;
-gap: 10px !important;
+margin-bottom: 2px !important;
+padding: 0px 6px !important;
+min-height: 20px !important;
+gap: 4px !important;
 flex-wrap: wrap;
 }
 
@@ -424,30 +425,96 @@ flex-wrap: wrap;
 margin-left: 50px !important;
 display: flex !important;
 align-items: center !important;
-gap: 8px !important;
+gap: 4px !important;
 }
 
 .header-title i {
-font-size: 1.1rem !important;
+font-size: 0.9rem !important;
 color: var(--white);
 background: var(--black);
-padding: 6px;
+padding: 4px;
 border-radius: var(--radius);
 }
 
 .header-title h2 {
-font-size: 1.2rem !important;
+font-size: 1rem !important;
 color: var(--text-primary);
 font-weight: 700;
 margin: 0 !important;
 }
 
+/* ✅ MOBILE - HEADER ENCORE PLUS RÉDUIT */
 @media(max-width:768px) {
 .main-content { padding: 12px 8px; padding-top: calc(60px + env(safe-area-inset-top, 0px)) !important; }
-.page-header { padding: 2px 6px !important; min-height: 28px !important; margin-bottom: 2px !important; }
-.page-header .header-title { margin-left: 40px !important; }
-.page-header .header-title i { font-size: 1rem !important; padding: 4px !important; }
-.page-header .header-title h2 { font-size: 1rem !important; }
+.page-header {
+padding: 0px 4px !important;
+min-height: 16px !important;
+margin-bottom: 1px !important;
+gap: 2px !important;
+}
+.page-header .header-title {
+margin-left: 48px !important;
+gap: 3px !important;
+}
+.header-title i {
+font-size: 0.7rem !important;
+padding: 3px !important;
+}
+.header-title h2 {
+font-size: 0.85rem !important;
+}
+}
+
+/* ✅ TRÈS PETIT ÉCRAN */
+@media(max-width: 400px) {
+.page-header {
+padding: 0px 2px !important;
+min-height: 14px !important;
+margin-bottom: 0px !important;
+gap: 1px !important;
+}
+.page-header .header-title {
+margin-left: 42px !important;
+gap: 2px !important;
+}
+.header-title i {
+font-size: 0.6rem !important;
+padding: 2px !important;
+}
+.header-title h2 {
+font-size: 0.75rem !important;
+}
+}
+
+/* ✅ CORRECTION POUR ÉCRAN D'ACCUEIL (MODE STANDALONE) */
+@media all and (display-mode: standalone) {
+.page-header {
+padding: 0px 4px !important;
+min-height: 14px !important;
+margin-bottom: 0px !important;
+gap: 2px !important;
+margin-top: 0px !important;
+}
+.page-header .header-title {
+margin-left: 46px !important;
+gap: 2px !important;
+}
+.header-title i {
+font-size: 0.65rem !important;
+padding: 2px !important;
+}
+.header-title h2 {
+font-size: 0.8rem !important;
+}
+.mobile-menu-btn {
+top: calc(8px + env(safe-area-inset-top, 0px)) !important;
+width: 44px !important;
+height: 44px !important;
+font-size: 1.4rem !important;
+}
+.main-content {
+padding-top: calc(44px + env(safe-area-inset-top, 0px)) !important;
+}
 }
 
 /* ==================== CARDS ==================== */
