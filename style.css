@@ -764,13 +764,13 @@ overflow-y: auto !important;
 flex: 1 !important;
 }
 
-/* ✅ CARTES PRODUITS */
+/* ✅ CARTES PRODUITS - SANS BORDURE */
 .pos-product-card {
 min-height: 150px !important;
 max-height: 180px !important;
 padding: 3px 2px !important;
 border-radius: 8px !important;
-border: 2px solid var(--border) !important;
+border: none !important;
 display: flex !important;
 flex-direction: column !important;
 align-items: center !important;
@@ -780,10 +780,10 @@ background: var(--bg-card) !important;
 cursor: pointer !important;
 transition: var(--transition) !important;
 gap: 1px !important;
+box-shadow: var(--shadow-xs) !important;
 }
-
 .pos-product-card:hover {
-border-color: var(--accent) !important;
+border: none !important;
 transform: translateY(-2px) !important;
 box-shadow: var(--shadow-md) !important;
 }
@@ -860,13 +860,13 @@ overflow-y: auto !important;
 flex: 1 !important;
 }
 
-/* ✅ CARTES CATÉGORIES - AGRANDIES AVEC IMAGES PLUS GRANDES - SANS BORDURE PAR DÉFAUT */
+/* ✅ CARTES CATÉGORIES - SANS BORDURE */
 .pos-category-card {
 min-height: 210px !important;
 max-height: 250px !important;
 padding: 8px 4px !important;
 border-radius: 10px !important;
-border: 2px solid transparent !important;
+border: none !important;
 display: flex !important;
 flex-direction: column !important;
 align-items: center !important;
@@ -876,16 +876,15 @@ background: var(--bg-card) !important;
 cursor: pointer !important;
 transition: var(--transition) !important;
 gap: 4px !important;
+box-shadow: var(--shadow-xs) !important;
 }
-
-/* ✅ CARTE CATÉGORIE SÉLECTIONNÉE - BORDURE VERTE */
 .pos-category-card.active {
-border-color: var(--accent) !important;
+border: none !important;
 background: var(--bg-card) !important;
+box-shadow: 0 2px 12px rgba(20,184,166,0.2) !important;
 }
-
 .pos-category-card:hover {
-border-color: var(--accent) !important;
+border: none !important;
 transform: translateY(-2px) !important;
 box-shadow: var(--shadow-md) !important;
 }
@@ -1191,11 +1190,13 @@ font-size: 16px !important;
 font-size: 16px !important;
 }
 
-/* ✅ CATÉGORIES PC - IMAGES AGRANDIES ET CARTES RÉDUITES */
+/* ✅ CATÉGORIES PC - IMAGES AGRANDIES */
 .pos-category-card {
 min-height: 210px !important;
 max-height: 250px !important;
 padding: 14px 10px !important;
+border: none !important;
+box-shadow: var(--shadow-xs) !important;
 }
 .pos-category-card .category-image {
 width: 200px !important;
@@ -1211,9 +1212,15 @@ font-size: 20px !important;
 font-size: 16px !important;
 }
 
-/* ✅ CARTE CATÉGORIE SÉLECTIONNÉE - BORDURE VERTE */
+/* ✅ CARTE CATÉGORIE SÉLECTIONNÉE - SANS BORDURE */
 .pos-category-card.active {
-border-color: var(--accent) !important;
+border: none !important;
+box-shadow: 0 2px 16px rgba(20,184,166,0.25) !important;
+}
+.pos-category-card:hover {
+border: none !important;
+transform: translateY(-2px) !important;
+box-shadow: var(--shadow-md) !important;
 }
 
 .pos-steps-nav {
@@ -1299,20 +1306,20 @@ font-size: 0.9rem !important;
 font-size: 16px !important;
 }
 
-/* --- PRODUITS - CARTES RÉDUITES ET SANS BORDURE --- */
+/* --- PRODUITS - SANS BORDURE --- */
 .pos-product-card {
 min-height: 140px !important;
 max-height: 160px !important;
 padding: 4px 3px !important;
 border: none !important;
 border-radius: 6px !important;
-background: var(--bg-page) !important;
-box-shadow: none !important;
+background: var(--bg-card) !important;
+box-shadow: var(--shadow-xs) !important;
 }
 .pos-product-card:hover {
 border: none !important;
 transform: translateY(-2px) !important;
-box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+box-shadow: var(--shadow-md) !important;
 background: var(--bg-card) !important;
 }
 .pos-product-img {
@@ -1346,14 +1353,14 @@ font-size: 13px !important;
 font-size: 8px !important;
 }
 
-/* ✅ CATÉGORIES IPAD 9.7" - IMAGES TRÈS GRANDES, CARTES RÉDUITES */
+/* ✅ CATÉGORIES IPAD 9.7" - IMAGES TRÈS GRANDES - SANS BORDURE */
 .pos-category-card {
 min-height: 150px !important;
 max-height: 180px !important;
 padding: 8px 4px !important;
-border: 2px solid transparent !important;
-background: transparent !important;
-box-shadow: none !important;
+border: none !important;
+background: var(--bg-card) !important;
+box-shadow: var(--shadow-xs) !important;
 }
 .pos-category-card .category-image {
 width: 280px !important;
@@ -1371,14 +1378,15 @@ margin-top: 4px !important;
 font-size: 13px !important;
 }
 .pos-category-card:hover {
-border: 2px solid transparent !important;
+border: none !important;
 transform: translateY(-3px) !important;
-box-shadow: none !important;
-background: transparent !important;
+box-shadow: var(--shadow-md) !important;
+background: var(--bg-card) !important;
 }
 .pos-category-card.active {
-border-color: var(--accent) !important;
-background: transparent !important;
+border: none !important;
+background: var(--bg-card) !important;
+box-shadow: 0 2px 16px rgba(20,184,166,0.25) !important;
 }
 
 .pos-products-grid {
@@ -1510,6 +1518,7 @@ max-height: calc(100vh - 100px) !important;
 .pos-category-card {
 min-height: 195px !important;
 max-height: 230px !important;
+border: none !important;
 }
 .pos-category-card .category-image {
 width: 190px !important;
@@ -1519,7 +1528,8 @@ height: 190px !important;
 font-size: 80px !important;
 }
 .pos-category-card.active {
-border-color: var(--accent) !important;
+border: none !important;
+box-shadow: 0 2px 16px rgba(20,184,166,0.25) !important;
 }
 
 .pos-products-panel {
@@ -1534,7 +1544,7 @@ min-height: 400px !important;
 }
 }
 
-/* ✅ SUR MOBILE (< 700px) - CATÉGORIES AGRANDIES + HEADER RÉDUIT + STEPS NAV AUGMENTÉS */
+/* ✅ SUR MOBILE (< 700px) - CATÉGORIES AGRANDIES SANS BORDURE + HEADER RÉDUIT + STEPS NAV AUGMENTÉS */
 @media(max-width: 700px) {
 /* ✅ FORCER LE PANIER EN DESSOUS */
 .pos-row {
@@ -1569,12 +1579,13 @@ position: static !important;
 flex: none !important;
 }
 
-/* ✅ PRODUITS MOBILE */
+/* ✅ PRODUITS MOBILE - SANS BORDURE */
 .pos-product-card {
 min-height: 115px !important;
 max-height: 140px !important;
 padding: 3px 2px !important;
-border-width: 1px !important;
+border: none !important;
+box-shadow: var(--shadow-xs) !important;
 }
 .pos-product-img {
 height: 60px !important;
@@ -1590,37 +1601,37 @@ font-size: 12px !important;
 font-size: 12px !important;
 }
 
-/* ✅ CATÉGORIES MOBILE - AGRANDIES */
+/* ✅ CATÉGORIES MOBILE - AGRANDIES SANS BORDURE */
 .pos-category-card {
 min-height: 110px !important;
 max-height: 130px !important;
 padding: 6px 4px !important;
-border: 2px solid var(--border) !important;
+border: none !important;
 border-radius: 12px !important;
 background: var(--bg-card) !important;
 box-shadow: var(--shadow-xs) !important;
 }
 .pos-category-card .category-image {
-width: 80px !important;
-height: 80px !important;
+width: 90px !important;
+height: 90px !important;
 }
 .pos-category-card .fas.fa-folder {
-font-size: 36px !important;
+font-size: 40px !important;
 }
 .pos-category-card .category-name {
-font-size: 12px !important;
+font-size: 15px !important;
 font-weight: 700 !important;
 }
 .pos-category-card .category-count {
-font-size: 11px !important;
+font-size: 12px !important;
 color: var(--text-muted) !important;
 }
 .pos-category-card.active {
-border-color: var(--accent) !important;
-box-shadow: 0 2px 12px rgba(20,184,166,0.15) !important;
+border: none !important;
+box-shadow: 0 2px 12px rgba(20,184,166,0.2) !important;
 }
 .pos-category-card:hover {
-border-color: var(--accent) !important;
+border: none !important;
 transform: translateY(-2px) !important;
 box-shadow: var(--shadow-md) !important;
 }
@@ -1719,6 +1730,7 @@ grid-template-columns: repeat(3, 1fr) !important;
 min-height: 95px !important;
 max-height: 115px !important;
 padding: 2px 1px !important;
+border: none !important;
 }
 .pos-product-img {
 height: 48px !important;
@@ -1743,6 +1755,7 @@ grid-template-columns: repeat(2, 1fr) !important;
 min-height: 60px !important;
 max-height: 75px !important;
 padding: 3px 2px !important;
+border: none !important;
 }
 .pos-category-card .category-image {
 width: 35px !important;
@@ -1759,7 +1772,7 @@ font-size: 7px !important;
 }
 
 .pos-category-card.active {
-border-color: var(--accent) !important;
+border: none !important;
 }
 }
 
@@ -1791,7 +1804,8 @@ border-color: var(--accent) !important;
 
 [data-theme="dark"] .pos-product-card {
 background: #0D1117 !important;
-border-color: #30363D !important;
+border: none !important;
+box-shadow: var(--shadow-xs) !important;
 }
 [data-theme="dark"] .pos-product-name {
 color: #F0F6FC !important;
@@ -1842,15 +1856,17 @@ border-bottom-color: #30363D !important;
 
 [data-theme="dark"] .pos-category-card {
 background: #0D1117 !important;
-border-color: transparent !important;
+border: none !important;
 }
 [data-theme="dark"] .pos-category-card:hover {
 background: #161B22 !important;
-border-color: var(--accent) !important;
+border: none !important;
+box-shadow: var(--shadow-md) !important;
 }
 [data-theme="dark"] .pos-category-card.active {
-border-color: var(--accent) !important;
+border: none !important;
 background: #161B22 !important;
+box-shadow: 0 2px 16px rgba(20,184,166,0.25) !important;
 }
 
 /* ============================================================
