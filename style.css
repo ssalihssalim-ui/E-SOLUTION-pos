@@ -1534,7 +1534,7 @@ min-height: 400px !important;
 }
 }
 
-/* ✅ SUR MOBILE (< 700px) - CATÉGORIES RÉDUITES */
+/* ✅ SUR MOBILE (< 700px) - CATÉGORIES AGRANDIES + HEADER RÉDUIT + STEPS NAV AUGMENTÉS */
 @media(max-width: 700px) {
 /* ✅ FORCER LE PANIER EN DESSOUS */
 .pos-row {
@@ -1569,6 +1569,7 @@ position: static !important;
 flex: none !important;
 }
 
+/* ✅ PRODUITS MOBILE */
 .pos-product-card {
 min-height: 115px !important;
 max-height: 140px !important;
@@ -1589,45 +1590,69 @@ font-size: 12px !important;
 font-size: 12px !important;
 }
 
-/* ✅ CATÉGORIES MOBILE - RÉDUITES */
+/* ✅ CATÉGORIES MOBILE - AGRANDIES */
 .pos-category-card {
-min-height: 75px !important;
-max-height: 95px !important;
-padding: 4px 2px !important;
+min-height: 110px !important;
+max-height: 130px !important;
+padding: 6px 4px !important;
+border: 2px solid var(--border) !important;
+border-radius: 12px !important;
+background: var(--bg-card) !important;
+box-shadow: var(--shadow-xs) !important;
 }
 .pos-category-card .category-image {
-width: 50px !important;
-height: 50px !important;
+width: 80px !important;
+height: 80px !important;
 }
 .pos-category-card .fas.fa-folder {
-font-size: 24px !important;
+font-size: 36px !important;
 }
 .pos-category-card .category-name {
-font-size: 9px !important;
+font-size: 12px !important;
+font-weight: 700 !important;
 }
 .pos-category-card .category-count {
-font-size: 8px !important;
+font-size: 11px !important;
+color: var(--text-muted) !important;
 }
-
 .pos-category-card.active {
 border-color: var(--accent) !important;
+box-shadow: 0 2px 12px rgba(20,184,166,0.15) !important;
+}
+.pos-category-card:hover {
+border-color: var(--accent) !important;
+transform: translateY(-2px) !important;
+box-shadow: var(--shadow-md) !important;
 }
 
+/* ✅ STEPS NAV - AUGMENTÉS */
 .pos-steps-nav {
 position: sticky !important;
 top: 0 !important;
 z-index: 100 !important;
 background: var(--bg-page) !important;
-padding: 2px 6px !important;
-padding-top: calc(2px + env(safe-area-inset-top, 0px)) !important;
+padding: 4px 10px !important;
+padding-top: calc(4px + env(safe-area-inset-top, 0px)) !important;
 border-radius: var(--radius) !important;
 flex-shrink: 0 !important;
-margin-bottom: 4px !important;
+margin-bottom: 8px !important;
 border-bottom: 1px solid var(--border) !important;
-min-height: 20px !important;
-max-height: 24px !important;
+min-height: 28px !important;
+max-height: 34px !important;
+}
+.pos-step {
+font-size: 12px !important;
+}
+.step-number {
+width: 18px !important;
+height: 18px !important;
+font-size: 10px !important;
+}
+.pos-step span:last-child {
+font-size: 12px !important;
 }
 
+/* ✅ GRILLES MOBILE */
 .pos-products-grid {
 gap: 4px !important;
 padding: 3px !important;
@@ -1647,18 +1672,6 @@ min-height: 60px !important;
 
 .pos-payment-form {
 max-height: 300px !important;
-}
-
-.pos-step {
-font-size: 10px !important;
-}
-.step-number {
-width: 16px !important;
-height: 16px !important;
-font-size: 9px !important;
-}
-.pos-step span:last-child {
-font-size: 10px !important;
 }
 }
 
