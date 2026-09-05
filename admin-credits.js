@@ -9,6 +9,7 @@
 // ✅ STATISTIQUES EN HAUT DE PAGE AVEC FILTRES DE DATE
 // ✅ SYNCHRONISATION AVEC ADMIN VENTES : Quand un crédit est payé, la vente se met à jour
 // ✅ SEUL L'ADMIN PEUT SUPPRIMER - LE CAISSIER N'A PAS LE BOUTON SUPPRIMER
+// ✅ GESTION DES CRÉDITS À 0 MAD : Marqué comme payé automatiquement
 
 // ========== VARIABLES GLOBALES ==========
 window.creditsPeriod = window.creditsPeriod || 'all';
@@ -1368,8 +1369,18 @@ function openCreditPaymentModal(creditId) {
     }
 
     var restant = credit.remainingAmount || credit.total || 0;
-    var currentPaye = credit.amountGiven || 0;
     var total = credit.total || 0;
+    
+    // ✅ Si le crédit a un total de 0, on le marque comme payé directement
+    if (total <= 0) {
+        if (confirm('⚠️ Ce crédit a un total de 0 MAD. Voulez-vous le marquer comme payé ?')) {
+            // Appeler directement la fonction de paiement avec un montant de 0
+            confirmerPaiementCreditZero(creditId);
+        }
+        return;
+    }
+
+    var currentPaye = credit.amountGiven || 0;
 
     var modalHtml = `
         <div style="padding:10px;">
@@ -1421,6 +1432,69 @@ function openCreditPaymentModal(creditId) {
     `;
 
     openModal('💰 Paiement crédit', modalHtml);
+}
+
+// ✅ Fonction pour gérer les crédits à 0 MAD
+async function confirmerPaiementCreditZero(creditId) {
+    try {
+        var data = window.filteredCredits || window.allCreditsData || [];
+        var credit = data.find(function(c) { return c.id === creditId; });
+        if (!credit) {
+            alert('Crédit introuvable');
+            return;
+        }
+
+        await db.collection('credits').doc(creditId).update({
+            paid: true,
+            remainingAmount: 0,
+            amountGiven: credit.amountGiven || 0,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        var updatedCredit = {
+            ...credit,
+            paid: true,
+            remainingAmount: 0
+        };
+        await CacheDB.set('credits', creditId, updatedCredit);
+        
+        var index = window.allCreditsData.findIndex(function(c) { return c.id === creditId; });
+        if (index !== -1) window.allCreditsData[index] = updatedCredit;
+        
+        var fIndex = (window.filteredCredits || []).findIndex(function(c) { return c.id === creditId; });
+        if (fIndex !== -1) window.filteredCredits[fIndex] = updatedCredit;
+
+        // ✅ Synchronisation avec admin ventes
+        if (typeof window.synchroVenteDepuisCredit === 'function') {
+            var creditData = {
+                id: creditId,
+                factureNum: credit.factureNum,
+                amountGiven: credit.amountGiven || 0,
+                total: credit.total || 0,
+                paid: true,
+                remainingAmount: 0,
+                clientId: credit.clientId,
+                clientName: credit.clientName
+            };
+            await window.synchroVenteDepuisCredit(creditData);
+        }
+        
+        closeModal();
+        updateCreditsStats(window.filteredCredits || window.allCreditsData);
+        renderCreditsTablePro();
+        CacheDB.sync();
+        
+        if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+            CacheDB.saveCollection('credits');
+            CacheDB.saveCollection('ventes');
+        }
+        
+        alert('✅ Ce crédit a été marqué comme payé (total à 0).');
+        return;
+    } catch(e) {
+        console.error('Erreur paiement crédit à 0:', e);
+        alert('❌ Erreur lors du paiement: ' + e.message);
+    }
 }
 
 // Fonction pour confirmer le paiement depuis le modal
@@ -2175,6 +2249,9 @@ window.updateCreditsStats = updateCreditsStats;
 window.appliquerFiltreDatePersonnaliseCredits = appliquerFiltreDatePersonnaliseCredits;
 window.reinitialiserFiltresCredits = reinitialiserFiltresCredits;
 
+// ✅ EXPOSER LA FONCTION DE PAIEMENT CRÉDIT À 0
+window.confirmerPaiementCreditZero = confirmerPaiementCreditZero;
+
 // ==================== EXPOSITION DES FONCTIONS GLOBALES ====================
 
 window.loadCreditsPage = loadCreditsPage;
@@ -2242,3 +2319,4 @@ console.log('✅ Statistiques en haut de page avec filtres de date');
 console.log('✅ Filtres rapides : Aujourd\'hui, 3j, 7j, 15j, 30j, 90j, 365j');
 console.log('✅ Paiement crédit : Le champ "Reste à payer" diminue correctement');
 console.log('✅ Synchronisation avec admin ventes : Quand un crédit est payé, la vente se met à jour');
+console.log('✅ Gestion des crédits à 0 MAD : Marqué comme payé automatiquement');
