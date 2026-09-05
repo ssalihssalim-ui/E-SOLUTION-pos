@@ -332,40 +332,24 @@ width: 28px !important;
 .sidebar { width: 320px !important; }
 }
 
-/* ✅ BOUTON MENU - TOUJOURS VISIBLE - AGRANDI AVEC SAFE AREA */
+/* ✅ BOUTON MENU - TOUJOURS VISIBLE */
 .mobile-menu-btn {
 display: flex !important;
 background: var(--black);
 border: none;
 color: var(--white);
-font-size: 1.8rem;
-width: 56px;
-height: 56px;
+font-size: 1.4rem;
+width: 46px;
+height: 46px;
 border-radius: var(--radius);
 cursor: pointer;
 position: fixed;
-top: calc(24px + env(safe-area-inset-top, 0px));
-left: calc(14px + env(safe-area-inset-left, 0px));
+top: 14px;
+left: 14px;
 z-index: 200;
 box-shadow: var(--shadow);
 align-items: center;
 justify-content: center;
-padding: 0;
-transition: var(--transition);
-}
-.mobile-menu-btn:hover {
-transform: scale(1.05);
-box-shadow: var(--shadow-md);
-}
-
-@media(max-width:768px) {
-.mobile-menu-btn {
-top: calc(20px + env(safe-area-inset-top, 0px)) !important;
-left: calc(10px + env(safe-area-inset-left, 0px)) !important;
-width: 52px !important;
-height: 52px !important;
-font-size: 1.6rem !important;
-}
 }
 
 /* ✅ OVERLAY */
@@ -386,7 +370,7 @@ display: block !important;
 flex: 1;
 margin-left: 0 !important;
 padding: 22px;
-padding-top: calc(70px + env(safe-area-inset-top, 0px)) !important;
+padding-top: 70px !important;
 background: var(--bg-page);
 height: 100vh;
 height: 100dvh;
@@ -398,7 +382,7 @@ overflow-x: hidden;
 display: flex !important;
 justify-content: flex-start !important;
 align-items: center !important;
-margin-top: calc(0px + env(safe-area-inset-top, 0px)) !important;
+margin-top: 0px !important;
 margin-bottom: 4px !important;
 padding: 2px 8px !important;
 min-height: 30px !important;
@@ -429,7 +413,7 @@ margin: 0 !important;
 }
 
 @media(max-width:768px) {
-.main-content { padding: 12px 8px; padding-top: calc(60px + env(safe-area-inset-top, 0px)) !important; }
+.main-content { padding: 12px 8px; padding-top: 60px !important; }
 .page-header { padding: 2px 6px !important; min-height: 28px !important; margin-bottom: 2px !important; }
 .page-header .header-title { margin-left: 40px !important; }
 .page-header .header-title i { font-size: 1rem !important; padding: 4px !important; }
@@ -548,7 +532,6 @@ min-height: 120vh !important;
 max-height: none !important;
 width: 100% !important;
 padding: 0 4px 40px 4px !important;
-padding-top: calc(env(safe-area-inset-top, 0px) + 4px) !important;
 position: relative !important;
 overflow-y: visible !important;
 overflow-x: hidden !important;
@@ -561,7 +544,6 @@ justify-content: center !important;
 align-items: center !important;
 gap: 10px !important;
 padding: 2px 8px !important;
-padding-top: calc(2px + env(safe-area-inset-top, 0px)) !important;
 background: var(--bg-page) !important;
 border-radius: var(--radius) !important;
 width: 100% !important;
@@ -1418,7 +1400,7 @@ max-height: calc(100vh - 100px) !important;
 /* ✅ MAIN CONTENT - HAUTEUR RÉDUITE DE 100px */
 .main-content {
 padding: 12px !important;
-padding-top: calc(60px + env(safe-area-inset-top, 0px)) !important;
+padding-top: 60px !important;
 height: calc(100vh - 100px) !important;
 max-height: calc(100vh - 100px) !important;
 }
@@ -1515,8 +1497,8 @@ max-height: 95px !important;
 padding: 4px 2px !important;
 }
 .pos-category-card .category-image {
-width: 50px !important;
-height: 50px !important;
+width: 100px !important;
+height: 100px !important;
 }
 .pos-category-card .fas.fa-folder {
 font-size: 24px !important;
@@ -1538,7 +1520,6 @@ top: 0 !important;
 z-index: 100 !important;
 background: var(--bg-page) !important;
 padding: 2px 6px !important;
-padding-top: calc(2px + env(safe-area-inset-top, 0px)) !important;
 border-radius: var(--radius) !important;
 flex-shrink: 0 !important;
 margin-bottom: 4px !important;
