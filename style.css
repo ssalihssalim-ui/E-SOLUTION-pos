@@ -332,24 +332,54 @@ width: 28px !important;
 .sidebar { width: 320px !important; }
 }
 
-/* ✅ BOUTON MENU - TOUJOURS VISIBLE */
+/* ✅ BOUTON MENU - TOUJOURS VISIBLE - AGRANDI AVEC SAFE AREA ET CORRECTION CLICK */
 .mobile-menu-btn {
 display: flex !important;
 background: var(--black);
 border: none;
 color: var(--white);
-font-size: 1.4rem;
-width: 46px;
-height: 46px;
+font-size: 1.8rem;
+width: 56px;
+height: 56px;
 border-radius: var(--radius);
 cursor: pointer;
 position: fixed;
-top: 14px;
-left: 14px;
+top: calc(24px + env(safe-area-inset-top, 0px));
+left: calc(14px + env(safe-area-inset-left, 0px));
 z-index: 200;
 box-shadow: var(--shadow);
 align-items: center;
 justify-content: center;
+padding: 0;
+transition: var(--transition);
+transform: translateZ(0);
+-webkit-transform: translateZ(0);
+will-change: transform;
+touch-action: manipulation;
+-webkit-tap-highlight-color: transparent;
+user-select: none;
+-webkit-user-select: none;
+}
+.mobile-menu-btn:hover {
+transform: scale(1.05);
+box-shadow: var(--shadow-md);
+}
+.mobile-menu-btn:active {
+transform: scale(0.92) !important;
+}
+
+@media(max-width:768px) {
+.mobile-menu-btn {
+top: calc(20px + env(safe-area-inset-top, 0px)) !important;
+left: calc(10px + env(safe-area-inset-left, 0px)) !important;
+width: 52px !important;
+height: 52px !important;
+font-size: 1.6rem !important;
+touch-action: manipulation !important;
+}
+.mobile-menu-btn:active {
+transform: scale(0.90) !important;
+}
 }
 
 /* ✅ OVERLAY */
@@ -370,7 +400,7 @@ display: block !important;
 flex: 1;
 margin-left: 0 !important;
 padding: 22px;
-padding-top: 70px !important;
+padding-top: calc(70px + env(safe-area-inset-top, 0px)) !important;
 background: var(--bg-page);
 height: 100vh;
 height: 100dvh;
@@ -382,7 +412,7 @@ overflow-x: hidden;
 display: flex !important;
 justify-content: flex-start !important;
 align-items: center !important;
-margin-top: 0px !important;
+margin-top: calc(0px + env(safe-area-inset-top, 0px)) !important;
 margin-bottom: 4px !important;
 padding: 2px 8px !important;
 min-height: 30px !important;
@@ -413,7 +443,7 @@ margin: 0 !important;
 }
 
 @media(max-width:768px) {
-.main-content { padding: 12px 8px; padding-top: 60px !important; }
+.main-content { padding: 12px 8px; padding-top: calc(60px + env(safe-area-inset-top, 0px)) !important; }
 .page-header { padding: 2px 6px !important; min-height: 28px !important; margin-bottom: 2px !important; }
 .page-header .header-title { margin-left: 40px !important; }
 .page-header .header-title i { font-size: 1rem !important; padding: 4px !important; }
@@ -532,6 +562,7 @@ min-height: 120vh !important;
 max-height: none !important;
 width: 100% !important;
 padding: 0 4px 40px 4px !important;
+padding-top: calc(env(safe-area-inset-top, 0px) + 4px) !important;
 position: relative !important;
 overflow-y: visible !important;
 overflow-x: hidden !important;
@@ -544,6 +575,7 @@ justify-content: center !important;
 align-items: center !important;
 gap: 10px !important;
 padding: 2px 8px !important;
+padding-top: calc(2px + env(safe-area-inset-top, 0px)) !important;
 background: var(--bg-page) !important;
 border-radius: var(--radius) !important;
 width: 100% !important;
@@ -1400,7 +1432,7 @@ max-height: calc(100vh - 100px) !important;
 /* ✅ MAIN CONTENT - HAUTEUR RÉDUITE DE 100px */
 .main-content {
 padding: 12px !important;
-padding-top: 60px !important;
+padding-top: calc(60px + env(safe-area-inset-top, 0px)) !important;
 height: calc(100vh - 100px) !important;
 max-height: calc(100vh - 100px) !important;
 }
@@ -1497,8 +1529,8 @@ max-height: 95px !important;
 padding: 4px 2px !important;
 }
 .pos-category-card .category-image {
-width: 100px !important;
-height: 100px !important;
+width: 50px !important;
+height: 50px !important;
 }
 .pos-category-card .fas.fa-folder {
 font-size: 24px !important;
@@ -1520,6 +1552,7 @@ top: 0 !important;
 z-index: 100 !important;
 background: var(--bg-page) !important;
 padding: 2px 6px !important;
+padding-top: calc(2px + env(safe-area-inset-top, 0px)) !important;
 border-radius: var(--radius) !important;
 flex-shrink: 0 !important;
 margin-bottom: 4px !important;
@@ -1765,66 +1798,10 @@ padding-top: calc(22px + env(safe-area-inset-top, 0px)) !important;
 }
 
 /* ============================================================
-✅ ICÔNES FONT AWESOME - PROTÉGÉES
+✅ CORRECTION BOUTONS - ÉVITE LE DÉCALAGE SUR CLICK
 ============================================================ */
-.fas, .far, .fab, .fa, .fa-solid, .fa-regular, .fa-brands {
-font-family: 'Font Awesome 5 Free', 'Font Awesome 6 Free', 'Font Awesome 5 Brands', 'Font Awesome 6 Brands' !important;
-font-weight: 900 !important;
-font-style: normal !important;
-line-height: 1 !important;
-display: inline-block !important;
--webkit-font-smoothing: antialiased !important;
--moz-osx-font-smoothing: grayscale !important;
-vertical-align: middle !important;
-text-rendering: auto !important;
-}
 
-/* ============================================================
-✅ CORRECTION ICÔNES DANS LES BOUTONS
-============================================================ */
-button .fas,
-button .far,
-button .fab,
-button .fa,
-button .fa-solid,
-button .fa-regular,
-button .fa-brands {
-font-family: 'Font Awesome 5 Free', 'Font Awesome 6 Free', 'Font Awesome 5 Brands', 'Font Awesome 6 Brands' !important;
-font-weight: 900 !important;
-font-style: normal !important;
-line-height: 1 !important;
-display: inline-block !important;
--webkit-font-smoothing: antialiased !important;
--moz-osx-font-smoothing: grayscale !important;
-vertical-align: middle !important;
-text-rendering: auto !important;
-font-size: inherit !important;
-width: auto !important;
-height: auto !important;
-margin: 0 !important;
-padding: 0 !important;
-visibility: visible !important;
-opacity: 1 !important;
-}
-
-/* ✅ TAILLE CORRECTE DES ICÔNES DANS LES BOUTONS */
-.action-buttons .btn-print i,
-.action-buttons .btn-whatsapp i,
-.action-buttons .btn-payer i,
-.action-buttons .btn-edit i,
-.action-buttons .btn-delete i {
-font-size: 22px !important;
-width: auto !important;
-height: auto !important;
-margin: 0 !important;
-padding: 0 !important;
-display: inline-block !important;
-line-height: 1 !important;
-visibility: visible !important;
-opacity: 1 !important;
-}
-
-/* ✅ BOUTONS D'ACTION - STYLES */
+/* ✅ CORRECTION POUR TOUS LES BOUTONS D'ACTION */
 .action-buttons .btn-print,
 .action-buttons .btn-whatsapp,
 .action-buttons .btn-payer,
@@ -1847,6 +1824,17 @@ flex-shrink: 0 !important;
 box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
 visibility: visible !important;
 opacity: 1 !important;
+touch-action: manipulation !important;
+transform: translateZ(0) !important;
+-webkit-transform: translateZ(0) !important;
+will-change: transform !important;
+}
+.action-buttons .btn-print:active,
+.action-buttons .btn-whatsapp:active,
+.action-buttons .btn-payer:active,
+.action-buttons .btn-edit:active,
+.action-buttons .btn-delete:active {
+transform: scale(0.92) !important;
 }
 
 /* Bouton Imprimer - Indigo */
@@ -1904,6 +1892,14 @@ width: 40px !important;
 height: 40px !important;
 min-width: 40px !important;
 min-height: 40px !important;
+touch-action: manipulation !important;
+}
+.action-buttons .btn-print:active,
+.action-buttons .btn-whatsapp:active,
+.action-buttons .btn-payer:active,
+.action-buttons .btn-edit:active,
+.action-buttons .btn-delete:active {
+transform: scale(0.90) !important;
 }
 .action-buttons .btn-print i,
 .action-buttons .btn-whatsapp i,
@@ -1924,6 +1920,14 @@ width: 35px !important;
 height: 35px !important;
 min-width: 35px !important;
 min-height: 35px !important;
+touch-action: manipulation !important;
+}
+.action-buttons .btn-print:active,
+.action-buttons .btn-whatsapp:active,
+.action-buttons .btn-payer:active,
+.action-buttons .btn-edit:active,
+.action-buttons .btn-delete:active {
+transform: scale(0.88) !important;
 }
 .action-buttons .btn-print i,
 .action-buttons .btn-whatsapp i,
@@ -1932,4 +1936,64 @@ min-height: 35px !important;
 .action-buttons .btn-delete i {
 font-size: 16px !important;
 }
+}
+
+/* ============================================================
+✅ ICÔNES FONT AWESOME - PROTÉGÉES
+============================================================ */
+.fas, .far, .fab, .fa, .fa-solid, .fa-regular, .fa-brands {
+font-family: 'Font Awesome 5 Free', 'Font Awesome 6 Free', 'Font Awesome 5 Brands', 'Font Awesome 6 Brands' !important;
+font-weight: 900 !important;
+font-style: normal !important;
+line-height: 1 !important;
+display: inline-block !important;
+-webkit-font-smoothing: antialiased !important;
+-moz-osx-font-smoothing: grayscale !important;
+vertical-align: middle !important;
+text-rendering: auto !important;
+}
+
+/* ============================================================
+✅ CORRECTION ICÔNES DANS LES BOUTONS
+============================================================ */
+button .fas,
+button .far,
+button .fab,
+button .fa,
+button .fa-solid,
+button .fa-regular,
+button .fa-brands {
+font-family: 'Font Awesome 5 Free', 'Font Awesome 6 Free', 'Font Awesome 5 Brands', 'Font Awesome 6 Brands' !important;
+font-weight: 900 !important;
+font-style: normal !important;
+line-height: 1 !important;
+display: inline-block !important;
+-webkit-font-smoothing: antialiased !important;
+-moz-osx-font-smoothing: grayscale !important;
+vertical-align: middle !important;
+text-rendering: auto !important;
+font-size: inherit !important;
+width: auto !important;
+height: auto !important;
+margin: 0 !important;
+padding: 0 !important;
+visibility: visible !important;
+opacity: 1 !important;
+}
+
+/* ✅ TAILLE CORRECTE DES ICÔNES DANS LES BOUTONS */
+.action-buttons .btn-print i,
+.action-buttons .btn-whatsapp i,
+.action-buttons .btn-payer i,
+.action-buttons .btn-edit i,
+.action-buttons .btn-delete i {
+font-size: 22px !important;
+width: auto !important;
+height: auto !important;
+margin: 0 !important;
+padding: 0 !important;
+display: inline-block !important;
+line-height: 1 !important;
+visibility: visible !important;
+opacity: 1 !important;
 }
