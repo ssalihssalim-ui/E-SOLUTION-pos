@@ -1761,8 +1761,8 @@ padding: 6px 4px !important;
 border: none !important;
 }
 .pos-category-card .category-image {
-width: 65px !important;
-height: 65px !important;
+width: 100px !important;
+height: 100px !important;
 }
 .pos-category-card .fas.fa-folder {
 font-size: 30px !important;
