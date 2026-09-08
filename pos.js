@@ -16,6 +16,7 @@
 // ✅ LIMITE À 5 PANIERS MAXIMUM
 // ✅ AFFICHAGE CORRECT DES PRODUITS ET NAVIGATION FLUIDE ENTRE PANIERS
 // ✅ SUPPRESSION IMMÉDIATE DES PANIERS AVEC RE-RENDU COMPLET
+// ✅ RÉORGANISATION DES NUMÉROS DE PANIERS (1 À 5)
 
 var posCart = [];
 var posStep = 1;
@@ -313,21 +314,80 @@ function posSaveMultiCarts() {
     } catch(e) { console.warn('⚠️ Erreur sauvegarde multi-paniers:', e); }
 }
 
-// ✅ CRÉER UN NOUVEAU PANIER - AVEC LIMITE DE 5
+// ✅ RÉORGANISER LES NUMÉROS DES PANIERS (1 À 5)
+function posReorganiserNumerosPaniers() {
+    var cartKeys = Object.keys(posMultiCarts);
+    if (cartKeys.length === 0) {
+        posMultiCarts = { 'panier1': [] };
+        posMultiPaniersData = { 'panier1': { client: null, table: '', paymentMethod: 'espece', discountMAD: 0, amountGiven: 0, step: 1 } };
+        posCurrentCartId = 'panier1';
+        posSaveMultiCarts();
+        return;
+    }
+    
+    // Trier les clés par numéro
+    cartKeys.sort(function(a, b) {
+        var numA = parseInt(a.replace('panier', ''));
+        var numB = parseInt(b.replace('panier', ''));
+        return numA - numB;
+    });
+    
+    var newCarts = {};
+    var newData = {};
+    var targetIndex = 1;
+    
+    for (var i = 0; i < cartKeys.length; i++) {
+        var oldKey = cartKeys[i];
+        var newKey = 'panier' + targetIndex;
+        newCarts[newKey] = posMultiCarts[oldKey] || [];
+        if (posMultiPaniersData[oldKey]) {
+            newData[newKey] = posMultiPaniersData[oldKey];
+        }
+        // Si c'est le panier actuel, mettre à jour l'ID
+        if (posCurrentCartId === oldKey) {
+            posCurrentCartId = newKey;
+        }
+        targetIndex++;
+    }
+    
+    posMultiCarts = newCarts;
+    posMultiPaniersData = newData;
+    posMultiCartCounter = targetIndex - 1;
+    posSaveMultiCarts();
+}
+
+// ✅ CRÉER UN NOUVEAU PANIER - AVEC LIMITE DE 5 ET RÉUTILISATION DES NUMÉROS
 function posCreateNewCart() {
-    // ✅ Vérifier la limite de 5 paniers
+    // Sauvegarder le panier actuel avec ses données
+    posMultiCarts[posCurrentCartId] = posCart.slice();
+    posSauvegarderDonneesPanier(posCurrentCartId);
+    
+    // Vérifier la limite de 5 paniers
     var cartCount = Object.keys(posMultiCarts).length;
     if (cartCount >= MAX_PANIERS) {
         alert('⚠️ Vous avez atteint la limite de ' + MAX_PANIERS + ' paniers maximum.');
         return null;
     }
     
-    // Sauvegarder le panier actuel avec ses données
-    posMultiCarts[posCurrentCartId] = posCart.slice();
-    posSauvegarderDonneesPanier(posCurrentCartId);
+    // Trouver le plus petit numéro disponible (1 à 5)
+    var usedNumbers = [];
+    var cartKeys = Object.keys(posMultiCarts);
+    for (var k = 0; k < cartKeys.length; k++) {
+        var num = parseInt(cartKeys[k].replace('panier', ''));
+        if (!isNaN(num)) usedNumbers.push(num);
+    }
     
-    posMultiCartCounter++;
-    var newCartId = 'panier' + posMultiCartCounter;
+    var availableNumber = 1;
+    while (usedNumbers.includes(availableNumber) && availableNumber <= MAX_PANIERS) {
+        availableNumber++;
+    }
+    
+    if (availableNumber > MAX_PANIERS) {
+        alert('⚠️ Tous les numéros de paniers (1 à ' + MAX_PANIERS + ') sont utilisés.');
+        return null;
+    }
+    
+    var newCartId = 'panier' + availableNumber;
     posMultiCarts[newCartId] = [];
     posMultiPaniersData[newCartId] = {
         client: null,
@@ -412,7 +472,7 @@ function posSwitchToCart(cartId) {
     console.log('🔄 Basculé vers:', cartId, 'articles:', posCart.length);
 }
 
-// ✅ SUPPRIMER UN PANIER - VERSION CORRIGÉE AVEC SUPPRESSION IMMÉDIATE
+// ✅ SUPPRIMER UN PANIER - AVEC RÉORGANISATION DES NUMÉROS
 function posDeleteCart(cartId) {
     console.log('🗑️ Tentative de suppression du panier:', cartId);
     
@@ -444,6 +504,9 @@ function posDeleteCart(cartId) {
         posRestaurerDonneesPanier(posCurrentCartId);
         console.log('🔄 Basculé vers:', posCurrentCartId);
     }
+    
+    // ✅ Réorganiser les numéros des paniers
+    posReorganiserNumerosPaniers();
     
     posSaveMultiCarts();
     
@@ -2405,3 +2468,4 @@ console.log('✅ Ajout rapide de client avec bouton "Nouveau" dans la section pa
 console.log('✅ LIMITE À ' + MAX_PANIERS + ' PANIERS MAXIMUM');
 console.log('✅ NAVIGATION FLUIDE ENTRE PANIERS AVEC RE-RENDU COMPLET');
 console.log('✅ SUPPRESSION IMMÉDIATE DES PANIERS AVEC RE-RENDU COMPLET');
+console.log('✅ RÉORGANISATION DES NUMÉROS DE PANIERS (1 À ' + MAX_PANIERS + ')');
