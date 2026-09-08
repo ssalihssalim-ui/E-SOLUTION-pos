@@ -15,6 +15,7 @@
 // ✅ MULTI-PANIERS : Chaque panier sauvegarde son propre client, table, paiement, remise, montant donné
 // ✅ LIMITE À 5 PANIERS MAXIMUM
 // ✅ AFFICHAGE CORRECT DES PRODUITS ET NAVIGATION FLUIDE ENTRE PANIERS
+// ✅ SUPPRESSION IMMÉDIATE DES PANIERS AVEC RE-RENDU COMPLET
 
 var posCart = [];
 var posStep = 1;
@@ -411,33 +412,74 @@ function posSwitchToCart(cartId) {
     console.log('🔄 Basculé vers:', cartId, 'articles:', posCart.length);
 }
 
-// ✅ SUPPRIMER UN PANIER
+// ✅ SUPPRIMER UN PANIER - VERSION CORRIGÉE AVEC SUPPRESSION IMMÉDIATE
 function posDeleteCart(cartId) {
+    console.log('🗑️ Tentative de suppression du panier:', cartId);
+    
     // ✅ Ne pas supprimer le dernier panier
     if (cartId === 'panier1' && Object.keys(posMultiCarts).length === 1) {
         alert('❌ Impossible de supprimer le dernier panier.');
         return;
     }
-    if (!posMultiCarts[cartId]) return;
+    if (!posMultiCarts[cartId]) {
+        console.warn('⚠️ Panier inexistant:', cartId);
+        return;
+    }
     
-    // Sauvegarder l'état actuel
-    posMultiCarts[posCurrentCartId] = posCart.slice();
-    posSauvegarderDonneesPanier(posCurrentCartId);
+    // ✅ Sauvegarder l'état actuel
+    if (posCurrentCartId) {
+        posMultiCarts[posCurrentCartId] = posCart.slice();
+        posSauvegarderDonneesPanier(posCurrentCartId);
+    }
     
-    // Supprimer le panier
+    // ✅ Supprimer le panier
     delete posMultiCarts[cartId];
     delete posMultiPaniersData[cartId];
     
-    // Si c'était le panier actif, basculer vers un autre
+    // ✅ Si c'était le panier actif, basculer vers un autre
     if (posCurrentCartId === cartId) {
         var keys = Object.keys(posMultiCarts);
         posCurrentCartId = keys.length > 0 ? keys[0] : 'panier1';
         posCart = posMultiCarts[posCurrentCartId] || [];
         posRestaurerDonneesPanier(posCurrentCartId);
+        console.log('🔄 Basculé vers:', posCurrentCartId);
     }
     
     posSaveMultiCarts();
-    if (isOnPOSPage()) renderPOS();
+    
+    // ✅ Forcer le re-rendu immédiat
+    if (isOnPOSPage()) {
+        var c = document.getElementById('dynamicContent');
+        if (c) {
+            buildFullPOS(c);
+        } else {
+            renderPOS();
+        }
+        
+        // ✅ Mettre à jour les champs après le rendu
+        setTimeout(function() {
+            if (posCurrentClient && posCurrentClient.name) {
+                var ci = document.getElementById('posClientSearchInput');
+                if (ci) ci.value = posCurrentClient.name;
+            }
+            if (posCurrentTable) {
+                var ti = document.getElementById('posTableNum');
+                if (ti) ti.value = posCurrentTable;
+            }
+            if (posAmountGiven > 0) {
+                var ai = document.getElementById('posAmountGiven');
+                if (ai) ai.value = posAmountGiven.toFixed(2);
+            }
+            if (posCurrentClient && posCurrentClient.id) {
+                updateClientCreditDisplay(posCurrentClient.id);
+            }
+            updatePaymentButtons();
+            if (posStep === 2) {
+                posCalculateChange();
+            }
+        }, 100);
+    }
+    console.log('✅ Panier supprimé:', cartId, 'Paniers restants:', Object.keys(posMultiCarts).length);
 }
 
 // ✅ VIDER TOUS LES PANIERS
@@ -1641,9 +1683,9 @@ multiCartBar += '<span style="font-size:9px;color:#94a3b8;max-width:50px;overflo
 if (count > 0) {
 multiCartBar += '<span style="font-size:9px;color:#94a3b8;">' + total.toFixed(0) + ' MAD</span>';
 }
-// ✅ Bouton supprimer - pas pour panier1 si c'est le seul
+// ✅ Bouton supprimer - toujours visible si plus d'un panier
 if (cartKeys.length > 1) {
-multiCartBar += '<button onclick="posDeleteCart(\'' + cid + '\')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:11px;padding:0 2px;" title="Supprimer ce panier">✕</button>';
+multiCartBar += '<button onclick="posDeleteCart(\'' + cid + '\')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:12px;padding:0 4px;font-weight:700;" title="Supprimer ce panier">✕</button>';
 }
 multiCartBar += '</div>';
 }
@@ -2362,3 +2404,4 @@ console.log('✅ Chaque panier sauvegarde son propre client, table, paiement, re
 console.log('✅ Ajout rapide de client avec bouton "Nouveau" dans la section paiement');
 console.log('✅ LIMITE À ' + MAX_PANIERS + ' PANIERS MAXIMUM');
 console.log('✅ NAVIGATION FLUIDE ENTRE PANIERS AVEC RE-RENDU COMPLET');
+console.log('✅ SUPPRESSION IMMÉDIATE DES PANIERS AVEC RE-RENDU COMPLET');
