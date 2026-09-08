@@ -13,6 +13,8 @@
 // ✅ Bouton "Afficher tout" corrigé
 // ✅ Affichage crédit client cliquable - REDIRECTION VERS PAGE CRÉDITS AVEC SAUVEGARDE D'ÉTAT
 // ✅ MULTI-PANIERS : Chaque panier sauvegarde son propre client, table, paiement, remise, montant donné
+// ✅ LIMITE À 5 PANIERS MAXIMUM
+// ✅ AFFICHAGE CORRECT DES PRODUITS ET NAVIGATION FLUIDE ENTRE PANIERS
 
 var posCart = [];
 var posStep = 1;
@@ -69,6 +71,9 @@ var posMultiCartCounter = 1;
 
 // ✅ STOCKAGE DES DONNÉES DE CHAQUE PANIER (client, table, paiement, remise, montant donné)
 var posMultiPaniersData = {};
+
+// ✅ LIMITE MAXIMALE DE PANIERS
+var MAX_PANIERS = 5;
 
 // ======================================================
 // ✅ FONCTION DE FORCE POUR METTRE À JOUR LE CLIENT
@@ -254,19 +259,26 @@ function posLoadMultiCarts() {
             posMultiCarts = data.carts || {};
             posCurrentCartId = data.currentId || 'panier1';
             posMultiCartCounter = data.counter || 1;
+            
+            // ✅ Vérifier que le panier actif existe
             if (!posMultiCarts[posCurrentCartId]) {
-                posCurrentCartId = 'panier1';
+                var keys = Object.keys(posMultiCarts);
+                posCurrentCartId = keys.length > 0 ? keys[0] : 'panier1';
                 if (!posMultiCarts['panier1']) posMultiCarts['panier1'] = [];
             }
+            
             // ✅ Charger les données des paniers
             posChargerToutesDonneesPaniers();
+            
             // ✅ Restaurer le panier actuel
             posCart = posMultiCarts[posCurrentCartId] || [];
-            // ✅ Restaurer les données du panier actif (CLIENT, TABLE, PAIEMENT, etc.)
+            // ✅ Restaurer les données du panier actif
             posRestaurerDonneesPanier(posCurrentCartId);
             return true;
         }
     } catch(e) { console.warn('⚠️ Erreur chargement multi-paniers:', e); }
+    
+    // Initialisation par défaut
     posMultiCarts = { 'panier1': [] };
     posCurrentCartId = 'panier1';
     posMultiCartCounter = 1;
@@ -296,12 +308,19 @@ function posSaveMultiCarts() {
             currentId: posCurrentCartId,
             counter: posMultiCartCounter
         }));
-        // Sauvegarder les données des paniers séparément
         localStorage.setItem('posMultiPaniersData', JSON.stringify(posMultiPaniersData));
     } catch(e) { console.warn('⚠️ Erreur sauvegarde multi-paniers:', e); }
 }
 
+// ✅ CRÉER UN NOUVEAU PANIER - AVEC LIMITE DE 5
 function posCreateNewCart() {
+    // ✅ Vérifier la limite de 5 paniers
+    var cartCount = Object.keys(posMultiCarts).length;
+    if (cartCount >= MAX_PANIERS) {
+        alert('⚠️ Vous avez atteint la limite de ' + MAX_PANIERS + ' paniers maximum.');
+        return null;
+    }
+    
     // Sauvegarder le panier actuel avec ses données
     posMultiCarts[posCurrentCartId] = posCart.slice();
     posSauvegarderDonneesPanier(posCurrentCartId);
@@ -331,37 +350,59 @@ function posCreateNewCart() {
     return newCartId;
 }
 
+// ✅ CHANGER DE PANIER - VERSION FLUIDE CORRIGÉE
 function posSwitchToCart(cartId) {
-    if (!posMultiCarts[cartId]) { console.warn('⚠️ Panier inexistant:', cartId); return; }
-    // Sauvegarder le panier actuel
+    // ✅ Vérifier que le panier existe
+    if (!posMultiCarts[cartId]) { 
+        console.warn('⚠️ Panier inexistant:', cartId); 
+        return; 
+    }
+    
+    // ✅ Sauvegarder le panier actuel
     posMultiCarts[posCurrentCartId] = posCart.slice();
     posSauvegarderDonneesPanier(posCurrentCartId);
     
+    // ✅ Changer de panier
     posCurrentCartId = cartId;
     posCart = posMultiCarts[cartId] || [];
     posRestaurerDonneesPanier(cartId);
     
     posSaveMultiCarts();
+    
+    // ✅ Forcer le re-rendu complet avec les nouvelles données
     if (isOnPOSPage()) {
-        renderPOS();
-        // Mettre à jour les champs
+        // ✅ Utiliser buildFullPOS directement pour un rendu complet et propre
+        var c = document.getElementById('dynamicContent');
+        if (c) {
+            buildFullPOS(c);
+        } else {
+            renderPOS();
+        }
+        
+        // ✅ Mettre à jour les champs après le rendu
         setTimeout(function() {
+            // Mettre à jour le nom du client
             if (posCurrentClient && posCurrentClient.name) {
                 var ci = document.getElementById('posClientSearchInput');
                 if (ci) ci.value = posCurrentClient.name;
             }
+            // Mettre à jour le numéro de table
             if (posCurrentTable) {
                 var ti = document.getElementById('posTableNum');
                 if (ti) ti.value = posCurrentTable;
             }
+            // Mettre à jour le montant donné
             if (posAmountGiven > 0) {
                 var ai = document.getElementById('posAmountGiven');
                 if (ai) ai.value = posAmountGiven.toFixed(2);
             }
+            // Mettre à jour l'affichage du crédit client
             if (posCurrentClient && posCurrentClient.id) {
                 updateClientCreditDisplay(posCurrentClient.id);
             }
+            // Mettre à jour les boutons de paiement
             updatePaymentButtons();
+            // Calculer le rendu si étape 2
             if (posStep === 2) {
                 posCalculateChange();
             }
@@ -370,26 +411,36 @@ function posSwitchToCart(cartId) {
     console.log('🔄 Basculé vers:', cartId, 'articles:', posCart.length);
 }
 
+// ✅ SUPPRIMER UN PANIER
 function posDeleteCart(cartId) {
+    // ✅ Ne pas supprimer le dernier panier
     if (cartId === 'panier1' && Object.keys(posMultiCarts).length === 1) {
         alert('❌ Impossible de supprimer le dernier panier.');
         return;
     }
     if (!posMultiCarts[cartId]) return;
+    
+    // Sauvegarder l'état actuel
     posMultiCarts[posCurrentCartId] = posCart.slice();
     posSauvegarderDonneesPanier(posCurrentCartId);
+    
+    // Supprimer le panier
     delete posMultiCarts[cartId];
     delete posMultiPaniersData[cartId];
+    
+    // Si c'était le panier actif, basculer vers un autre
     if (posCurrentCartId === cartId) {
         var keys = Object.keys(posMultiCarts);
         posCurrentCartId = keys.length > 0 ? keys[0] : 'panier1';
         posCart = posMultiCarts[posCurrentCartId] || [];
         posRestaurerDonneesPanier(posCurrentCartId);
     }
+    
     posSaveMultiCarts();
     if (isOnPOSPage()) renderPOS();
 }
 
+// ✅ VIDER TOUS LES PANIERS
 function posResetAllCarts() {
     if (!confirm('⚠️ Vider TOUS les paniers ? Cette action est irréversible.')) return;
     posMultiCarts = { 'panier1': [] };
@@ -1551,9 +1602,14 @@ var stepIndicator = '<div class="pos-steps-nav" style="display:flex; justify-con
 '</div>' +
 '</div>';
 
-// ==================== BARRE MULTI-PANIERS AVEC NOM DU CLIENT ====================
+// ==================== BARRE MULTI-PANIERS AVEC NOM DU CLIENT - VERSION AMÉLIORÉE ====================
 var multiCartBar = '<div class="pos-multi-carts-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:4px 8px;background:var(--bg-card);border-radius:8px;border:1px solid var(--border);margin-bottom:4px;">';
-multiCartBar += '<button onclick="posCreateNewCart()" style="background:#14B8A6;color:#fff;border:none;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;"><i class="fas fa-plus"></i> Nouveau</button>';
+
+// ✅ Bouton Nouveau - désactivé si limite atteinte
+var cartCount = Object.keys(posMultiCarts).length;
+var isMax = cartCount >= MAX_PANIERS;
+multiCartBar += '<button onclick="posCreateNewCart()" style="background:' + (isMax ? '#94a3b8' : '#14B8A6') + ';color:#fff;border:none;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;cursor:' + (isMax ? 'not-allowed' : 'pointer') + ';display:flex;align-items:center;gap:4px;opacity:' + (isMax ? '0.6' : '1') + ';" ' + (isMax ? 'disabled' : '') + ' title="' + (isMax ? 'Limite de ' + MAX_PANIERS + ' paniers atteinte' : '') + '"><i class="fas fa-plus"></i> Nouveau</button>';
+
 var cartKeys = Object.keys(posMultiCarts);
 for (var k = 0; k < cartKeys.length; k++) {
 var cid = cartKeys[k];
@@ -1570,22 +1626,36 @@ if (posMultiPaniersData[cid] && posMultiPaniersData[cid].client) {
 clientName = posMultiPaniersData[cid].client.name || '';
 }
 var displayName = clientName ? clientName.substring(0, 12) : '';
-multiCartBar += '<div style="display:flex;align-items:center;gap:2px;border:2px solid ' + (isActive ? '#14B8A6' : 'var(--border)') + ';border-radius:6px;background:' + (isActive ? '#f0fdf4' : 'var(--bg-page)') + ';padding:2px 8px;">';
-multiCartBar += '<button onclick="posSwitchToCart(\'' + cid + '\')" style="background:none;border:none;cursor:pointer;font-weight:' + (isActive ? '700' : '500') + ';font-size:11px;color:' + (isActive ? '#14B8A6' : 'var(--text-primary)') + ';padding:2px 4px;">' + cid + ' (' + count + ')</button>';
+
+// ✅ Style actif/inactif clair
+var bgColor = isActive ? '#f0fdf4' : 'var(--bg-page)';
+var borderColor = isActive ? '#14B8A6' : 'var(--border)';
+var textColor = isActive ? '#14B8A6' : 'var(--text-primary)';
+var fontWeight = isActive ? '700' : '500';
+
+multiCartBar += '<div style="display:flex;align-items:center;gap:2px;border:2px solid ' + borderColor + ';border-radius:6px;background:' + bgColor + ';padding:2px 8px;transition:all 0.2s ease;">';
+multiCartBar += '<button onclick="posSwitchToCart(\'' + cid + '\')" style="background:none;border:none;cursor:pointer;font-weight:' + fontWeight + ';font-size:12px;color:' + textColor + ';padding:2px 4px;">' + cid + ' (' + count + ')</button>';
 if (displayName) {
 multiCartBar += '<span style="font-size:9px;color:#94a3b8;max-width:50px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(displayName) + '</span>';
 }
 if (count > 0) {
 multiCartBar += '<span style="font-size:9px;color:#94a3b8;">' + total.toFixed(0) + ' MAD</span>';
 }
-if (cid !== 'panier1' || Object.keys(posMultiCarts).length > 1) {
-multiCartBar += '<button onclick="posDeleteCart(\'' + cid + '\')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:11px;padding:0 2px;">✕</button>';
+// ✅ Bouton supprimer - pas pour panier1 si c'est le seul
+if (cartKeys.length > 1) {
+multiCartBar += '<button onclick="posDeleteCart(\'' + cid + '\')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:11px;padding:0 2px;" title="Supprimer ce panier">✕</button>';
 }
 multiCartBar += '</div>';
 }
+
 var grandTotal = posGetTotalAllCarts();
 multiCartBar += '<span style="font-size:11px;color:#94a3b8;margin-left:auto;">Total: ' + grandTotal.toFixed(2) + ' MAD</span>';
-multiCartBar += '<button onclick="posResetAllCarts()" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:10px;cursor:pointer;">🗑️ Tout</button>';
+
+// ✅ Bouton Tout vider - seulement si plus d'un panier
+if (cartKeys.length > 1) {
+multiCartBar += '<button onclick="posResetAllCarts()" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:10px;cursor:pointer;" title="Vider tous les paniers">🗑️ Tout</button>';
+}
+
 multiCartBar += '</div>';
 
 var productPanelDisplay = (posStep === 2) ? 'display:none;' : '';
@@ -2266,6 +2336,7 @@ window.posMultiCarts = posMultiCarts;
 window.posCurrentCartId = posCurrentCartId;
 window.posMultiCartCounter = posMultiCartCounter;
 window.posMultiPaniersData = posMultiPaniersData;
+window.MAX_PANIERS = MAX_PANIERS;
 window.posLoadMultiCarts = posLoadMultiCarts;
 window.posSaveMultiCarts = posSaveMultiCarts;
 window.posCreateNewCart = posCreateNewCart;
@@ -2289,3 +2360,5 @@ console.log('✅ Catégories actives : texte noir sur fond blanc');
 console.log('✅ Multi-paniers activé - ' + Object.keys(posMultiCarts).length + ' panier(s) disponible(s)');
 console.log('✅ Chaque panier sauvegarde son propre client, table, paiement, remise, montant donné');
 console.log('✅ Ajout rapide de client avec bouton "Nouveau" dans la section paiement');
+console.log('✅ LIMITE À ' + MAX_PANIERS + ' PANIERS MAXIMUM');
+console.log('✅ NAVIGATION FLUIDE ENTRE PANIERS AVEC RE-RENDU COMPLET');
