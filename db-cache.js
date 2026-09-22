@@ -1,12 +1,26 @@
 // ==================== INDEXEDDB CACHE + PENDING OPERATIONS - E-SOLUTION ====================
+// ✅ VERSION CORRIGÉE : ne démarre la sync qu'après connexion utilisateur
+
 const DB_NAME = 'ESolutionDB';
-const DB_VERSION = 2; // Augmenté pour ajouter les nouveaux stores
+const DB_VERSION = 2;
 const CACHE_STORE = 'firestore_cache';
 const PENDING_STORE = 'pending_operations';
-const SYNC_LOG_STORE = 'sync_log'; // Nouveau store pour le journal de synchronisation
-const SETTINGS_STORE = 'app_settings'; // Nouveau store pour les paramètres
+const SYNC_LOG_STORE = 'sync_log';
+const SETTINGS_STORE = 'app_settings';
 
 let dbInstance = null;
+let realtimeListeners = []; // ✅ Stocke les listeners pour pouvoir les fermer
+
+// ==================== HELPER : Vérifier si connecté ====================
+function isUserConnected() {
+    try {
+        return typeof firebase !== 'undefined' 
+            && firebase.auth 
+            && firebase.auth().currentUser !== null;
+    } catch(e) {
+        return false;
+    }
+}
 
 function openDB() {
     return new Promise((resolve, reject) => {
@@ -23,27 +37,20 @@ function openDB() {
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
             
-            // Store principal pour le cache des documents Firestore
             if (!db.objectStoreNames.contains(CACHE_STORE)) {
                 const cacheStore = db.createObjectStore(CACHE_STORE, { keyPath: 'id' });
                 cacheStore.createIndex('collection', 'collection', { unique: false });
                 cacheStore.createIndex('updatedAt', 'updatedAt', { unique: false });
             }
-            
-            // Store pour les opérations en attente (offline)
             if (!db.objectStoreNames.contains(PENDING_STORE)) {
                 const pendingStore = db.createObjectStore(PENDING_STORE, { keyPath: 'id' });
                 pendingStore.createIndex('createdAt', 'createdAt', { unique: false });
             }
-            
-            // Store pour le journal de synchronisation
             if (!db.objectStoreNames.contains(SYNC_LOG_STORE)) {
                 const syncLogStore = db.createObjectStore(SYNC_LOG_STORE, { keyPath: 'id' });
                 syncLogStore.createIndex('timestamp', 'timestamp', { unique: false });
                 syncLogStore.createIndex('collection', 'collection', { unique: false });
             }
-            
-            // Store pour les paramètres de l'application
             if (!db.objectStoreNames.contains(SETTINGS_STORE)) {
                 db.createObjectStore(SETTINGS_STORE, { keyPath: 'id' });
             }
@@ -180,6 +187,11 @@ async function logSyncEvent(collection, action, docId, status, details = {}) {
 
 async function processPendingOperations() {
     if (isProcessing) return;
+    // ✅ Ne pas synchroniser si pas connecté
+    if (!isUserConnected()) {
+        console.log('⏭️ Sync ignorée : utilisateur non connecté');
+        return;
+    }
     isProcessing = true;
     try {
         const pending = await getAllPendingOperations();
@@ -209,7 +221,7 @@ async function processPendingOperations() {
                 }
                 await removePendingOperation(op.id);
             } catch (err) {
-                console.warn('Échec synchro (réessaiera plus tard)', op, err);
+                console.warn('Échec synchro (réessaiera plus tard)', op, err.message);
                 await logSyncEvent(op.collection, op.type, op.docId || 'N/A', 'error', { error: err.message });
             }
         }
@@ -235,6 +247,11 @@ const COLLECTIONS_TO_SYNC = [
 ];
 
 async function saveCollectionToCache(collection) {
+    // ✅ PROTECTION : rien si pas connecté
+    if (!isUserConnected()) {
+        return [];
+    }
+    
     try {
         console.log(`💾 Sauvegarde de la collection "${collection}" en cache...`);
         const snapshot = await db.collection(collection).get();
@@ -249,21 +266,30 @@ async function saveCollectionToCache(collection) {
         console.log(`✅ ${items.length} documents sauvegardés pour "${collection}"`);
         return items;
     } catch(e) {
-        console.error(`❌ Erreur sauvegarde "${collection}":`, e);
+        // ✅ Ne pas spammer la console pour les erreurs de permission
+        if (e.code === 'permission-denied') {
+            console.warn(`⚠️ Accès refusé à "${collection}" (vérifier règles Firestore)`);
+        } else {
+            console.error(`❌ Erreur sauvegarde "${collection}":`, e.message);
+        }
         return [];
     }
 }
 
 async function saveAllCollections() {
+    // ✅ PROTECTION : rien si pas connecté
+    if (!isUserConnected()) {
+        console.log('⏭️ Sauvegarde ignorée : aucun utilisateur connecté');
+        return false;
+    }
+    
     console.log('🔄 Démarrage de la sauvegarde systématique...');
     
     for (const collection of COLLECTIONS_TO_SYNC) {
         await saveCollectionToCache(collection);
     }
     
-    // Mettre à jour l'horodatage de la dernière sauvegarde
     await setSetting('last_full_sync', new Date().toISOString());
-    
     console.log('✅ Sauvegarde systématique terminée');
     return true;
 }
@@ -298,40 +324,69 @@ async function getSetting(key) {
 function createCollectionListener(collection) {
     if (!db || typeof db.collection !== 'function') return null;
     
+    // ✅ PROTECTION : pas de listener si pas connecté
+    if (!isUserConnected()) return null;
+    
     try {
-        return db.collection(collection).onSnapshot(snapshot => {
-            console.log(`🔔 Changement détecté dans "${collection}" (${snapshot.size} documents)`);
-            
-            snapshot.docChanges().forEach(change => {
-                const docId = change.doc.id;
-                const data = change.doc.data();
-                
-                if (change.type === 'added' || change.type === 'modified') {
-                    cacheSet(collection, docId, data);
-                } else if (change.type === 'removed') {
-                    cacheDelete(collection, docId);
+        return db.collection(collection).onSnapshot(
+            snapshot => {
+                // Log discret
+                snapshot.docChanges().forEach(change => {
+                    const docId = change.doc.id;
+                    const data = change.doc.data();
+                    
+                    if (change.type === 'added' || change.type === 'modified') {
+                        cacheSet(collection, docId, data);
+                    } else if (change.type === 'removed') {
+                        cacheDelete(collection, docId);
+                    }
+                });
+            },
+            error => {
+                // ✅ Gestion silencieuse des erreurs de permission
+                if (error.code === 'permission-denied') {
+                    console.warn(`⚠️ Listener "${collection}" refusé par Firestore`);
+                } else {
+                    console.warn(`⚠️ Listener "${collection}":`, error.message);
                 }
-            });
-        });
+            }
+        );
     } catch(e) {
-        console.error(`❌ Erreur création listener pour "${collection}":`, e);
+        console.error(`❌ Erreur création listener "${collection}":`, e.message);
         return null;
     }
 }
 
 function setupRealtimeSync() {
+    // ✅ PROTECTION : rien si pas connecté
+    if (!isUserConnected()) {
+        console.log('⏭️ Sync temps réel ignorée : pas connecté');
+        return [];
+    }
+    
     console.log('🔄 Configuration de la synchronisation en temps réel...');
     
-    const listeners = [];
+    // Fermer les anciens listeners
+    realtimeListeners.forEach(l => {
+        try { if (typeof l === 'function') l(); } catch(e) {}
+    });
+    realtimeListeners = [];
+    
     COLLECTIONS_TO_SYNC.forEach(collection => {
         const listener = createCollectionListener(collection);
-        if (listener) listeners.push(listener);
+        if (listener) realtimeListeners.push(listener);
     });
     
-    // Sauvegarde initiale
     saveAllCollections();
-    
-    return listeners;
+    return realtimeListeners;
+}
+
+function stopRealtimeSync() {
+    console.log('🛑 Arrêt de la synchronisation temps réel');
+    realtimeListeners.forEach(l => {
+        try { if (typeof l === 'function') l(); } catch(e) {}
+    });
+    realtimeListeners = [];
 }
 
 function isNetworkAvailable() {
@@ -341,7 +396,7 @@ function isNetworkAvailable() {
 // ==================== FONCTION D'ÉCRITURE INTELLIGENTE ====================
 
 async function writeDocument(collection, docId, data, type = 'set') {
-    if (isNetworkAvailable()) {
+    if (isNetworkAvailable() && isUserConnected()) {
         try {
             if (type === 'add') {
                 const ref = await db.collection(collection).add(data);
@@ -369,13 +424,13 @@ async function writeDocument(collection, docId, data, type = 'set') {
                 return docId;
             }
         } catch (err) {
-            console.warn('Erreur réseau, mise en file d\'attente', err);
-            const opRecord = await addPendingOperation({ type, collection, docId, data });
+            console.warn('Erreur réseau, mise en file d\'attente', err.message);
+            await addPendingOperation({ type, collection, docId, data });
             await logSyncEvent(collection, type, docId || 'N/A', 'pending', { error: err.message });
             return null;
         }
     } else {
-        const opRecord = await addPendingOperation({ type, collection, docId, data });
+        await addPendingOperation({ type, collection, docId, data });
         await logSyncEvent(collection, type, docId || 'N/A', 'pending', { reason: 'offline' });
         return null;
     }
@@ -394,47 +449,47 @@ window.CacheDB = {
     addPendingOperation,
     isOnline: () => navigator.onLine,
     
-    // Nouvelles fonctions de sauvegarde systématique
     saveCollection: saveCollectionToCache,
     saveAll: saveAllCollections,
     setupRealtime: setupRealtimeSync,
+    stopRealtime: stopRealtimeSync,
     
-    // Fonctions de paramètres
     setSetting,
     getSetting,
-    
-    // Fonctions de journal
     logSyncEvent,
     
-    // Liste des collections à synchroniser
-    COLLECTIONS_TO_SYNC
+    COLLECTIONS_TO_SYNC,
+    
+    // ✅ NOUVELLES FONCTIONS À APPELER DEPUIS AUTH.JS
+    startAfterLogin: function() {
+        console.log('🚀 Démarrage du cache après login...');
+        this.setupRealtime();
+        this.saveAll();
+    },
+    stopAfterLogout: function() {
+        console.log('🛑 Arrêt du cache après logout');
+        this.stopRealtime();
+    }
 };
 
-// Initialiser la sauvegarde automatique
-window.addEventListener('load', () => {
-    // Configurer les listeners temps réel
-    setTimeout(() => {
-        if (window.CacheDB) {
-            window.CacheDB.setupRealtime();
-        }
-    }, 2000);
-    
-    // Synchroniser lorsque la connexion revient
-    window.addEventListener('online', () => {
-        console.log('🟢 Connexion rétablie – synchronisation automatique');
-        if (window.CacheDB) {
-            window.CacheDB.sync();
-            window.CacheDB.saveAll();
-        }
-    });
-    
-    // Sauvegarde périodique (toutes les 5 minutes)
-    setInterval(() => {
-        if (navigator.onLine && window.CacheDB) {
-            console.log('⏰ Sauvegarde périodique...');
-            window.CacheDB.saveAll();
-        }
-    }, 5 * 60 * 1000);
+// ==================== INITIALISATION ====================
+// ✅ AUCUN démarrage automatique de sync : on attend le login
+
+// Synchroniser quand la connexion réseau revient (SEULEMENT si connecté)
+window.addEventListener('online', () => {
+    if (isUserConnected()) {
+        console.log('🟢 Connexion réseau rétablie');
+        window.CacheDB.sync();
+        window.CacheDB.saveAll();
+    }
 });
 
-console.log('🚀 E-SOLUTION - Cache DB avec sauvegarde systématique OK');
+// Sauvegarde périodique : TOUTES LES 5 MIN, SEULEMENT SI CONNECTÉ
+setInterval(() => {
+    if (navigator.onLine && isUserConnected() && window.CacheDB) {
+        console.log('⏰ Sauvegarde périodique (utilisateur connecté)...');
+        window.CacheDB.saveAll();
+    }
+}, 5 * 60 * 1000);
+
+console.log('🚀 E-SOLUTION - Cache DB prêt (démarrage conditionnel après login)');
