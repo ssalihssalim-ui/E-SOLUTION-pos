@@ -17,6 +17,9 @@
 // ✅ AFFICHAGE CORRECT DES PRODUITS ET NAVIGATION FLUIDE ENTRE PANIERS
 // ✅ SUPPRESSION IMMÉDIATE DES PANIERS AVEC RE-RENDU COMPLET
 // ✅ RÉORGANISATION DES NUMÉROS DE PANIERS (1 À 5)
+// ✅ BARRE CATÉGORIES SLIDE SUPPRIMÉE DÉFINITIVEMENT
+// ✅ BOUTONS TABLES/EN LIGNE MASQUÉS POUR LE CLIENT
+// ⚡ OPTIMISATIONS : cache recherche + content-visibility + batch 30 + debounce 80ms
 
 var posCart = [];
 var posStep = 1;
@@ -56,11 +59,17 @@ var posLastRenderTime = 0;
 var isFinalizing = false;
 
 var posProductOffset = 0;
-var posProductBatchSize = 50;
+var posProductBatchSize = 30;   // ⚡ 50 → 30
 var posHasMoreProducts = false;
 
 var clientCreditsCache = {};
 var clientSearchTimeout = null;
+
+// ⚡ CACHE DE RECHERCHE PRODUIT (partagé avec pos-audio.js)
+if (typeof window.posSearchCache === 'undefined') {
+    window.posSearchCache = {};
+}
+var posSearchCache = window.posSearchCache;
 
 // ✅ MODE CATÉGORIES / PRODUITS
 var posViewMode = 'categories';
@@ -209,7 +218,6 @@ function posRestaurerDonneesPanier(cartId) {
         posStep = data.step || 1;
         return true;
     }
-    // Si pas de données, réinitialiser
     posCurrentClient = null;
     posCurrentTable = '';
     posPaymentMethod = 'espece';
@@ -226,7 +234,6 @@ function posChargerToutesDonneesPaniers() {
         if (allData) {
             posMultiPaniersData = JSON.parse(allData);
         } else {
-            // Initialiser avec le panier par défaut
             posMultiPaniersData = {
                 'panier1': {
                     client: null,
@@ -262,29 +269,26 @@ function posLoadMultiCarts() {
             posCurrentCartId = data.currentId || 'panier1';
             posMultiCartCounter = data.counter || 1;
             
-            // ✅ Vérifier que le panier actif existe
             if (!posMultiCarts[posCurrentCartId]) {
                 var keys = Object.keys(posMultiCarts);
                 posCurrentCartId = keys.length > 0 ? keys[0] : 'panier1';
                 if (!posMultiCarts['panier1']) posMultiCarts['panier1'] = [];
             }
             
-            // ✅ Charger les données des paniers
             posChargerToutesDonneesPaniers();
             
-            // ✅ Restaurer le panier actuel
             posCart = posMultiCarts[posCurrentCartId] || [];
-            // ✅ Restaurer les données du panier actif
+            window.posCart = posCart;
             posRestaurerDonneesPanier(posCurrentCartId);
             return true;
         }
     } catch(e) { console.warn('⚠️ Erreur chargement multi-paniers:', e); }
     
-    // Initialisation par défaut
     posMultiCarts = { 'panier1': [] };
     posCurrentCartId = 'panier1';
     posMultiCartCounter = 1;
     posCart = [];
+    window.posCart = posCart;
     posMultiPaniersData = {
         'panier1': {
             client: null,
@@ -299,7 +303,6 @@ function posLoadMultiCarts() {
 }
 
 function posSaveMultiCarts() {
-    // Sauvegarder le panier courant avec ses données
     if (posCurrentCartId && posMultiCarts[posCurrentCartId] !== undefined) {
         posMultiCarts[posCurrentCartId] = posCart.slice();
         posSauvegarderDonneesPanier(posCurrentCartId);
@@ -325,7 +328,6 @@ function posReorganiserNumerosPaniers() {
         return;
     }
     
-    // Trier les clés par numéro
     cartKeys.sort(function(a, b) {
         var numA = parseInt(a.replace('panier', ''));
         var numB = parseInt(b.replace('panier', ''));
@@ -343,7 +345,6 @@ function posReorganiserNumerosPaniers() {
         if (posMultiPaniersData[oldKey]) {
             newData[newKey] = posMultiPaniersData[oldKey];
         }
-        // Si c'est le panier actuel, mettre à jour l'ID
         if (posCurrentCartId === oldKey) {
             posCurrentCartId = newKey;
         }
@@ -358,18 +359,15 @@ function posReorganiserNumerosPaniers() {
 
 // ✅ CRÉER UN NOUVEAU PANIER - AVEC LIMITE DE 5 ET RÉUTILISATION DES NUMÉROS
 function posCreateNewCart() {
-    // Sauvegarder le panier actuel avec ses données
     posMultiCarts[posCurrentCartId] = posCart.slice();
     posSauvegarderDonneesPanier(posCurrentCartId);
     
-    // Vérifier la limite de 5 paniers
     var cartCount = Object.keys(posMultiCarts).length;
     if (cartCount >= MAX_PANIERS) {
         alert('⚠️ Vous avez atteint la limite de ' + MAX_PANIERS + ' paniers maximum.');
         return null;
     }
     
-    // Trouver le plus petit numéro disponible (1 à 5)
     var usedNumbers = [];
     var cartKeys = Object.keys(posMultiCarts);
     for (var k = 0; k < cartKeys.length; k++) {
@@ -399,6 +397,7 @@ function posCreateNewCart() {
     };
     posCurrentCartId = newCartId;
     posCart = [];
+    window.posCart = posCart;
     posCurrentClient = null;
     posCurrentTable = '';
     posPaymentMethod = 'espece';
@@ -413,26 +412,22 @@ function posCreateNewCart() {
 
 // ✅ CHANGER DE PANIER - VERSION FLUIDE CORRIGÉE
 function posSwitchToCart(cartId) {
-    // ✅ Vérifier que le panier existe
     if (!posMultiCarts[cartId]) { 
         console.warn('⚠️ Panier inexistant:', cartId); 
         return; 
     }
     
-    // ✅ Sauvegarder le panier actuel
     posMultiCarts[posCurrentCartId] = posCart.slice();
     posSauvegarderDonneesPanier(posCurrentCartId);
     
-    // ✅ Changer de panier
     posCurrentCartId = cartId;
     posCart = posMultiCarts[cartId] || [];
+    window.posCart = posCart;
     posRestaurerDonneesPanier(cartId);
     
     posSaveMultiCarts();
     
-    // ✅ Forcer le re-rendu complet avec les nouvelles données
     if (isOnPOSPage()) {
-        // ✅ Utiliser buildFullPOS directement pour un rendu complet et propre
         var c = document.getElementById('dynamicContent');
         if (c) {
             buildFullPOS(c);
@@ -440,30 +435,23 @@ function posSwitchToCart(cartId) {
             renderPOS();
         }
         
-        // ✅ Mettre à jour les champs après le rendu
         setTimeout(function() {
-            // Mettre à jour le nom du client
             if (posCurrentClient && posCurrentClient.name) {
                 var ci = document.getElementById('posClientSearchInput');
                 if (ci) ci.value = posCurrentClient.name;
             }
-            // Mettre à jour le numéro de table
             if (posCurrentTable) {
                 var ti = document.getElementById('posTableNum');
                 if (ti) ti.value = posCurrentTable;
             }
-            // Mettre à jour le montant donné
             if (posAmountGiven > 0) {
                 var ai = document.getElementById('posAmountGiven');
                 if (ai) ai.value = posAmountGiven.toFixed(2);
             }
-            // Mettre à jour l'affichage du crédit client
             if (posCurrentClient && posCurrentClient.id) {
                 updateClientCreditDisplay(posCurrentClient.id);
             }
-            // Mettre à jour les boutons de paiement
             updatePaymentButtons();
-            // Calculer le rendu si étape 2
             if (posStep === 2) {
                 posCalculateChange();
             }
@@ -476,7 +464,6 @@ function posSwitchToCart(cartId) {
 function posDeleteCart(cartId) {
     console.log('🗑️ Tentative de suppression du panier:', cartId);
     
-    // ✅ Ne pas supprimer le dernier panier
     if (cartId === 'panier1' && Object.keys(posMultiCarts).length === 1) {
         alert('❌ Impossible de supprimer le dernier panier.');
         return;
@@ -486,31 +473,27 @@ function posDeleteCart(cartId) {
         return;
     }
     
-    // ✅ Sauvegarder l'état actuel
     if (posCurrentCartId) {
         posMultiCarts[posCurrentCartId] = posCart.slice();
         posSauvegarderDonneesPanier(posCurrentCartId);
     }
     
-    // ✅ Supprimer le panier
     delete posMultiCarts[cartId];
     delete posMultiPaniersData[cartId];
     
-    // ✅ Si c'était le panier actif, basculer vers un autre
     if (posCurrentCartId === cartId) {
         var keys = Object.keys(posMultiCarts);
         posCurrentCartId = keys.length > 0 ? keys[0] : 'panier1';
         posCart = posMultiCarts[posCurrentCartId] || [];
+        window.posCart = posCart;
         posRestaurerDonneesPanier(posCurrentCartId);
         console.log('🔄 Basculé vers:', posCurrentCartId);
     }
     
-    // ✅ Réorganiser les numéros des paniers
     posReorganiserNumerosPaniers();
     
     posSaveMultiCarts();
     
-    // ✅ Forcer le re-rendu immédiat
     if (isOnPOSPage()) {
         var c = document.getElementById('dynamicContent');
         if (c) {
@@ -519,7 +502,6 @@ function posDeleteCart(cartId) {
             renderPOS();
         }
         
-        // ✅ Mettre à jour les champs après le rendu
         setTimeout(function() {
             if (posCurrentClient && posCurrentClient.name) {
                 var ci = document.getElementById('posClientSearchInput');
@@ -553,6 +535,7 @@ function posResetAllCarts() {
     posCurrentCartId = 'panier1';
     posMultiCartCounter = 1;
     posCart = [];
+    window.posCart = posCart;
     posCurrentClient = null;
     posCurrentTable = '';
     posPaymentMethod = 'espece';
@@ -651,24 +634,12 @@ function posToggleTools() {
         enligneBtn.style.display = posToolsVisible ? 'inline-flex' : 'none';
     }
 
-    var categoriesBar = document.querySelector('.pos-categories-bar');
-    if (categoriesBar) {
-        categoriesBar.style.display = posToolsVisible ? 'flex' : 'none';
-    }
-
     if (!posToolsVisible) {
         posViewMode = 'categories';
         posSelectedCategoryForView = null;
         posSelectedCategory = 'all';
         posSearchQuery = '';
         posProductOffset = 0;
-        
-        var catBtns = document.querySelectorAll('.pos-cat-btn');
-        catBtns.forEach(function(btn) {
-            btn.classList.remove('active');
-        });
-        var allBtn = document.querySelector('.pos-cat-btn[onclick*="all"]');
-        if (allBtn) allBtn.classList.add('active');
         
         var searchInput2 = document.getElementById('posSearchInput');
         if (searchInput2) {
@@ -805,6 +776,7 @@ posResetCart();
 posStep = 1;
 } else {
 posCart = restoredState.cart || [];
+window.posCart = posCart;
 posStep = restoredState.step || 1;
 posCurrentClient = restoredState.client || null;
 posCurrentTable = restoredState.table || '';
@@ -872,13 +844,14 @@ if (typeof window.buildProductIndex === 'function') window.buildProductIndex();
 await posChargerCommandesTables(); await posChargerCommandesEnLigneCount();
 var cmdData=localStorage.getItem('posCommandeData'),payData=localStorage.getItem('posPayerVente');
 var creditData = localStorage.getItem('posPayerCredit');
-if(cmdData){ var cmd=JSON.parse(cmdData); localStorage.removeItem('posCommandeData'); posCart=[]; if(cmd.items){ posEnrichirItemsAvecPrixAchat(cmd.items).forEach(function(item){ posCart.push({id:item.id,nom:item.nom,prixUnitaire:item.prixVente||item.prixUnitaire||0,prixAchat:item.prixAchat||0,prixPromo:item.prixPromo||0,prixVente:item.prixVente||item.prixUnitaire||0,quantite:item.quantite||1,categorie:item.categorie||'',imageBase64:item.imageBase64||'',sauces:item.sauces||[],interdits:item.interdits||[],epice:item.epice||'Normal',sel:item.sel||'Normal'}); }); } if(cmd.clientId&&cmd.clientName) posCurrentClient={id:cmd.clientId,name:cmd.clientName}; posCurrentTable=cmd.table||''; posStep=2; posDiscountMAD=0; posPaymentMethod='espece'; window.posCommandeId=cmd.commandeId; if(isOnPOSPage()) renderPOS(); return; }
-if(payData){ var v=JSON.parse(payData); localStorage.removeItem('posPayerVente'); posCart=[]; if(v.items){ posEnrichirItemsAvecPrixAchat(v.items).forEach(function(item){ posCart.push({id:item.id,nom:item.nom,prixUnitaire:item.prixVente||0,prixAchat:item.prixAchat||0,prixPromo:item.prixPromo||0,prixVente:item.prixVente||0,quantite:item.quantite||1,categorie:'',imageBase64:'',sauces:item.sauces||[],interdits:item.interdits||[],epice:item.epice||'Normal',sel:item.sel||'Normal'}); }); } if(v.clientId&&v.clientName) posCurrentClient={id:v.clientId,name:v.clientName}; posCurrentTable=v.table||''; posStep=2; posDiscountMAD=0; posPaymentMethod='espece'; window.posVenteId=v.venteId; if(isOnPOSPage()) renderPOS(); return; }
+if(cmdData){ var cmd=JSON.parse(cmdData); localStorage.removeItem('posCommandeData'); posCart=[]; if(cmd.items){ posEnrichirItemsAvecPrixAchat(cmd.items).forEach(function(item){ posCart.push({id:item.id,nom:item.nom,prixUnitaire:item.prixVente||item.prixUnitaire||0,prixAchat:item.prixAchat||0,prixPromo:item.prixPromo||0,prixVente:item.prixVente||item.prixUnitaire||0,quantite:item.quantite||1,categorie:item.categorie||'',imageBase64:item.imageBase64||'',sauces:item.sauces||[],interdits:item.interdits||[],epice:item.epice||'Normal',sel:item.sel||'Normal'}); }); } window.posCart = posCart; if(cmd.clientId&&cmd.clientName) posCurrentClient={id:cmd.clientId,name:cmd.clientName}; posCurrentTable=cmd.table||''; posStep=2; posDiscountMAD=0; posPaymentMethod='espece'; window.posCommandeId=cmd.commandeId; if(isOnPOSPage()) renderPOS(); return; }
+if(payData){ var v=JSON.parse(payData); localStorage.removeItem('posPayerVente'); posCart=[]; if(v.items){ posEnrichirItemsAvecPrixAchat(v.items).forEach(function(item){ posCart.push({id:item.id,nom:item.nom,prixUnitaire:item.prixVente||0,prixAchat:item.prixAchat||0,prixPromo:item.prixPromo||0,prixVente:item.prixVente||0,quantite:item.quantite||1,categorie:'',imageBase64:'',sauces:item.sauces||[],interdits:item.interdits||[],epice:item.epice||'Normal',sel:item.sel||'Normal'}); }); } window.posCart = posCart; if(v.clientId&&v.clientName) posCurrentClient={id:v.clientId,name:v.clientName}; posCurrentTable=v.table||''; posStep=2; posDiscountMAD=0; posPaymentMethod='espece'; window.posVenteId=v.venteId; if(isOnPOSPage()) renderPOS(); return; }
 if(creditData){
 try {
 var data = JSON.parse(creditData);
 localStorage.removeItem('posPayerCredit');
 posCart = [];
+window.posCart = posCart;
 if (data.clientName) { posCurrentClient = { id: data.clientId, name: data.clientName }; }
 if (data.items && data.items.length > 0) {
 data.items.forEach(function(item) {
@@ -924,6 +897,7 @@ if (typeof window.updatePaymentButtons === 'function') window.updatePaymentButto
 }
 }
 
+// ⚡ OPTIMISATION : debounce 80ms + cache
 function posSearchProducts(query){
 clearTimeout(window._searchTimeout);
 window._searchTimeout = setTimeout(function(){
@@ -935,8 +909,15 @@ posViewMode = 'products';
 posSelectedCategoryForView = null;
 }
 
+// ⚡ OPTIMISATION : pré-remplir le cache (partagé avec pos-audio.js)
+if (posSearchQuery.length > 0 && !posSearchCache[posSearchQuery]) {
+    if (typeof fastSearch === 'function') {
+        posSearchCache[posSearchQuery] = fastSearch(posSearchQuery).slice();
+    }
+}
+
 if(isOnPOSPage()) filterProductGrid();
-}, 150);
+}, 80);   // ⚡ 150ms → 80ms
 }
 
 function clearPosSearch() {
@@ -986,7 +967,14 @@ afficherCategories(grid);
 return;
 }
 
-var f = fastSearch(posSearchQuery);
+// ⚡ OPTIMISATION : utiliser le cache si disponible
+var f;
+if (posSearchCache[posSearchQuery]) {
+    f = posSearchCache[posSearchQuery].slice();
+} else {
+    f = fastSearch(posSearchQuery);
+    posSearchCache[posSearchQuery] = f.slice();
+}
 
 if (posSelectedCategoryForView) {
 f = f.filter(function(p) {
@@ -1079,7 +1067,8 @@ imgContent = '<img src="' + escapeHtml(p.imageBase64) + '" loading="lazy" alt=""
 imgContent = '<i class="fas fa-box" style="' + (isMobile ? 'font-size:18px;color:var(--text-muted);' : 'font-size:26px;color:var(--text-muted);') + '"></i>';
 }
 
-html += '<div class="pos-product-card ' + sc + '" style="' + cardStyle + '" onclick="posAddToCartOrOpenOptions(\'' + p.id + '\')">' +
+// ⚡ OPTIMISATION : content-visibility auto sur les cartes
+html += '<div class="pos-product-card ' + sc + '" style="' + cardStyle + 'content-visibility:auto;contain-intrinsic-size:150px 150px;" onclick="posAddToCartOrOpenOptions(\'' + p.id + '\')">' +
 '<div class="pos-product-img" style="' + imgStyle + '">' + imgContent + '</div>' +
 '<div class="pos-product-info" style="display:flex;flex-direction:column;align-items:center;width:100%;flex:1;justify-content:center;overflow:hidden;min-height:0;">' +
 '<span class="pos-product-name" style="' + nameStyle + '">' + dn + stt + '</span>' +
@@ -1246,14 +1235,6 @@ posSearchQuery = '';
 
 posSelectedCategory = catName;
 
-var catBtns = document.querySelectorAll('.pos-cat-btn');
-catBtns.forEach(function(btn) {
-btn.classList.remove('active');
-if (btn.textContent.trim() === catName) {
-btn.classList.add('active');
-}
-});
-
 var searchInput = document.getElementById('posSearchInput');
 if (searchInput) {
 searchInput.value = '';
@@ -1281,13 +1262,6 @@ posSelectedCategory = 'all';
 posSearchQuery = '';
 posProductOffset = 0;
 
-var catBtns = document.querySelectorAll('.pos-cat-btn');
-catBtns.forEach(function(btn) {
-btn.classList.remove('active');
-});
-var allBtn = document.querySelector('.pos-cat-btn[onclick*="all"]');
-if (allBtn) allBtn.classList.add('active');
-
 var searchInput = document.getElementById('posSearchInput');
 if (searchInput) {
 searchInput.value = '';
@@ -1298,6 +1272,7 @@ filterProductGrid();
 }
 }
 
+// ⚡ OPTIMISATION : cache de recherche client
 function posSearchClient(query){
 var q = query.toLowerCase().trim();
 posCurrentClient = null;
@@ -1313,12 +1288,25 @@ if (isOnPOSPage()) renderPOS();
 return;
 }
 if (clearBtn) clearBtn.style.display = 'flex';
-posFilteredClients = posAllClients.filter(function(c){
-return (c.nom||'').toLowerCase().indexOf(q)!==-1 ||
-(c.prenom||'').toLowerCase().indexOf(q)!==-1 ||
-(c.telephone||'').toLowerCase().indexOf(q)!==-1 ||
-(c.description||'').toLowerCase().indexOf(q)!==-1;
-});
+
+// ⚡ OPTIMISATION : cache de recherche client
+if (typeof window.clientSearchCache === 'undefined') {
+    window.clientSearchCache = {};
+}
+if (window.clientSearchCache[q]) {
+    posFilteredClients = window.clientSearchCache[q].slice();
+} else {
+    posFilteredClients = posAllClients.filter(function(c){
+        return (c.nom||'').toLowerCase().indexOf(q)!==-1 ||
+        (c.prenom||'').toLowerCase().indexOf(q)!==-1 ||
+        (c.telephone||'').toLowerCase().indexOf(q)!==-1 ||
+        (c.description||'').toLowerCase().indexOf(q)!==-1;
+    });
+    var keys = Object.keys(window.clientSearchCache);
+    if (keys.length > 100) window.clientSearchCache = {};
+    window.clientSearchCache[q] = posFilteredClients.slice();
+}
+
 if (posFilteredClients.length === 1) {
 var client = posFilteredClients[0];
 posCurrentClient = { id: client.id, name: client.nom + ' ' + client.prenom };
@@ -1395,7 +1383,31 @@ s.value = posCurrentClient.name;
 function updatePaymentButtons(){ setTimeout(function(){ var cb=document.getElementById('posCreditBtn'),pb=document.getElementById('posPartielBtn'),cc=posCurrentClient&&posCurrentClient.id; if(cb){ cb.disabled=!cc; cb.style.opacity=cc?'1':'0.4'; } if(pb){ pb.disabled=!cc; pb.style.opacity=cc?'1':'0.4'; } },300); }
 function posSetTable(v){ posCurrentTable=v.trim(); if(posCurrentTable){ posCurrentClient=null; posPaymentMethod='espece'; var s=document.getElementById('posClientSearchInput'); if(s) s.value=''; document.getElementById('clientCreditDisplay').style.display='none'; var clearBtn=document.getElementById('posClientClearBtn'); if(clearBtn) clearBtn.style.display='none'; } }
 
-function posAddToCartOrOpenOptions(pid){ var p=posProductsList.find(function(x){ return x.id===pid; }); if(!p) return; if(p.stock!==undefined&&p.stock<=0){ alert('Rupture'); return; } var cat=posCategoriesList.find(function(c){ return c.nom===p.categorie; }),isRecette=cat&&cat.recette===true; if(isRecette){ posCurrentProductId=pid; posOpenOptionsModal(pid); }else{ var ex=posCart.find(function(x){ return x.id===pid; }); if(ex){ if(p.stock!==undefined&&ex.quantite>=p.stock){ alert('Stock insuffisant'); return; } ex.quantite+=1; }else{ var pr=p.prixPromo&&p.prixPromo>0?p.prixPromo:p.prixVente; posCart.push({id:p.id,nom:p.nom,prixUnitaire:pr,prixAchat:p.prixAchat||0,prixPromo:p.prixPromo||0,prixVente:p.prixVente||0,quantite:1,categorie:p.categorie||'',imageBase64:p.imageBase64||'',sauces:[],interdits:[],epice:'Normal',sel:'Normal'}); } if(typeof window.onProductAdded==='function') window.onProductAdded(p.id); updateCartOnly(); } posMultiCarts[posCurrentCartId] = posCart.slice(); posSauvegarderDonneesPanier(posCurrentCartId); posSaveMultiCarts(); }
+function posAddToCartOrOpenOptions(pid){ 
+    var p=posProductsList.find(function(x){ return x.id===pid; }); 
+    if(!p) return; 
+    if(p.stock!==undefined&&p.stock<=0){ alert('Rupture'); return; } 
+    var cat=posCategoriesList.find(function(c){ return c.nom===p.categorie; }),isRecette=cat&&cat.recette===true; 
+    if(isRecette){ 
+        posCurrentProductId=pid; 
+        posOpenOptionsModal(pid); 
+    } else { 
+        var ex=posCart.find(function(x){ return x.id===pid; }); 
+        if(ex){ 
+            if(p.stock!==undefined&&ex.quantite>=p.stock){ alert('Stock insuffisant'); return; } 
+            ex.quantite+=1; 
+        } else { 
+            var pr=p.prixPromo&&p.prixPromo>0?p.prixPromo:p.prixVente; 
+            posCart.push({id:p.id,nom:p.nom,prixUnitaire:pr,prixAchat:p.prixAchat||0,prixPromo:p.prixPromo||0,prixVente:p.prixVente||0,quantite:1,categorie:p.categorie||'',imageBase64:p.imageBase64||'',sauces:[],interdits:[],epice:'Normal',sel:'Normal'}); 
+        } 
+        window.posCart = posCart;
+        if(typeof window.onProductAdded==='function') window.onProductAdded(p.id); 
+        updateCartOnly(); 
+    } 
+    posMultiCarts[posCurrentCartId] = posCart.slice(); 
+    posSauvegarderDonneesPanier(posCurrentCartId); 
+    posSaveMultiCarts(); 
+}
 
 async function posOpenOptionsModal(pid) {
 var p = posProductsList.find(function(x) { return x.id === pid; });
@@ -1710,7 +1722,6 @@ var stepIndicator = '<div class="pos-steps-nav" style="display:flex; justify-con
 // ==================== BARRE MULTI-PANIERS AVEC NOM DU CLIENT - VERSION AMÉLIORÉE ====================
 var multiCartBar = '<div class="pos-multi-carts-bar" style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:4px 8px;background:var(--bg-card);border-radius:8px;border:1px solid var(--border);margin-bottom:4px;">';
 
-// ✅ Bouton Nouveau - désactivé si limite atteinte
 var cartCount = Object.keys(posMultiCarts).length;
 var isMax = cartCount >= MAX_PANIERS;
 multiCartBar += '<button onclick="posCreateNewCart()" style="background:' + (isMax ? '#94a3b8' : '#14B8A6') + ';color:#fff;border:none;border-radius:6px;padding:4px 12px;font-size:12px;font-weight:600;cursor:' + (isMax ? 'not-allowed' : 'pointer') + ';display:flex;align-items:center;gap:4px;opacity:' + (isMax ? '0.6' : '1') + ';" ' + (isMax ? 'disabled' : '') + ' title="' + (isMax ? 'Limite de ' + MAX_PANIERS + ' paniers atteinte' : '') + '"><i class="fas fa-plus"></i> Nouveau</button>';
@@ -1725,14 +1736,12 @@ var items = posMultiCarts[cid] || [];
 for (var itm = 0; itm < items.length; itm++) {
 total += (items[itm].prixUnitaire || 0) * (items[itm].quantite || 0);
 }
-// ✅ Récupérer le nom du client pour ce panier
 var clientName = '';
 if (posMultiPaniersData[cid] && posMultiPaniersData[cid].client) {
 clientName = posMultiPaniersData[cid].client.name || '';
 }
 var displayName = clientName ? clientName.substring(0, 12) : '';
 
-// ✅ Style actif/inactif clair
 var bgColor = isActive ? '#f0fdf4' : 'var(--bg-page)';
 var borderColor = isActive ? '#14B8A6' : 'var(--border)';
 var textColor = isActive ? '#14B8A6' : 'var(--text-primary)';
@@ -1746,7 +1755,6 @@ multiCartBar += '<span style="font-size:9px;color:#94a3b8;max-width:50px;overflo
 if (count > 0) {
 multiCartBar += '<span style="font-size:9px;color:#94a3b8;">' + total.toFixed(0) + ' MAD</span>';
 }
-// ✅ Bouton supprimer - toujours visible si plus d'un panier
 if (cartKeys.length > 1) {
 multiCartBar += '<button onclick="posDeleteCart(\'' + cid + '\')" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:12px;padding:0 4px;font-weight:700;" title="Supprimer ce panier">✕</button>';
 }
@@ -1756,7 +1764,6 @@ multiCartBar += '</div>';
 var grandTotal = posGetTotalAllCarts();
 multiCartBar += '<span style="font-size:11px;color:#94a3b8;margin-left:auto;">Total: ' + grandTotal.toFixed(2) + ' MAD</span>';
 
-// ✅ Bouton Tout vider - seulement si plus d'un panier
 if (cartKeys.length > 1) {
 multiCartBar += '<button onclick="posResetAllCarts()" style="background:#ef4444;color:#fff;border:none;border-radius:6px;padding:2px 8px;font-size:10px;cursor:pointer;" title="Vider tous les paniers">🗑️ Tout</button>';
 }
@@ -1801,30 +1808,18 @@ multiCartBar +
 '<button id="posMicBtn" title="Recherche vocale" style="background:var(--bg-page);border:2px solid var(--border);border-radius:50%;width:'+(isMobile?'36px':'40px')+';height:'+(isMobile?'36px':'40px')+';cursor:pointer;font-size:'+(isMobile?'14px':'16px')+';display:flex;align-items:center;justify-content:center;color:var(--text-primary);transition:var(--transition);" onclick="posToggleVoiceSearch()"><i class="fas fa-microphone"></i></button>' +
 
 '<div style="display:flex;gap:6px;margin-left:auto;">' +
+(window.posIsClientMode ? '' :
 '<button id="posTablesBtn" onclick="posAfficherCommandesTables()" style="background:var(--bg-page);border:2px solid var(--border);border-radius:40px;padding:6px 14px;font-weight:600;font-size:'+(isMobile?'11px':'13px')+';display:flex;align-items:center;gap:6px;color:var(--text-primary);cursor:pointer;transition:var(--transition);">🍽️ Tables <span style="background:#ef4444;color:#fff;border-radius:20px;padding:0 8px;font-size:'+(isMobile?'9px':'11px')+';font-weight:700;">'+posCommandesTablesCount+'</span></button>' +
-'<button id="posEnLigneBtn" onclick="navigateTo(\'commandes\')" style="background:var(--bg-page);border:2px solid var(--border);border-radius:40px;padding:6px 14px;font-weight:600;font-size:'+(isMobile?'11px':'13px')+';display:flex;align-items:center;gap:6px;color:var(--text-primary);cursor:pointer;transition:var(--transition);">🌐 En ligne <span style="background:#ef4444;color:#fff;border-radius:20px;padding:0 8px;font-size:'+(isMobile?'9px':'11px')+';font-weight:700;">'+posCommandesEnLigneCount+'</span></button>' +
+'<button id="posEnLigneBtn" onclick="navigateTo(\'commandes\')" style="background:var(--bg-page);border:2px solid var(--border);border-radius:40px;padding:6px 14px;font-weight:600;font-size:'+(isMobile?'11px':'13px')+';display:flex;align-items:center;gap:6px;color:var(--text-primary);cursor:pointer;transition:var(--transition);">🌐 En ligne <span style="background:#ef4444;color:#fff;border-radius:20px;padding:0 8px;font-size:'+(isMobile?'9px':'11px')+';font-weight:700;">'+posCommandesEnLigneCount+'</span></button>'
+) +
+'</div>' +
+'</div>' +
+'' +
 '</div>' +
 '</div>' +
 
-'<div class="pos-categories-bar" style="display:flex;flex-wrap:wrap;gap:6px;padding-top:6px;border-top:1px solid var(--border);margin-top:4px;">' +
-'<button class="pos-cat-btn '+(posSelectedCategory==='all'?'active':'')+'" onclick="posFilterCategory(\'all\')" style="padding:5px 14px;font-size:12px;gap:4px;border-radius:40px;border:2px solid '+(posSelectedCategory==='all'?'#14B8A6':'var(--border)')+';background:'+(posSelectedCategory==='all'?'#f0fdf4':'var(--bg-card)')+';cursor:pointer;font-weight:600;transition:all 0.2s;display:inline-flex;align-items:center;">📋 Tous</button>';
-var sortedCategories = posCategoriesList.slice().sort(function(a, b) {
-var ordreA = (a.ordre !== undefined && a.ordre !== null) ? parseInt(a.ordre) : 9999;
-var ordreB = (b.ordre !== undefined && b.ordre !== null) ? parseInt(b.ordre) : 9999;
-if (ordreA !== ordreB) return ordreA - ordreB;
-return (a.nom || '').localeCompare(b.nom || '');
-});
-for(var i=0;i<sortedCategories.length;i++){
-var ca = sortedCategories[i];
-var ac = posSelectedCategory===ca.nom?'active':'';
-var ih = ca.imageBase64?'<img src="'+escapeHtml(ca.imageBase64)+'" loading="lazy" style="max-width:20px;max-height:20px;border-radius:4px;object-fit:contain;">':'<i class="fas fa-folder" style="font-size:'+(isMobile?'11px':'13px')+';"></i>';
-h+='<button class="pos-cat-btn '+ac+'" onclick="posFilterCategory(\''+escapeHtml(ca.nom).replace(/'/g,"\\'")+'\')" style="padding:5px 14px;font-size:12px;gap:4px;border-radius:40px;border:2px solid '+(posSelectedCategory===ca.nom?'#14B8A6':'var(--border)')+';background:'+(posSelectedCategory===ca.nom?'#f0fdf4':'var(--bg-card)')+';cursor:pointer;font-weight:600;transition:all 0.2s;display:inline-flex;align-items:center;">'+ih+' '+escapeHtml(ca.nom)+'</button>';
-}
-h+='</div>' +
-'</div>' +
-'</div>' +
-
-'<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:hidden;overflow-y:auto;flex-wrap:wrap;align-content:start;flex:1;"></div>' +
+// ⚡ OPTIMISATION : content-visibility sur la grille
+'<div class="pos-products-grid" id="posProductGrid" style="grid-template-columns:'+gridCols+';gap:'+gridGap+';padding:'+gridPadding+';overflow-x:hidden;overflow-y:auto;flex-wrap:wrap;align-content:start;flex:1;contain:layout paint;content-visibility:auto;"></div>' +
 '</div>' +
 
 '<div class="pos-cart-panel" style="' + (isMobile ? mobileCartStyle : 'width:100%;background:var(--bg-card);border-radius:var(--radius-xl);box-shadow:var(--shadow-xs);border:1px solid var(--border);display:flex;flex-direction:column;margin-top:4px;max-height:35vh;flex:2;min-height:120px;') + '">';
@@ -1963,6 +1958,10 @@ setStaticBackButtonVisibility(true);
 if (posCurrentClient && posCurrentClient.id) {
 updateClientCreditDisplay(posCurrentClient.id);
 }
+// 🔥 CORRECTION : réinitialiser le mode quantité AVANT de passer en mode paiement
+if (typeof window.resetVoiceQuantityMode === 'function') {
+    window.resetVoiceQuantityMode();
+}
 if (typeof window.setVoiceMode === 'function') {
 if (typeof window.lastAddedProductId !== 'undefined') { window.lastAddedProductId = null; }
 window.setVoiceMode('payment', '🎤 Mode paiement', null);
@@ -1978,6 +1977,7 @@ delete window.posCommandeId;
 delete window.posVenteId;
 setStaticBackButtonVisibility(false);
 posCart = posMultiCarts[posCurrentCartId] || [];
+window.posCart = posCart;
 if (typeof window.setVoiceMode === 'function') {
 window.setVoiceMode('search', '🎤 Recherche vocale active', null);
 }
@@ -2144,6 +2144,7 @@ finally { isFinalizing=false; if(fb){ fb.disabled=false; fb.innerHTML='<i class=
 
 function posResetCart() {
 posCart = [];
+window.posCart = posCart;
 posMultiCarts[posCurrentCartId] = [];
 posDiscountMAD = 0;
 posAmountGiven = 0;
@@ -2281,7 +2282,6 @@ async function posConfirmerAjoutClient() {
     }
     
     try {
-        // Vérifier si le client existe déjà (même nom + prénom)
         var existing = posAllClients.find(function(c) {
             return (c.nom || '').toLowerCase() === nomVal.toLowerCase() && 
                    (c.prenom || '').toLowerCase() === prenomVal.toLowerCase();
@@ -2290,7 +2290,6 @@ async function posConfirmerAjoutClient() {
         if (existing) {
             alert('⚠️ Ce client existe déjà : ' + prenomVal + ' ' + nomVal);
             closeModal();
-            // Sélectionner automatiquement le client existant
             posCurrentClient = { id: existing.id, name: existing.nom + ' ' + existing.prenom };
             var input = document.getElementById('posClientSearchInput');
             if (input) input.value = posCurrentClient.name;
@@ -2300,7 +2299,6 @@ async function posConfirmerAjoutClient() {
             return;
         }
         
-        // Créer le client dans Firestore (STRUCTURE COMPATIBLE ADMIN-CRUD)
         var newClientData = {
             nom: nomVal,
             prenom: prenomVal,
@@ -2344,24 +2342,20 @@ async function posConfirmerAjoutClient() {
             description: ''
         };
         
-        // Ajouter à la liste locale
         posAllClients.push(newClient);
         posFilteredClients.push(newClient);
         if (window.allClientsData) window.allClientsData.push(newClient);
         
-        // Sauvegarder dans le cache
         if (typeof CacheDB !== 'undefined' && CacheDB.set) {
             CacheDB.set('clients', docRef.id, newClient);
         }
         
-        // Sauvegarder la collection complète
         if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
             setTimeout(function() {
                 CacheDB.saveCollection('clients');
             }, 500);
         }
         
-        // Sélectionner automatiquement le nouveau client
         posCurrentClient = { id: docRef.id, name: nomVal + ' ' + prenomVal };
         var input = document.getElementById('posClientSearchInput');
         if (input) input.value = posCurrentClient.name;
@@ -2469,3 +2463,4 @@ console.log('✅ LIMITE À ' + MAX_PANIERS + ' PANIERS MAXIMUM');
 console.log('✅ NAVIGATION FLUIDE ENTRE PANIERS AVEC RE-RENDU COMPLET');
 console.log('✅ SUPPRESSION IMMÉDIATE DES PANIERS AVEC RE-RENDU COMPLET');
 console.log('✅ RÉORGANISATION DES NUMÉROS DE PANIERS (1 À ' + MAX_PANIERS + ')');
+console.log('⚡ OPTIMISATIONS : cache recherche + content-visibility + batch 30 + debounce 80ms');
