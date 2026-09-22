@@ -106,7 +106,7 @@
 <div id="clientPage" class="dashboard hidden">
 <button class="mobile-menu-btn" onclick="toggleClientSidebar()"><i class="fas fa-bars"></i></button>
 <div class="sidebar-overlay" id="clientSidebarOverlay" onclick="closeClientSidebar()"></div>
-<div class="sidebar" id="clientSidebar">
+<div class="client-sidebar" id="clientSidebar">
 <div class="sidebar-header">
 <div class="sidebar-logo"><img src="logo.png" alt="Logo" class="sidebar-logo-img" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\'fas fa-store\' style=\'font-size:30px;color:#14B8A6;\'></i>';"></div>
 <h2>E-SOLUTION <span>POS</span></h2>
@@ -150,16 +150,15 @@ Contenu du modal
 </div>
 </div>
 
-<!-- ==================== SCRIPTS (ORDRE CORRIGÉ) ==================== -->
-<!-- ✅ firebase-config.js EN PREMIER pour que firebase soit défini avant db-cache.js -->
-<script src="firebase-config.js"></script>
+<!-- ==================== SCRIPTS (ORDRE CORRIGÉ POUR PAGINATION) ==================== -->
 <script src="db-cache.js"></script>
+<script src="firebase-config.js"></script>
 <script src="auth.js"></script>
-<script src="admin-crud.js"></script>
-<script src="admin-ventes.js"></script>
-<script src="admin-credits.js"></script>
-<script src="admin.js"></script>
-<script src="script.js"></script>
+<script src="admin-crud.js"></script> <!-- ✅ CHARGÉ AVANT script.js -->
+<script src="admin-ventes.js"></script> <!-- ✅ CHARGÉ AVANT script.js -->
+<script src="admin-credits.js"></script> <!-- ✅ CHARGÉ AVANT script.js -->
+<script src="admin.js"></script> <!-- ✅ CHARGÉ AVANT script.js -->
+<script src="script.js"></script> <!-- ✅ script.js APRÈS les autres -->
 <script src="pos.js"></script>
 <script src="client.js"></script>
 <script src="menutactile.js"></script>
@@ -170,14 +169,21 @@ Contenu du modal
 
 <script>
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-        .then(reg => console.log('SW ✓', reg))
-        .catch(err => console.error('SW ✗', err));
+navigator.serviceWorker.register('sw.js').then(reg => console.log('SW ✓', reg)).catch(err => console.error('SW ✗', err));
 }
 
-// ✅ La sauvegarde CacheDB démarre automatiquement après login via auth.js
-// (fonction CacheDB.startAfterLogin() appelée dans handleLogin)
-console.log('✅ E-SOLUTION - Page chargée (attente de connexion)');
+// ✅ AJOUT : Sauvegarde automatique au chargement de l'application
+window.addEventListener('load', function() {
+setTimeout(function() {
+if (typeof CacheDB !== 'undefined' && CacheDB.saveAll) {
+console.log('💾 Sauvegarde initiale des données...');
+CacheDB.saveAll();
+if (typeof CacheDB.setupRealtime === 'function') {
+CacheDB.setupRealtime();
+}
+}
+}, 2000);
+});
 </script>
 
 </body>
