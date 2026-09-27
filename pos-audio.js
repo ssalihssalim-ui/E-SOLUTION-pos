@@ -9,6 +9,7 @@
 // ✅ Le micro affiche la barre de recherche avant de démarrer
 // 🔥 CORRECTION : Navigation utilise les noms ANGLAIS (products, categories...) pour matcher admin.js
 // 🔥 AJOUT : Recherche vocale sur pages Produits, Ventes, Crédits
+// 🔥 CORRECTION MICRO : ajout alias window.toggleVoiceSearch
 
 var voiceRecognition = null;
 var isRecording = false;
@@ -180,14 +181,10 @@ function fastFindProduct(query) {
 // 🔥 CORRECTION 1 : tri par longueur décroissante + match exact de mot
 function extractNumberFromTranscript(transcript) {
     const cleaned = transcript.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-    // 1. Chiffres en premier (ex: "2", "15")
     const digits = cleaned.match(/\b\d+\b/);
     if (digits) return parseInt(digits[0]);
-    // 2. Mots-nombres : chercher par longueur DÉCROISSANTE pour éviter "cinq" dans "cinquante"
     const sortedKeys = Object.keys(numberMap).sort(function(a, b) { return b.length - a.length; });
-    // 3. Découper en mots et chercher un match EXACT de mot
     const words = cleaned.split(/[\s,;.!?]+/).filter(function(w) { return w.length > 0; });
-    // D'abord match exact mot par mot
     for (let w = 0; w < words.length; w++) {
         const mot = words[w];
         for (let i = 0; i < sortedKeys.length; i++) {
@@ -196,7 +193,6 @@ function extractNumberFromTranscript(transcript) {
             }
         }
     }
-    // 4. Fallback : chercher par sous-chaîne (mais en longueur décroissante)
     for (let i = 0; i < sortedKeys.length; i++) {
         const word = sortedKeys[i];
         const regex = new RegExp('(^|[\\s,;.!?])' + word + '($|[\\s,;.!?])', 'i');
@@ -281,13 +277,11 @@ function parseVoiceCommand(transcript) {
     // 🔥 NOUVEAU : PAGE PRODUITS - recherche produit ou filtre catégorie
     // ============================================================
     if (currentPage === 'Produits') {
-        // Chercher d'abord si c'est une catégorie
         var catFilter = detectCategoryFilter(cleaned);
         if (catFilter) {
             console.log('✅ [PRODUITS] Catégorie détectée:', catFilter);
             return { type: 'filter_products_category', category: catFilter };
         }
-        // Sinon recherche produit
         if (cleaned.length > 1) {
             return { type: 'search_products_page', text: cleaned };
         }
@@ -326,8 +320,6 @@ function parseVoiceCommand(transcript) {
 
     // ============================================================
     // PRIORITÉ 1 : NAVIGATION (TOUTES LES PAGES)
-    // 🔥 Ne pas activer en étape 2 (paiement)
-    // 🔥 Retourner les noms ANGLAIS pour matcher admin.js
     // ============================================================
     
     if (posStep !== 2) {
@@ -578,7 +570,6 @@ function handleVoiceCommand(cmd) {
             }
             break;
             
-        // 🔥 NOUVEAU : Recherche sur page Produits
         case 'search_products_page':
             var searchTextP = cmd.text || '';
             console.log('🔍 [PRODUITS] Recherche:', searchTextP);
@@ -597,7 +588,6 @@ function handleVoiceCommand(cmd) {
             }
             break;
             
-        // 🔥 NOUVEAU : Filtre catégorie sur page Produits
         case 'filter_products_category':
             var catName = cmd.category || '';
             console.log('📂 [PRODUITS] Filtre catégorie:', catName);
@@ -613,7 +603,6 @@ function handleVoiceCommand(cmd) {
             }
             break;
             
-        // 🔥 NOUVEAU : Recherche sur page Ventes
         case 'search_ventes':
             var searchTextV = cmd.text || '';
             console.log('🔍 [VENTES] Recherche:', searchTextV);
@@ -632,7 +621,6 @@ function handleVoiceCommand(cmd) {
             }
             break;
             
-        // 🔥 NOUVEAU : Filtre période sur page Ventes
         case 'period_filter_ventes':
             var periodV = cmd.period || 'all';
             console.log('📅 [VENTES] Filtre période:', periodV);
@@ -664,7 +652,6 @@ function handleVoiceCommand(cmd) {
             }
             break;
             
-        // 🔥 NOUVEAU : Filtre période sur page Crédits
         case 'period_filter_credits':
             var periodC = cmd.period || 'all';
             console.log('📅 [CRÉDITS] Filtre période:', periodC);
@@ -987,7 +974,6 @@ function posStartVoiceRecording() {
         console.log('🎤 Résultat vocal - Interim:', interim, 'Final:', final);
         console.log('🔢 Mode quantité actif ?', waitingForQuantity, 'Produit en attente:', pendingProductForQuantity);
 
-        // 🔥 PRIORITÉ ABSOLUE : SI ON ATTEND UNE QUANTITÉ (uniquement sur POS)
         if (waitingForQuantity && pendingProductForQuantity) {
             if (final && final.trim().length > 0) {
                 var num = extractNumberFromTranscript(final);
@@ -1035,7 +1021,6 @@ function posStartVoiceRecording() {
             }
         }
 
-        // 🔥 VÉRIFIER LA NAVIGATION ET COMMANDES SPÉCIALES
         if (final && final.trim().length > 0 && final !== lastFinal) {
             lastFinal = final;
             var navCheck = parseVoiceCommand(final);
@@ -1047,12 +1032,8 @@ function posStartVoiceRecording() {
             }
         }
 
-        // ============================================================
-        // 🔥 NOUVELLE LOGIQUE : gérer les pages spéciales AVANT le reste
-        // ============================================================
         var cp = document.getElementById('pageTitle')?.textContent || '';
 
-        // ----- PAGE PRODUITS -----
         if (cp === 'Produits') {
             if (final && final.trim().length > 0 && final !== lastFinal) {
                 lastFinal = final;
@@ -1065,7 +1046,6 @@ function posStartVoiceRecording() {
             return;
         }
 
-        // ----- PAGE VENTES -----
         if (cp === 'Ventes') {
             if (final && final.trim().length > 0 && final !== lastFinal) {
                 lastFinal = final;
@@ -1078,7 +1058,6 @@ function posStartVoiceRecording() {
             return;
         }
 
-        // ----- PAGE CRÉDITS -----
         if (cp === 'Crédits') {
             if (final && final.trim().length > 0 && final !== lastFinal) {
                 lastFinal = final;
@@ -1096,7 +1075,6 @@ function posStartVoiceRecording() {
             return;
         }
 
-        // ✅ PAGE POS / DASHBOARD (par défaut)
         if (final && final.trim().length > 0 && final !== lastFinal) {
             lastFinal = final;
             console.log('✅ TEXTE FINAL DÉTECTÉ:', final);
@@ -1119,7 +1097,6 @@ function posStartVoiceRecording() {
                 return;
             }
 
-            // Fallback: recherche simple avec le texte dicté
             setTimeout(function() {
                 var si = document.getElementById('posSearchInput');
                 if (!si) {
@@ -1231,6 +1208,10 @@ function posStopVoiceSearch() {
 // ========== EXPORTS ==========
 window.posToggleVoiceSearch = posToggleVoiceSearch;
 window.posAudioToggleVoiceSearch = posToggleVoiceSearch;
+
+// 🔥 CORRECTION MICRO : ALIAS pour que pos.js trouve la fonction via window.toggleVoiceSearch
+window.toggleVoiceSearch = posToggleVoiceSearch;
+
 window.showVoiceResult = showVoiceResult;
 window.setVoiceMode = setVoiceMode;
 window.showVoiceModeIndicator = showVoiceModeIndicator;
@@ -1280,3 +1261,4 @@ console.log('✅ Recherche vocale sur page Produits (nom + catégorie)');
 console.log('✅ Recherche vocale sur page Ventes (client + période)');
 console.log('✅ Recherche vocale sur page Crédits (client + période)');
 console.log('✅ Navigation utilise les noms ANGLAIS pour matcher admin.js');
+console.log('✅ ALIAS window.toggleVoiceSearch ajouté pour compatibilité pos.js');
