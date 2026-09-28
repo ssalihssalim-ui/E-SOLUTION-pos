@@ -1,295 +1,568 @@
-// ==================== CLIENT.JS - E-SOLUTION ====================
+// ==================== CLIENT.JS - E-SOLUTION (VERSION FINALE POS IDENTIQUE) ====================
+// ✅ Le client voit EXACTEMENT le même POS que l'admin/caissier
+// ✅ Réutilise directement pos.js : buildFullPOS, filterProductGrid, updateCartOnly, etc.
+// ✅ Barre de recherche : bouton "Afficher tout" → affiche la barre de recherche uniquement
+// ✅ Étape de paiement identique (Étape 1 → Étape 2)
+// ✅ SANS multi-paniers
+// ✅ SANS boutons Tables / En ligne
+// ✅ Mêmes dimensions / même responsive
+
 var clientCart = [];
-var clientCategoriesList = [];
-var clientProductsList = [];
-var clientSelectedCategory = 'all';
-var clientCurrentProductId = null;
+var clientStep = 1;
+var clientIsClientMode = true;
 
-var clientEpicesList = ['Normal', 'Moins épicé', 'Très épicé', 'Sans épice'];
-var clientSelList = ['Normal', 'Moins de sel', 'Sans sel'];
-
-var allStockData = [];
-
+// ==================== NAVIGATION CLIENT ====================
 function clientNavigate(page) {
     var items = document.querySelectorAll('#clientPage .nav-item');
     items.forEach(function(item) { item.classList.remove('active'); });
     if (page === 'commander' && items[0]) items[0].classList.add('active');
     else if (page === 'historique' && items[1]) items[1].classList.add('active');
     else if (items[2]) items[2].classList.add('active');
-    document.getElementById('clientPageTitle').textContent = page === 'commander' ? 'Commander' : page === 'historique' ? 'Mon historique' : 'Paramètres';
+
+    var titleEl = document.getElementById('clientPageTitle');
+    if (titleEl) titleEl.textContent = page === 'commander' ? 'Commander' : page === 'historique' ? 'Mon historique' : 'Paramètres';
+
     if (page === 'commander') loadClientCommanderPage();
     else if (page === 'historique') loadClientHistoriquePage();
     else loadClientParametresPage();
+
+    if (typeof closeClientSidebar === 'function') closeClientSidebar();
 }
 
-// ==================== PAGE COMMANDER ====================
+// ==================== PAGE COMMANDER (RÉUTILISE LE POS ADMIN) ====================
 async function loadClientCommanderPage() {
-    var c = document.getElementById('clientDynamicContent'); if (!c) return;
-    clientCart = []; clientSelectedCategory = 'all';
+    var c = document.getElementById('clientDynamicContent');
+    if (!c) return;
 
-    let cachedCategories = await CacheDB.getAll('categories');
-    let cachedProducts = await CacheDB.getAll('products');
-    if (cachedCategories.length) clientCategoriesList = cachedCategories.map(function(cat) {
-        return { id: cat.id, nom: cat.nom, imageBase64: cat.imageBase64, recette: cat.recette || false };
-    });
-    if (cachedProducts.length) clientProductsList = cachedProducts.filter(p => p.disponible !== false);
-    renderClientPOS();
+    // ✅ Activer le mode client dans pos.js
+    window.posIsClientMode = true;
+    window.posHideMultiCarts = true;
+    window.posHideTablesBtn = true;
+    window.posHideEnLigneBtn = true;
 
+    c.innerHTML = '<div style="text-align:center;padding:60px;"><i class="fas fa-spinner fa-spin" style="font-size:2.5rem;color:#14B8A6;"></i><p style="margin-top:15px;color:#64748b;">Chargement du menu...</p></div>';
+
+    // ✅ Réinitialiser les variables pos.js pour le client
+    posCart = clientCart.length > 0 ? clientCart.slice() : [];
+    posStep = clientStep;
+    posSelectedCategory = 'all';
+    posViewMode = 'categories';
+    posSelectedCategoryForView = null;
+    posSearchQuery = '';
+    posToolsVisible = false;
+    posProductOffset = 0;
+
+    // ✅ Pas de multi-paniers pour le client
+    posMultiCarts = { 'client-panier': posCart };
+    posCurrentCartId = 'client-panier';
+    posMultiPaniersData = {
+        'client-panier': {
+            client: window.currentUserData ? {
+                id: window.currentUserData.uid,
+                name: window.currentUserData.userData.prenom + ' ' + window.currentUserData.userData.nom
+            } : null,
+            table: '',
+            paymentMethod: 'espece',
+            discountMAD: 0,
+            amountGiven: 0,
+            step: 1
+        }
+    };
+
+    // ✅ Définir le client actuel
+    posCurrentClient = window.currentUserData ? {
+        id: window.currentUserData.uid,
+        name: window.currentUserData.userData.prenom + ' ' + window.currentUserData.userData.nom
+    } : null;
+
+    // ✅ Charger les catégories et produits
+    try {
+        let cachedCategories = await CacheDB.getAll('categories');
+        let cachedProducts = await CacheDB.getAll('products');
+
+        if (cachedCategories.length) {
+            posCategoriesList = cachedCategories.map(function(cat) {
+                return { id: cat.id, nom: cat.nom, imageBase64: cat.imageBase64, recette: cat.recette || false, ordre: cat.ordre || 0 };
+            });
+        }
+        if (cachedProducts.length) {
+            posProductsList = cachedProducts.filter(function(p) { return p.disponible !== false; });
+            productIndexBuilt = false;
+        }
+        if (posCategoriesList.length || posProductsList.length) {
+            renderClientPOS();
+        }
+    } catch(e) { console.warn('Erreur cache client:', e); }
+
+    // ✅ Puis Firestore
     try {
         const [cs, ps] = await Promise.all([
             db.collection('categories').get(),
             db.collection('products').get()
         ]);
-        clientCategoriesList = [];
-        cs.forEach(d => {
-            let cat = { id: d.id, nom: d.data().nom, imageBase64: d.data().imageBase64, recette: d.data().recette || false };
-            clientCategoriesList.push(cat);
+
+        posCategoriesList = [];
+        cs.forEach(function(d) {
+            var dd = d.data();
+            var cat = { id: d.id, nom: dd.nom, imageBase64: dd.imageBase64, recette: dd.recette || false, ordre: dd.ordre || 0 };
+            posCategoriesList.push(cat);
             CacheDB.set('categories', d.id, cat);
         });
-        clientProductsList = [];
-        ps.forEach(d => {
-            const dd = d.data();
+
+        posProductsList = [];
+        ps.forEach(function(d) {
+            var dd = d.data();
             if (dd.disponible !== false) {
-                let prod = { id: d.id, nom: dd.nom, prixVente: dd.prixVente||0, prixPromo: dd.prixPromo||0, stock: dd.stock, categorie: dd.categorie||'', imageBase64: dd.imageBase64||'' };
-                clientProductsList.push(prod);
+                var prod = {
+                    id: d.id,
+                    nom: dd.nom || '',
+                    description: dd.description || '',
+                    prixVente: dd.prixVente || 0,
+                    prixPromo: dd.prixPromo || 0,
+                    prixAchat: dd.prixAchat || 0,
+                    stock: dd.stock,
+                    categorie: dd.categorie || '',
+                    categories: dd.categories || [],
+                    imageBase64: dd.imageBase64 || '',
+                    favori: dd.favori || false
+                };
+                posProductsList.push(prod);
                 CacheDB.set('products', d.id, prod);
             }
         });
+        productIndexBuilt = false;
+
         renderClientPOS();
-    } catch(e) { console.error('Erreur mise à jour catalogue client', e); }
+    } catch(e) {
+        console.error('Erreur chargement catalogue:', e);
+        renderClientPOS();
+    }
 }
 
-function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-    });
-}
+// ==================== RENDU POS CLIENT (UTILISE buildFullPOS DE POS.JS) ====================
+function renderClientPOS() {
+    var c = document.getElementById('clientDynamicContent');
+    if (!c) return;
 
-function clientAddToCartOrOpenOptions(pid) {
-    var p = clientProductsList.find(function(x) { return x.id === pid; });
-    if (!p) return;
-    if (p.stock !== undefined && p.stock <= 0) {
-        alert('Rupture de stock');
+    if (posProductsList.length === 0 && posCategoriesList.length === 0) {
+        c.innerHTML = '<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin" style="font-size:2rem;color:#14B8A6;"></i><p>Chargement...</p></div>';
         return;
     }
-    var cat = clientCategoriesList.find(function(c) { return c.nom === p.categorie; });
-    var isRecette = cat && cat.recette === true;
 
-    if (isRecette) {
-        clientCurrentProductId = pid;
-        clientOpenOptionsModal(pid);
+    // ✅ Synchroniser le panier client avec posCart
+    clientCart = posCart.slice();
+    clientStep = posStep;
+
+    // ✅ Appeler buildFullPOS de pos.js (IDENTIQUE à l'admin)
+    if (typeof buildFullPOS === 'function') {
+        buildFullPOS(c);
+        // ✅ Après le rendu, masquer les boutons multi-paniers, tables, en ligne
+        setTimeout(masquerElementsAdminDansClient, 50);
     } else {
-        var existing = clientCart.find(function(x) { return x.id === pid; });
-        if (existing) {
-            if (p.stock !== undefined && existing.quantite >= p.stock) { alert('Stock insuffisant'); return; }
-            existing.quantite += 1;
-        } else {
-            var pr = p.prixPromo && p.prixPromo > 0 ? p.prixPromo : p.prixVente;
-            clientCart.push({id: p.id, nom: p.nom, prixUnitaire: pr, quantite: 1, categorie: p.categorie||'', sauces: [], interdits: [], epice: 'Normal', sel: 'Normal'});
+        c.innerHTML = '<div style="text-align:center;padding:40px;color:#ef4444;">Erreur : POS non chargé</div>';
+    }
+}
+
+// ==================== MASQUER LES ÉLÉMENTS ADMIN DANS LE CLIENT ====================
+function masquerElementsAdminDansClient() {
+    // ✅ Masquer la barre multi-paniers
+    var multiCartBar = document.querySelector('#clientDynamicContent .pos-multi-carts-bar');
+    if (multiCartBar) multiCartBar.style.display = 'none';
+
+    // ✅ Masquer le bouton Tables
+    var tablesBtn = document.getElementById('posTablesBtn');
+    if (tablesBtn) tablesBtn.style.display = 'none';
+
+    // ✅ Masquer le bouton En ligne
+    var enligneBtn = document.getElementById('posEnLigneBtn');
+    if (enligneBtn) enligneBtn.style.display = 'none';
+
+    // ✅ Masquer le champ Vendeur (pas nécessaire pour le client)
+    var vendeurGroup = document.getElementById('posVendeur');
+    if (vendeurGroup) {
+        var parent = vendeurGroup.closest('div[style*="margin-bottom"]');
+        if (parent) parent.style.display = 'none';
+    }
+
+    // ✅ Masquer le champ Table (le client n'a pas besoin de table)
+    var tableInput = document.getElementById('posTableNum');
+    if (tableInput) {
+        var parent = tableInput.closest('div[style*="margin-bottom"]');
+        if (parent) parent.style.display = 'none';
+    }
+
+    // ✅ Masquer le séparateur "— OU —"
+    var separator = document.querySelector('#clientDynamicContent div[style*="OU"]');
+    if (separator) separator.style.display = 'none';
+
+    // ✅ Masquer le bouton "Nouveau client" (le client ne crée pas de clients)
+    var nouveauBtn = document.querySelector('#clientDynamicContent button[onclick*="posAjouterNouveauClient"]');
+    if (nouveauBtn) nouveauBtn.style.display = 'none';
+
+    // ✅ Masquer le champ de recherche client (le client est déjà identifié)
+    var clientSearchInput = document.getElementById('posClientSearchInput');
+    if (clientSearchInput) {
+        var parent = clientSearchInput.closest('div[style*="position:relative"]');
+        if (parent) parent.style.display = 'none';
+    }
+    var clientLabel = document.querySelector('#clientDynamicContent label');
+    // Masquer le label "Client" associé
+    var allLabels = document.querySelectorAll('#clientDynamicContent label');
+    allLabels.forEach(function(lbl) {
+        if (lbl.textContent.trim() === 'Client') {
+            var parentDiv = lbl.closest('div[style*="display:flex"]');
+            if (parentDiv) parentDiv.style.display = 'none';
         }
-        renderClientPOS();
+    });
+
+    // ✅ Masquer le bouton Crédit et Partiel (le client paie en espèces uniquement)
+    var creditBtn = document.getElementById('posCreditBtn');
+    if (creditBtn) creditBtn.style.display = 'none';
+    var partielBtn = document.getElementById('posPartielBtn');
+    if (partielBtn) partielBtn.style.display = 'none';
+
+    // ✅ Changer le texte du bouton "Finaliser" en "Commander"
+    var finalizeBtn = document.querySelector('#clientDynamicContent .pos-finalize-btn');
+    if (finalizeBtn) {
+        finalizeBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Envoyer la commande';
+    }
+
+    // ✅ Changer le titre "Panier" (déjà bon)
+    // ✅ Changer le titre "Paiement" en "Confirmation"
+    var paymentHeader = document.querySelector('#clientDynamicContent .pos-cart-header h3');
+    if (paymentHeader && paymentHeader.textContent.indexOf('Paiement') !== -1) {
+        paymentHeader.innerHTML = '<i class="fas fa-clipboard-check"></i> Confirmation';
     }
 }
 
-async function clientOpenOptionsModal(pid) {
-    var p = clientProductsList.find(function(x) { return x.id === pid; });
-    if (!p) return;
-    if (p.stock !== undefined && p.stock <= 0) { alert('Rupture de stock'); return; }
-
-    if (typeof allStockData === 'undefined' || allStockData.length === 0) {
-        try {
-            const snap = await db.collection('stock').orderBy('nom').get();
-            allStockData = [];
-            snap.forEach(d => { let dd = d.data(); dd.id = d.id; allStockData.push(dd); });
-        } catch(e) { console.error(e); }
+// ==================== SURCHARGER posFinalizeSale POUR LE CLIENT ====================
+window.posFinalizeSaleOriginal = window.posFinalizeSale;
+window.posFinalizeSale = async function() {
+    // ✅ Si on est en mode client, envoyer une commande au lieu de finaliser une vente
+    if (window.posIsClientMode) {
+        return await clientValidateOrder();
     }
-
-    try {
-        const doc = await db.collection('products').doc(pid).get();
-        if (doc.exists) {
-            var productData = doc.data();
-            var productIngredients = productData.ingredients || [];
-        } else {
-            var productIngredients = [];
-        }
-    } catch(e) { var productIngredients = []; }
-
-    var grouped = {};
-    productIngredients.forEach(function(ing) {
-        var stockItem = allStockData.find(function(s) { return s.id === ing.idStock; });
-        var cat = stockItem ? stockItem.categorie : 'Autre';
-        if (!grouped[cat]) grouped[cat] = [];
-        grouped[cat].push(ing.nom);
-    });
-    var order = ['Sauces', 'Légumes', 'Fruits', 'Viande', 'Poulet', 'Poisson'];
-    var sortedCats = Object.keys(grouped).sort(function(a, b) {
-        var idxA = order.indexOf(a), idxB = order.indexOf(b);
-        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-        if (idxA !== -1) return -1;
-        if (idxB !== -1) return 1;
-        return a.localeCompare(b);
-    });
-
-    clientCurrentProductId = pid;
-    var h = '<h4>' + escapeHtml(p.nom) + '</h4>';
-    if (sortedCats.length === 0) {
-        h += '<div style="margin-bottom:12px;color:#94a3b8;">Aucun ingrédient à exclure</div>';
-    } else {
-        sortedCats.forEach(function(cat) {
-            h += '<div style="margin-bottom:12px;"><label style="font-weight:600;">🥫 ' + escapeHtml(cat) + '</label><div style="display:flex;flex-wrap:wrap;gap:5px;">';
-            grouped[cat].forEach(function(ing) {
-                h += '<label style="display:flex;align-items:center;gap:4px;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;font-size:0.75rem;">';
-                h += '<input type="checkbox" class="client-interdit-check" value="' + escapeHtml(ing) + '"> ' + escapeHtml(ing);
-                h += '</label>';
-            });
-            h += '</div></div>';
-        });
+    // Sinon comportement admin normal
+    if (typeof window.posFinalizeSaleOriginal === 'function') {
+        return await window.posFinalizeSaleOriginal();
     }
+};
 
-    h += '<div style="margin-bottom:12px;"><label style="font-weight:600;">🌶️ Épices:</label><div style="display:flex;flex-wrap:wrap;gap:5px;">';
-    clientEpicesList.forEach(function(s, idx) {
-        h += '<label style="display:flex;align-items:center;gap:4px;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;font-size:0.75rem;"><input type="radio" name="client-epice" value="' + s + '" ' + (idx === 0 ? 'checked' : '') + '> ' + s + '</label>';
-    });
-    h += '</div></div>';
-    h += '<div style="margin-bottom:12px;"><label style="font-weight:600;">🧂 Sel:</label><div style="display:flex;flex-wrap:wrap;gap:5px;">';
-    clientSelList.forEach(function(s, idx) {
-        h += '<label style="display:flex;align-items:center;gap:4px;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;cursor:pointer;font-size:0.75rem;"><input type="radio" name="client-sel" value="' + s + '" ' + (idx === 0 ? 'checked' : '') + '> ' + s + '</label>';
-    });
-    h += '</div></div>';
-
-    h += '<div style="text-align:right;"><button class="btn-cancel" onclick="closeModal()">Annuler</button><button class="btn-save" onclick="clientConfirmOptions()">Ajouter</button></div>';
-    openModal('Personnaliser - ' + escapeHtml(p.nom), h);
-}
-
-function clientConfirmOptions() {
-    var interdits = []; document.querySelectorAll('.client-interdit-check:checked').forEach(function(cb) { interdits.push(cb.value); });
-    var epice = document.querySelector('input[name="client-epice"]:checked'); epice = epice ? epice.value : 'Normal';
-    var sel = document.querySelector('input[name="client-sel"]:checked'); sel = sel ? sel.value : 'Normal';
-    var p = clientProductsList.find(function(x) { return x.id === clientCurrentProductId; });
-    if (!p) { closeModal(); return; }
-    var ex = clientCart.find(function(x) { return x.id === clientCurrentProductId; });
-    if (ex) {
-        if (p.stock !== undefined && ex.quantite >= p.stock) { alert('Stock insuffisant'); closeModal(); return; }
-        ex.quantite += 1;
-    } else {
-        var pr = p.prixPromo && p.prixPromo > 0 ? p.prixPromo : p.prixVente;
-        clientCart.push({id: p.id, nom: p.nom, prixUnitaire: pr, quantite: 1, categorie: p.categorie||'', sauces: [], interdits: interdits, epice: epice, sel: sel});
-    }
-    closeModal(); renderClientPOS();
-}
-
-function renderClientPOS() {
-    var c = document.getElementById('clientDynamicContent'); if (!c) return;
-    var total = clientCalculateTotal();
-    var h = '<div class="pos-container"><div class="pos-products-panel"><div class="pos-categories-bar"><button class="pos-cat-btn '+(clientSelectedCategory==='all'?'active':'')+'" onclick="clientFilterCategory(\'all\')"><i class="fas fa-th-large"></i> Tous</button>';
-    for (var i = 0; i < clientCategoriesList.length; i++) { var ca = clientCategoriesList[i]; var ac = clientSelectedCategory===ca.nom?'active':''; var ih = ca.imageBase64?'<img src="'+escapeHtml(ca.imageBase64)+'" alt="'+escapeHtml(ca.nom)+'">':'<i class="fas fa-folder"></i>'; h += '<button class="pos-cat-btn '+ac+'" onclick="clientFilterCategory(\''+escapeHtml(ca.nom).replace(/'/g,"\\'")+'\')">'+ih+' '+escapeHtml(ca.nom)+'</button>'; }
-    h += '</div><div class="pos-products-grid">';
-    var f = clientProductsList; if (clientSelectedCategory!=='all') f = clientProductsList.filter(function(p){return p.categorie===clientSelectedCategory;});
-    if (f.length===0) { h += '<div style="grid-column:1/-1;text-align:center;padding:40px;">Aucun produit</div>'; }
-    else { for (var j = 0; j < f.length; j++) { var p = f[j]; var pr = p.prixPromo&&p.prixPromo>0?p.prixPromo:p.prixVente; var hp = p.prixPromo&&p.prixPromo>0; h += '<div class="pos-product-card" onclick="clientAddToCartOrOpenOptions(\''+p.id+'\')">'; if (p.imageBase64) h += '<div class="pos-product-img"><img src="'+escapeHtml(p.imageBase64)+'" alt="'+escapeHtml(p.nom)+'"></div>'; else h += '<div class="pos-product-img pos-product-placeholder"><i class="fas fa-box"></i></div>'; h += '<div class="pos-product-info"><span class="pos-product-name">'+escapeHtml(p.nom)+'</span><span class="pos-product-price">'; if (hp) h += '<span class="pos-old-price">'+p.prixVente.toFixed(2)+'</span> <span class="pos-promo-price">'+pr.toFixed(2)+' MAD</span>'; else h += pr.toFixed(2)+' MAD'; h += '</span></div></div>'; } }
-    h += '</div></div><div class="pos-cart-panel"><div class="pos-cart-header"><h3><i class="fas fa-shopping-cart"></i> Mon Panier <span class="pos-cart-badge">'+clientCart.length+'</span></h3><button class="pos-clear-btn" onclick="clientClearCart()"><i class="fas fa-trash-alt"></i> Vider</button></div><div class="pos-cart-items">';
-    if (clientCart.length===0) { h += '<div class="pos-cart-empty"><i class="fas fa-shopping-basket"></i><p>Panier vide</p></div>'; }
-    else { for (var k = 0; k < clientCart.length; k++) { var it = clientCart[k]; var opts = ''; if (it.interdits&&it.interdits.length>0) opts += ' <span style="color:#ef4444;font-size:0.6rem;">🚫'+escapeHtml(it.interdits.join(','))+'</span>'; if (it.epice&&it.epice!=='Normal') opts += ' <span style="color:#d97706;font-size:0.6rem;">🌶️'+escapeHtml(it.epice)+'</span>'; if (it.sel&&it.sel!=='Normal') opts += ' <span style="color:#4f46e5;font-size:0.6rem;">🧂'+escapeHtml(it.sel)+'</span>'; h += '<div class="pos-cart-item"><div class="pos-cart-item-info"><span class="pos-cart-item-name">'+escapeHtml(it.nom)+opts+'</span><span class="pos-cart-item-price">'+it.prixUnitaire.toFixed(2)+' MAD/u</span></div><div class="pos-cart-item-actions"><button class="pos-qty-btn" onclick="clientUpdateQty('+k+',-1)"><i class="fas fa-minus"></i></button><span class="pos-qty-value">'+it.quantite+'</span><button class="pos-qty-btn" onclick="clientUpdateQty('+k+',1)"><i class="fas fa-plus"></i></button><button class="pos-remove-btn" onclick="clientRemoveItem('+k+')"><i class="fas fa-times"></i></button></div><span class="pos-cart-item-total">'+(it.prixUnitaire*it.quantite).toFixed(2)+' MAD</span></div>'; } }
-    h += '</div><div class="pos-cart-footer"><div class="pos-cart-total-row"><span>Total</span><span>'+total.toFixed(2)+' MAD</span></div><button class="pos-validate-btn" onclick="clientValidateOrder()" '+(clientCart.length===0?'disabled':'')+'><i class="fas fa-check-circle"></i> Commander</button></div></div></div>';
-    c.innerHTML = h;
-}
-
-function clientFilterCategory(ca) { clientSelectedCategory = ca; renderClientPOS(); }
-function clientUpdateQty(i, ch) { var it = clientCart[i]; if (!it) return; var p = clientProductsList.find(function(x) { return x.id === it.id; }); var nq = it.quantite + ch; if (nq <= 0) clientCart.splice(i, 1); else { if (p && p.stock !== undefined && nq > p.stock) { alert('Stock max: ' + p.stock); return; } it.quantite = nq; } renderClientPOS(); }
-function clientRemoveItem(i) { clientCart.splice(i, 1); renderClientPOS(); }
-function clientCalculateTotal() { var t = 0; for (var i = 0; i < clientCart.length; i++) t += clientCart[i].prixUnitaire * clientCart[i].quantite; return t; }
-function clientClearCart() { clientCart = []; renderClientPOS(); }
-
+// ==================== VALIDATION COMMANDE CLIENT ====================
 async function clientValidateOrder() {
-    if (clientCart.length === 0) { alert('Votre panier est vide'); return; }
-    var total = clientCalculateTotal(); var ud = window.currentUserData ? window.currentUserData.userData : {};
+    if (posCart.length === 0) {
+        alert('❌ Votre panier est vide. Ajoutez des articles avant de commander.');
+        return;
+    }
+
+    // ✅ Confirmation
+    if (!confirm('Voulez-vous envoyer votre commande ?\n\nTotal: ' + posCalculateTotal().toFixed(2) + ' MAD')) {
+        return;
+    }
+
+    var total = posCalculateTotal();
+    var ud = window.currentUserData ? window.currentUserData.userData : {};
+
     var orderData = {
-        items: JSON.parse(JSON.stringify(clientCart)),
+        items: JSON.parse(JSON.stringify(posCart)),
         total: total,
         clientId: window.currentUserData ? window.currentUserData.uid : null,
-        clientName: ud.prenom + ' ' + ud.nom,
-        clientEmail: ud.email,
-        clientTelephone: ud.telephone,
+        clientName: (ud.prenom || '') + ' ' + (ud.nom || ''),
+        clientEmail: ud.email || '',
+        clientTelephone: ud.telephone || '',
         statut: 'en_attente',
         source: 'client',
+        paymentMethod: 'espece',
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
     };
-    await CacheDB.write('commandes', null, orderData, 'add');
-    alert('✅ Commande envoyée !\nTotal: ' + total.toFixed(2) + ' MAD');
-    clientCart = [];
-    renderClientPOS();
-    CacheDB.sync();
+
+    try {
+        await CacheDB.write('commandes', null, orderData, 'add');
+        alert('✅ Commande envoyée !\n\nTotal: ' + total.toFixed(2) + ' MAD\n\nNous vous contacterons bientôt.');
+
+        // ✅ Réinitialiser
+        posCart = [];
+        clientCart = [];
+        posStep = 1;
+        clientStep = 1;
+        posMultiCarts['client-panier'] = [];
+        renderClientPOS();
+
+        CacheDB.sync();
+
+        if (typeof CacheDB !== 'undefined' && CacheDB.saveCollection) {
+            setTimeout(function() {
+                CacheDB.saveCollection('commandes');
+            }, 500);
+        }
+    } catch(e) {
+        console.error('❌ Erreur commande:', e);
+        alert('❌ Erreur lors de l\'envoi: ' + e.message);
+    }
 }
+
+// ==================== SURCHARGER posResetCart POUR LE CLIENT ====================
+window.posResetCartOriginal = window.posResetCart;
+window.posResetCart = function() {
+    if (window.posIsClientMode) {
+        posCart = [];
+        clientCart = [];
+        posMultiCarts['client-panier'] = [];
+        posDiscountMAD = 0;
+        posAmountGiven = 0;
+        posCurrentClient = window.currentUserData ? {
+            id: window.currentUserData.uid,
+            name: window.currentUserData.userData.prenom + ' ' + window.currentUserData.userData.nom
+        } : null;
+        posCurrentTable = '';
+        posPaymentMethod = 'espece';
+        if (typeof renderClientPOS === 'function') renderClientPOS();
+        return;
+    }
+    if (typeof window.posResetCartOriginal === 'function') {
+        return window.posResetCartOriginal();
+    }
+};
+
+// ==================== SURCHARGER posGoToStep2 POUR LE CLIENT ====================
+window.posGoToStep2Original = window.posGoToStep2;
+window.posGoToStep2 = function() {
+    if (window.posIsClientMode) {
+        posMultiCarts['client-panier'] = posCart.slice();
+        posStep = 2;
+        clientStep = 2;
+        clientCart = posCart.slice();
+        renderClientPOS();
+        return;
+    }
+    if (typeof window.posGoToStep2Original === 'function') {
+        return window.posGoToStep2Original();
+    }
+};
+
+// ==================== SURCHARGER posGoToStep1 POUR LE CLIENT ====================
+window.posGoToStep1Original = window.posGoToStep1;
+window.posGoToStep1 = function() {
+    if (window.posIsClientMode) {
+        posStep = 1;
+        clientStep = 1;
+        posCart = posMultiCarts['client-panier'] || [];
+        clientCart = posCart.slice();
+        renderClientPOS();
+        return;
+    }
+    if (typeof window.posGoToStep1Original === 'function') {
+        return window.posGoToStep1Original();
+    }
+};
+
+// ==================== SURCHARGER renderPOS POUR LE CLIENT ====================
+window.renderPOSOriginal = window.renderPOS;
+window.renderPOS = function() {
+    if (window.posIsClientMode) {
+        return renderClientPOS();
+    }
+    if (typeof window.renderPOSOriginal === 'function') {
+        return window.renderPOSOriginal();
+    }
+};
+
+// ==================== SURCHARGER filterProductGrid POUR LE CLIENT ====================
+// (pour s'assurer que le rendu se fait dans #clientDynamicContent)
+window.filterProductGridOriginal = window.filterProductGrid;
+window.filterProductGrid = function() {
+    if (window.posIsClientMode) {
+        // Utiliser la grille dans #clientDynamicContent
+        var grid = document.getElementById('posProductGrid');
+        if (grid) {
+            // Le code de filterProductGrid utilise document.getElementById('posProductGrid')
+            // qui est unique, donc ça fonctionne tel quel
+        }
+    }
+    if (typeof window.filterProductGridOriginal === 'function') {
+        return window.filterProductGridOriginal();
+    }
+};
+
+// ==================== SURCHARGER updateCartOnly POUR LE CLIENT ====================
+window.updateCartOnlyOriginal = window.updateCartOnly;
+window.updateCartOnly = function() {
+    if (window.posIsClientMode) {
+        clientCart = posCart.slice();
+    }
+    if (typeof window.updateCartOnlyOriginal === 'function') {
+        return window.updateCartOnlyOriginal();
+    }
+};
+
+// ==================== SURCHARGER posToggleTools POUR LE CLIENT ====================
+// ✅ Le client veut : bouton "Afficher tout" → affiche UNIQUEMENT la barre de recherche + le micro
+// ✅ Masque : barre des catégories slide, btn Tables, btn En ligne
+window.posToggleToolsOriginal = window.posToggleTools;
+window.posToggleTools = function() {
+    if (window.posIsClientMode) {
+        posToolsVisible = !posToolsVisible;
+        var toolsContainer = document.getElementById('posToolsContainer');
+        var toggleBtn = document.getElementById('posToggleToolsBtn');
+
+        if (toolsContainer) {
+            if (posToolsVisible) {
+                toolsContainer.style.display = 'flex';
+                toolsContainer.style.flexDirection = 'column';
+                toolsContainer.style.gap = '8px';
+                toolsContainer.style.marginBottom = '8px';
+                toolsContainer.style.padding = '8px 12px';
+                toolsContainer.style.background = 'var(--bg-page)';
+                toolsContainer.style.borderRadius = '8px';
+                toolsContainer.style.border = '1px solid var(--border)';
+                toolsContainer.classList.add('visible');
+            } else {
+                toolsContainer.style.display = 'none';
+                toolsContainer.classList.remove('visible');
+            }
+        }
+
+        if (toggleBtn) {
+            toggleBtn.innerHTML = posToolsVisible ? '✕ Masquer' : '🔍 Afficher tout';
+            toggleBtn.style.background = posToolsVisible ? '#ef4444' : '#14B8A6';
+        }
+
+        // ✅ Afficher UNIQUEMENT la barre de recherche
+        var searchInput = document.getElementById('posSearchInput');
+        if (searchInput) {
+            searchInput.style.display = posToolsVisible ? 'flex' : 'none';
+            if (posToolsVisible) {
+                setTimeout(function() { searchInput.focus(); }, 100);
+            }
+        }
+
+        // ✅ Afficher le micro
+        var micBtn = document.getElementById('posMicBtn');
+        if (micBtn) {
+            micBtn.style.display = posToolsVisible ? 'flex' : 'none';
+        }
+
+        // ✅ MASQUER les boutons Tables et En ligne
+        var tablesBtn = document.getElementById('posTablesBtn');
+        if (tablesBtn) tablesBtn.style.display = 'none';
+        var enligneBtn = document.getElementById('posEnLigneBtn');
+        if (enligneBtn) enligneBtn.style.display = 'none';
+
+        // ✅ MASQUER la barre des catégories (slide)
+        var categoriesBar = document.querySelector('#clientDynamicContent .pos-categories-bar');
+        if (categoriesBar) categoriesBar.style.display = 'none';
+
+        // ✅ Si on masque, revenir aux catégories (cartes)
+        if (!posToolsVisible) {
+            posViewMode = 'categories';
+            posSelectedCategoryForView = null;
+            posSelectedCategory = 'all';
+            posSearchQuery = '';
+            posProductOffset = 0;
+
+            var searchInput2 = document.getElementById('posSearchInput');
+            if (searchInput2) searchInput2.value = '';
+
+            var clearBtn = document.getElementById('posSearchClearBtn');
+            if (clearBtn) clearBtn.style.display = 'none';
+
+            if (typeof filterProductGrid === 'function') filterProductGrid();
+        }
+        return;
+    }
+    if (typeof window.posToggleToolsOriginal === 'function') {
+        return window.posToggleToolsOriginal();
+    }
+};
 
 // ==================== PAGE HISTORIQUE ====================
 async function loadClientHistoriquePage() {
-    var c = document.getElementById('clientDynamicContent'); if (!c) return;
+    var c = document.getElementById('clientDynamicContent');
+    if (!c) return;
+
+    // ✅ Désactiver le mode client POS
+    window.posIsClientMode = false;
+
     c.innerHTML = '<div class="content-card"><div class="card-header"><h3><i class="fas fa-history"></i> Mon historique</h3></div><div id="clientOrdersList" style="text-align:center;padding:20px;">Chargement...</div></div>';
-    if (!window.currentUserData) { var cont0 = document.getElementById('clientOrdersList'); if (cont0) cont0.innerHTML = '<p>Non connecté</p>'; return; }
-    var uid = window.currentUserData.uid, clientName = (window.currentUserData.userData.prenom + ' ' + window.currentUserData.userData.nom).toLowerCase().trim(), clientEmail = (window.currentUserData.userData.email || '').toLowerCase().trim(), clientTelephone = (window.currentUserData.userData.telephone || '').trim();
+
+    if (!window.currentUserData) {
+        var cont0 = document.getElementById('clientOrdersList');
+        if (cont0) cont0.innerHTML = '<p>Non connecté</p>';
+        return;
+    }
+
+    var uid = window.currentUserData.uid;
+
     try {
-        let cmdSnap, venteSnap;
-        try {
-            cmdSnap = await db.collection('commandes').where('clientId', '==', uid).get();
-            venteSnap = await db.collection('ventes').where('clientId', '==', uid).get();
-        } catch(e) {
-            cmdSnap = await db.collection('commandes').get();
-            venteSnap = await db.collection('ventes').get();
-        }
+        var cmdSnap = await db.collection('commandes').where('clientId', '==', uid).get();
         var all = [];
-        cmdSnap.forEach(function(d) { var cmd = d.data(); if (cmd.clientId === uid) all.push({type: 'commande', data: cmd, date: cmd.createdAt}); });
-        venteSnap.forEach(function(d) { var v = d.data(); if (v.clientId === uid) all.push({type: 'vente', data: v, date: v.createdAt}); });
-        all.sort(function(a, b) { return (b.date?.seconds || 0) - (a.date?.seconds || 0); }); all = all.slice(0, 50);
-        var cont = document.getElementById('clientOrdersList'); if (!cont) return;
-        if (all.length === 0) { cont.innerHTML = '<p style="padding:40px;color:#94a3b8;"><i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:10px;"></i>Aucun historique</p>'; return; }
-        var h = '<div class="table-container"><table class="data-table" style="font-size:0.75rem;"><thead><tr><th>Date</th><th>Type</th><th>N° Facture</th><th>Articles</th><th>Total</th><th>Vendeur</th><th>Paiement</th><th>Statut</th></tr></thead><tbody>';
-        all.forEach(function(item) { var d = item.data, date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString('fr-FR') : '', type = item.type === 'commande' ? '<span class="status-warning">🛒 Commande</span>' : '<span style="color:#14B8A6;">💰 Vente</span>', facture = d.factureNum || '-', arts = d.items ? d.items.map(function(it) { return it.quantite + 'x ' + escapeHtml(it.nom); }).join('<br>') : '-', vendeur = d.vendeur || d.createdBy || '-', paiement = d.paymentMethod === 'espece' ? 'Espèces' : d.paymentMethod === 'credit' ? 'Crédit' : d.paymentMethod === 'partiel' ? 'Partiel' : '-', statut = item.type === 'commande' ? (d.statut === 'valide' ? '✅ Validée' : d.statut === 'payé' ? '💵 Payée' : '⏳ En attente') : (d.paid ? '✅ Payé' : d.statutPaiement === 'crédit' ? '📋 Crédit' : d.statutPaiement === 'partiel' ? '🔶 Partiel' : '⏳ En attente'), sc = (statut.includes('✅') || statut.includes('💵')) ? '#16a34a' : '#d97706'; h += '<tr><td>' + date + '</td><td>' + type + '</td><td><small>' + facture + '</small></td><td><small>' + arts + '</small><td><strong>' + (d.total || 0).toFixed(2) + ' MAD</strong></td><td>' + vendeur + '</td><td>' + paiement + '</td><td><span style="color:' + sc + ';">' + statut + '</span></td></tr>'; });
-        h += '</tbody></table></div>'; cont.innerHTML = h;
-    } catch(e) { var cont2 = document.getElementById('clientOrdersList'); if (cont2) cont2.innerHTML = '<p style="color:#ef4444;">Erreur</p>'; }
+        cmdSnap.forEach(function(d) {
+            var cmd = d.data();
+            all.push({ type: 'commande', data: cmd, date: cmd.createdAt });
+        });
+        all.sort(function(a, b) { return (b.date?.seconds || 0) - (a.date?.seconds || 0); });
+        all = all.slice(0, 50);
+
+        var cont = document.getElementById('clientOrdersList');
+        if (!cont) return;
+
+        if (all.length === 0) {
+            cont.innerHTML = '<p style="padding:40px;color:#94a3b8;text-align:center;"><i class="fas fa-inbox" style="font-size:2rem;display:block;margin-bottom:10px;"></i>Aucune commande</p>';
+            return;
+        }
+
+        var h = '<div class="table-container"><table class="data-table"><thead><tr><th>Date</th><th>Articles</th><th>Total</th><th>Statut</th></tr></thead><tbody>';
+        all.forEach(function(item) {
+            var d = item.data;
+            var date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleString('fr-FR') : '';
+            var arts = d.items ? d.items.map(function(it) { return it.quantite + 'x ' + escapeHtml(it.nom); }).join('<br>') : '-';
+            var statut = d.statut === 'valide' ? '<span class="status-success">✅ Validée</span>'
+                       : d.statut === 'payé' ? '<span class="status-success">💵 Payée</span>'
+                       : '<span class="status-warning">⏳ En attente</span>';
+            h += '<tr><td>' + date + '</td><td>' + arts + '</td><td><strong>' + (d.total || 0).toFixed(2) + ' MAD</strong></td><td>' + statut + '</td></tr>';
+        });
+        h += '</tbody></table></div>';
+        cont.innerHTML = h;
+    } catch(e) {
+        console.error('Erreur historique:', e);
+        var cont2 = document.getElementById('clientOrdersList');
+        if (cont2) cont2.innerHTML = '<p style="color:#ef4444;">Erreur de chargement</p>';
+    }
 }
 
 // ==================== PAGE PARAMÈTRES ====================
 async function loadClientParametresPage() {
     var c = document.getElementById('clientDynamicContent');
     if (!c) return;
+
+    // ✅ Désactiver le mode client POS
+    window.posIsClientMode = false;
+
     if (!window.currentUserData) { c.innerHTML = '<div class="content-card"><p>Non connecté</p></div>'; return; }
-    var clientData = null;
-    var clientDocId = null;
+
+    var clientData = null, clientDocId = null;
     var userEmail = window.currentUserData.userData.email;
     try {
         var clientSnap = await db.collection('clients').where('email', '==', userEmail).get();
         if (!clientSnap.empty) { clientDocId = clientSnap.docs[0].id; clientData = clientSnap.docs[0].data(); }
-    } catch(e) { console.error('Erreur chargement profil:', e); }
+    } catch(e) { console.error(e); }
     if (!clientData) clientData = window.currentUserData.userData;
+
     var dateCreated = clientData.createdAt ? new Date(clientData.createdAt.seconds * 1000).toLocaleString('fr-FR') : 'N/A';
+
     var h = '<div class="content-card"><div class="card-header"><h3><i class="fas fa-user-circle"></i> Mon Profil</h3></div>';
-    h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:0.9rem;">';
-    h += '<div><strong>ID:</strong> ' + (clientDocId ? clientDocId.substring(0, 8) : 'N/A') + '</div>';
+    h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;font-size:0.9rem;">';
     h += '<div><strong>Nom:</strong> ' + escapeHtml(clientData.nom || '') + '</div>';
     h += '<div><strong>Prénom:</strong> ' + escapeHtml(clientData.prenom || '') + '</div>';
-    h += '<div><strong>Username:</strong> @' + escapeHtml(clientData.username || '') + '</div>';
-    h += '<div><strong>Genre:</strong> ' + escapeHtml(clientData.genre || '-') + '</div>';
-    h += '<div><strong>Adresse:</strong> ' + escapeHtml(clientData.adresse || '-') + '</div>';
     h += '<div><strong>Email:</strong> ' + escapeHtml(clientData.email || '') + '</div>';
     h += '<div><strong>Tél:</strong> ' + escapeHtml(clientData.telephone || '-') + '</div>';
-    h += '<div><strong>WhatsApp:</strong> ' + escapeHtml(clientData.whatsapp || '-') + '</div>';
-    h += '<div><strong>Facebook:</strong> ' + escapeHtml(clientData.facebook || '-') + '</div>';
-    h += '<div><strong>Instagram:</strong> ' + escapeHtml(clientData.instagram || '-') + '</div>';
+    h += '<div><strong>Adresse:</strong> ' + escapeHtml(clientData.adresse || '-') + '</div>';
     h += '<div><strong>Points Fidélité:</strong> ' + (clientData.pointsFidelite || 0) + '</div>';
-    h += '<div><strong>Allergies:</strong> ' + (clientData.allergies ? clientData.allergies.join(', ') : '-') + '</div>';
-    h += '<div><strong>Aime:</strong> ' + (clientData.aime ? clientData.aime.join(', ') : '-') + '</div>';
-    h += '<div><strong>Déteste:</strong> ' + (clientData.deteste ? clientData.deteste.join(', ') : '-') + '</div>';
-    h += '<div><strong>Date créé:</strong> ' + dateCreated + '</div>';
     h += '</div>';
     h += '<div style="margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;">';
     h += '<button class="btn-add" onclick="clientOpenEditProfile()"><i class="fas fa-edit"></i> Modifier mon profil</button>';
     h += '<button class="btn-save" onclick="clientOpenChangePassword()"><i class="fas fa-lock"></i> Changer mot de passe</button>';
-    h += '</div>';
-    h += '</div>';
+    h += '</div></div>';
     c.innerHTML = h;
     window.clientProfileData = clientData;
     window.clientProfileDocId = clientDocId;
@@ -298,12 +571,8 @@ async function loadClientParametresPage() {
 function clientOpenEditProfile() {
     var data = window.clientProfileData || window.currentUserData.userData;
     var h = '';
-    h += '<div class="form-row"><div class="form-group"><label>Nom *</label><input type="text" id="clientEditNom" value="' + escapeHtml(data.nom || '') + '" required></div><div class="form-group"><label>Prénom *</label><input type="text" id="clientEditPrenom" value="' + escapeHtml(data.prenom || '') + '" required></div></div>';
-    h += '<div class="form-row"><div class="form-group"><label>Genre</label><select id="clientEditGenre"><option value="">-</option><option value="M" ' + (data.genre === 'M' ? 'selected' : '') + '>M</option><option value="F" ' + (data.genre === 'F' ? 'selected' : '') + '>F</option></select></div><div class="form-group"><label>Adresse</label><input type="text" id="clientEditAdresse" value="' + escapeHtml(data.adresse || '') + '"></div></div>';
-    h += '<div class="form-row"><div class="form-group"><label>Téléphone</label><input type="text" id="clientEditTel" value="' + escapeHtml(data.telephone || '') + '"></div><div class="form-group"><label>WhatsApp</label><input type="text" id="clientEditWhatsapp" value="' + escapeHtml(data.whatsapp || '') + '"></div></div>';
-    h += '<div class="form-row"><div class="form-group"><label>Facebook</label><input type="text" id="clientEditFacebook" value="' + escapeHtml(data.facebook || '') + '"></div><div class="form-group"><label>Instagram</label><input type="text" id="clientEditInstagram" value="' + escapeHtml(data.instagram || '') + '"></div></div>';
-    h += '<div class="form-row"><div class="form-group"><label>Allergies (virgules)</label><input type="text" id="clientEditAllergies" value="' + (data.allergies ? data.allergies.join(', ') : '') + '" placeholder="gluten, lactose"></div><div class="form-group"><label>Aime (virgules)</label><input type="text" id="clientEditAime" value="' + (data.aime ? data.aime.join(', ') : '') + '" placeholder="café, thé"></div></div>';
-    h += '<div class="form-row"><div class="form-group"><label>Déteste (virgules)</label><input type="text" id="clientEditDeteste" value="' + (data.deteste ? data.deteste.join(', ') : '') + '" placeholder="oignon, tomate"></div></div>';
+    h += '<div class="form-row"><div class="form-group"><label>Nom *</label><input type="text" id="clientEditNom" value="' + escapeHtml(data.nom || '') + '"></div><div class="form-group"><label>Prénom *</label><input type="text" id="clientEditPrenom" value="' + escapeHtml(data.prenom || '') + '"></div></div>';
+    h += '<div class="form-row"><div class="form-group"><label>Téléphone</label><input type="text" id="clientEditTel" value="' + escapeHtml(data.telephone || '') + '"></div><div class="form-group"><label>Adresse</label><input type="text" id="clientEditAdresse" value="' + escapeHtml(data.adresse || '') + '"></div></div>';
     h += '<button class="btn-cancel" onclick="closeModal()">Annuler</button><button class="btn-save" onclick="clientSaveProfile()">Enregistrer</button>';
     openModal('✏️ Modifier mon profil', h);
 }
@@ -314,15 +583,8 @@ async function clientSaveProfile() {
     if (!nom || !prenom) { alert('Nom et Prénom obligatoires'); return; }
     var updatedData = {
         nom: nom, prenom: prenom,
-        genre: document.getElementById('clientEditGenre').value,
-        adresse: document.getElementById('clientEditAdresse').value,
         telephone: document.getElementById('clientEditTel').value,
-        whatsapp: document.getElementById('clientEditWhatsapp').value,
-        facebook: document.getElementById('clientEditFacebook').value,
-        instagram: document.getElementById('clientEditInstagram').value,
-        allergies: document.getElementById('clientEditAllergies').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
-        aime: document.getElementById('clientEditAime').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
-        deteste: document.getElementById('clientEditDeteste').value.split(',').map(function(s) { return s.trim(); }).filter(Boolean),
+        adresse: document.getElementById('clientEditAdresse').value,
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
     try {
@@ -348,10 +610,10 @@ async function clientSaveProfile() {
 }
 
 function clientOpenChangePassword() {
-    var h = '<div class="form-row"><div class="form-group"><label>Mot de passe actuel</label><input type="password" id="clientOldPassword" required></div></div>';
-    h += '<div class="form-row"><div class="form-group"><label>Nouveau mot de passe</label><input type="password" id="clientNewPassword" required minlength="6"></div></div>';
-    h += '<div class="form-row"><div class="form-group"><label>Confirmer nouveau mot de passe</label><input type="password" id="clientConfirmPassword" required minlength="6"></div></div>';
-    h += '<button class="btn-cancel" onclick="closeModal()">Annuler</button><button class="btn-save" onclick="clientChangePassword()">Changer le mot de passe</button>';
+    var h = '<div class="form-row"><div class="form-group"><label>Mot de passe actuel</label><input type="password" id="clientOldPassword"></div></div>';
+    h += '<div class="form-row"><div class="form-group"><label>Nouveau mot de passe</label><input type="password" id="clientNewPassword"></div></div>';
+    h += '<div class="form-row"><div class="form-group"><label>Confirmer</label><input type="password" id="clientConfirmPassword"></div></div>';
+    h += '<button class="btn-cancel" onclick="closeModal()">Annuler</button><button class="btn-save" onclick="clientChangePassword()">Changer</button>';
     openModal('🔒 Changer mot de passe', h);
 }
 
@@ -359,16 +621,15 @@ async function clientChangePassword() {
     var oldPass = document.getElementById('clientOldPassword').value;
     var newPass = document.getElementById('clientNewPassword').value;
     var confirmPass = document.getElementById('clientConfirmPassword').value;
-    if (!oldPass || !newPass || !confirmPass) { alert('Tous les champs sont obligatoires'); return; }
-    if (newPass.length < 6) { alert('Le nouveau mot de passe doit contenir au moins 6 caractères'); return; }
-    if (newPass !== confirmPass) { alert('Les mots de passe ne correspondent pas'); return; }
+    if (!oldPass || !newPass || !confirmPass) { alert('Tous les champs obligatoires'); return; }
+    if (newPass.length < 6) { alert('6 caractères minimum'); return; }
+    if (newPass !== confirmPass) { alert('Ne correspondent pas'); return; }
     var user = auth.currentUser;
-    if (!user) { alert('Vous n\'êtes pas connecté'); return; }
-    var credential = firebase.auth.EmailAuthProvider.credential(user.email, oldPass);
+    if (!user) { alert('Non connecté'); return; }
     try {
-        await user.reauthenticateWithCredential(credential);
+        await user.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(user.email, oldPass));
         await user.updatePassword(newPass);
-        alert('✅ Mot de passe changé avec succès !');
+        alert('✅ Mot de passe changé');
         closeModal();
     } catch(e) {
         if (e.code === 'auth/wrong-password') alert('❌ Mot de passe actuel incorrect');
@@ -376,4 +637,23 @@ async function clientChangePassword() {
     }
 }
 
-console.log('🚀 E-SOLUTION - Client JS prêt');
+// ==================== EXPORTS GLOBAUX ====================
+window.clientNavigate = clientNavigate;
+window.loadClientCommanderPage = loadClientCommanderPage;
+window.renderClientPOS = renderClientPOS;
+window.clientValidateOrder = clientValidateOrder;
+window.loadClientHistoriquePage = loadClientHistoriquePage;
+window.loadClientParametresPage = loadClientParametresPage;
+window.clientOpenEditProfile = clientOpenEditProfile;
+window.clientSaveProfile = clientSaveProfile;
+window.clientOpenChangePassword = clientOpenChangePassword;
+window.clientChangePassword = clientChangePassword;
+window.masquerElementsAdminDansClient = masquerElementsAdminDansClient;
+
+console.log('🚀 E-SOLUTION - Client JS chargé (POS identique à l\'admin)');
+console.log('✅ Réutilise buildFullPOS de pos.js');
+console.log('✅ Barre de recherche via bouton "Afficher tout" + micro uniquement');
+console.log('✅ Sans catégories slide, sans Tables, sans En ligne');
+console.log('✅ Étape de paiement identique');
+console.log('✅ Sans multi-paniers');
+console.log('✅ Mêmes dimensions / même responsive');
