@@ -2098,13 +2098,13 @@ function getPaginationHTML(pageType, totalItems) {
 
 // Fonction pour changer de page
 function changePage(pageType, page) {
-    console.log('🔄 changePage crédits appelé:', pageType, page);
+    console.log('🔄 changePage appelé:', pageType, page);
     
     var totalItems = 0;
-    if (pageType === 'credits') {
-        totalItems = window.filteredCredits ? window.filteredCredits.length : (window.allCreditsData || []).length;
-    } else if (pageType === 'ventes') {
+    if (pageType === 'ventes') {
         totalItems = window.filteredVentes ? window.filteredVentes.length : (window.allVentesData || []).length;
+    } else if (pageType === 'credits') {
+        totalItems = window.filteredCredits ? window.filteredCredits.length : (window.allCreditsData || []).length;
     } else if (pageType === 'commandes') {
         totalItems = window.filteredCommandes ? window.filteredCommandes.length : (window.allCommandesData || []).length;
     }
@@ -2114,13 +2114,13 @@ function changePage(pageType, page) {
     if (page < 1 || page > totalPages) return;
     
     window.currentPages[pageType] = page;
-    console.log('📄 Page courante crédits:', page);
+    console.log('📄 Page courante:', page);
     
     // Re-rendre la page correspondante
-    if (pageType === 'credits' && typeof window.renderCreditsTablePro === 'function') {
-        window.renderCreditsTablePro();
-    } else if (pageType === 'ventes' && typeof window.renderVentesTablePro === 'function') {
+    if (pageType === 'ventes' && typeof window.renderVentesTablePro === 'function') {
         window.renderVentesTablePro();
+    } else if (pageType === 'credits' && typeof window.renderCreditsTablePro === 'function') {
+        window.renderCreditsTablePro();
     } else if (pageType === 'commandes' && typeof window.renderCommandesTablePro === 'function') {
         window.renderCommandesTablePro();
     }
@@ -2257,7 +2257,7 @@ window.confirmerPaiementCreditZero = confirmerPaiementCreditZero;
 window.loadCreditsPage = loadCreditsPage;
 window.loadCredits = loadCredits;
 window.applyCreditsFilters = applyCreditsFilters;
-window.renderCreditsTablePro = renderCreditsTablePro;  // ✅ AJOUT CRITIQUE - Permet à changePage (admin-ventes.js) de re-rendre les crédits
+window.renderCreditsTablePro = renderCreditsTablePro;
 window.editCredit = editCredit;
 window.deleteCredit = deleteCredit;
 window.saveEditCredit = saveEditCredit;
@@ -2301,7 +2301,10 @@ window.validateCreditPayment = validateCreditPayment;
 // ✅ AJOUT DE LA FONCTION WHATSAPP
 window.sendCreditWhatsApp = sendCreditWhatsApp;
 
-// ✅ AJOUT DES FONCTIONS PAGINATION
+// ✅ ALIAS POUR COMPATIBILITÉ avec admin.js (qui appelle renderCreditsTable sans "Pro")
+window.renderCreditsTable = renderCreditsTablePro;
+
+// ✅ PAGINATION - NE PAS écraser les fonctions existantes (admin.js/script.js fonctionnent déjà)
 window.getPaginationHTML = window.getPaginationHTML || getPaginationHTML;
 window.changePage = window.changePage || changePage;
 window.getPageData = window.getPageData || getPageData;
@@ -2320,3 +2323,5 @@ console.log('✅ Filtres rapides : Aujourd\'hui, 3j, 7j, 15j, 30j, 90j, 365j');
 console.log('✅ Paiement crédit : Le champ "Reste à payer" diminue correctement');
 console.log('✅ Synchronisation avec admin ventes : Quand un crédit est payé, la vente se met à jour');
 console.log('✅ Gestion des crédits à 0 MAD : Marqué comme payé automatiquement');
+console.log('✅ ALIAS renderCreditsTable = renderCreditsTablePro (compatibilité admin.js)');
+console.log('✅ changePage NON écrasée (garde la version d\'admin.js)');
