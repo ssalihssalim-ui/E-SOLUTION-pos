@@ -2848,3 +2848,14 @@ opacity: 1 !important;
         width: 320px !important;
     }
 }
+
+
+/* 🔧 FIX SCROLL MENU TACTILE */
+#menuTactilePage {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+}
+
+#menuTactileContent {
+    padding-bottom: 60vh !important;
+}
