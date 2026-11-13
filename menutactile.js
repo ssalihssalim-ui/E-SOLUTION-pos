@@ -106,7 +106,8 @@ function renderMenuTactile() {
     html += '<h1 style="margin:0;font-size:1.4rem;">E-<span style="color:#14B8A6;">SOLUTION</span></h1>';
     html += '<p style="margin:5px 0 0;">🍽️ Table n° ' + menuTableNum + '</p></div>';
     
-    html += '<div style="overflow-x:auto;white-space:nowrap;padding:10px 10px 5px 10px;">';
+    // ✅ FIX 1 : Scroll horizontal catégories isolé du scroll vertical
+    html += '<div style="overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;white-space:nowrap;padding:10px 10px 5px 10px;">';
     html += '<button onclick="menuFilterCategory(\'all\')" style="display:inline-block;padding:8px 16px;margin:0 4px;border-radius:50px;border:2px solid ' + (menuSelectedCategory === 'all' ? '#14B8A6' : '#e2e8f0') + ';background:' + (menuSelectedCategory === 'all' ? '#14B8A6' : '#fff') + ';color:' + (menuSelectedCategory === 'all' ? '#fff' : '#1e293b') + ';font-weight:600;">📋 Tous</button>';
     for (var i = 0; i < menuCategories.length; i++) {
         var cat = menuCategories[i];
@@ -141,7 +142,8 @@ function renderMenuTactile() {
     }
     html += '</div>';
     
-    html += '<div style="position:sticky;bottom:0;background:#fff;padding:12px;border-radius:20px 20px 0 0;box-shadow:0 -2px 15px rgba(0,0,0,0.1);margin-top:10px;">';
+    // ✅ FIX 2 : Panier en position:fixed (ne bloque plus le scroll) avec zone scrollable interne
+    html += '<div style="position:fixed;bottom:0;left:0;right:0;z-index:30;background:#fff;padding:12px;border-radius:20px 20px 0 0;box-shadow:0 -2px 15px rgba(0,0,0,0.15);max-height:55vh;overflow-y:auto;-webkit-overflow-scrolling:touch;">';
     html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><strong>🛒 Mon panier</strong><span style="background:#14B8A6;color:#fff;padding:2px 10px;border-radius:20px;">' + menuCart.length + ' article(s)</span></div>';
     if (menuCart.length === 0) {
         html += '<p style="text-align:center;color:#94a3b8;margin:5px 0;">Cliquez sur un produit</p>';
@@ -161,7 +163,8 @@ function renderMenuTactile() {
     if (menuCart.length > 0) html += '<button onclick="menuClearCart()" style="width:100%;margin-top:8px;padding:6px;border:1px solid #ccc;background:#fff;border-radius:12px;">🗑️ Vider</button>';
     html += '</div>';
     
-    html += '<button onclick="requestFullscreen()" style="position:fixed;bottom:20px;right:20px;background:#14B8A6;color:white;border:none;border-radius:50%;width:45px;height:45px;font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,0.2);cursor:pointer;z-index:1000;">⛶</button>';
+    // ✅ FIX 3 : Bouton plein écran remonté au-dessus du panier fixe
+    html += '<button onclick="requestFullscreen()" style="position:fixed;bottom:calc(55vh + 10px);right:15px;background:#14B8A6;color:white;border:none;border-radius:50%;width:45px;height:45px;font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,0.2);cursor:pointer;z-index:1000;">⛶</button>';
     
     content.innerHTML = html;
 }
