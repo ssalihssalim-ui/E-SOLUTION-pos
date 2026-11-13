@@ -1,13 +1,13 @@
 // ==================== MENU TACTILE - E-SOLUTION ====================
-// 🆕 v9 : Style POS complet — Catégories → Produits + Recherche dynamique + Panier fixe
-// Logo logo.png intégré dans le header
+// 🆕 v10 : Reproduction EXACTE du style POS (variables CSS + couleurs + structure)
+// Logo logo.png + Catégories → Produits + Recherche dynamique + Panier fixe
 
 var menuTableNum = null;
 var menuCart = [];
 var menuCategories = [];
 var menuProducts = [];
 var menuSelectedCategory = 'all';
-var menuViewMode = 'categories'; // 'categories' | 'products'
+var menuViewMode = 'categories';
 var menuSelectedCategoryName = null;
 var menuSearchQuery = '';
 var menuCurrentProductId = null;
@@ -47,11 +47,11 @@ function requestFullscreen() {
 
 // ========== CHARGEMENT ==========
 async function loadMenuData() {
-    console.log('📱 Chargement des données du menu tactile E-SOLUTION...');
+    console.log('📱 Chargement menu tactile E-SOLUTION...');
     var content = document.getElementById('menuTactileContent');
-    if (!content) { console.error('Conteneur introuvable'); return; }
+    if (!content) return;
 
-    content.innerHTML = '<div style="text-align:center;padding:80px 20px;"><i class="fas fa-spinner fa-spin" style="font-size:3rem;color:#2563EB;"></i><p style="margin-top:16px;color:#64748B;font-weight:500;">Chargement du menu...</p></div>';
+    content.innerHTML = '<div style="text-align:center;padding:60px;"><i class="fas fa-spinner fa-spin" style="font-size:2.5rem;color:#14B8A6;"></i><p style="margin-top:15px;color:#64748b;">Chargement du menu...</p></div>';
 
     try {
         const catSnap = await db.collection('categories').get();
@@ -65,7 +65,6 @@ async function loadMenuData() {
                 ordre: d.data().ordre || 0
             });
         });
-        menuCategories.sort((a, b) => (a.ordre || 999) - (b.ordre || 999) || a.nom.localeCompare(b.nom));
 
         const prodSnap = await db.collection('products').get();
         menuProducts = [];
@@ -94,9 +93,10 @@ async function loadMenuData() {
         });
 
         renderMenuTactile();
+        console.log('✅ Menu chargé:', menuCategories.length, 'catégories,', menuProducts.length, 'produits');
     } catch (e) {
-        console.error('Erreur chargement:', e);
-        content.innerHTML = '<div style="text-align:center;padding:50px;"><i class="fas fa-exclamation-circle" style="font-size:3rem;color:#EF4444;"></i><p style="margin-top:12px;">Erreur de chargement</p><button onclick="loadMenuData()" style="margin-top:16px;padding:10px 24px;border:none;border-radius:10px;background:#2563EB;color:#fff;font-weight:600;cursor:pointer;">Réessayer</button></div>';
+        console.error('❌ Erreur:', e);
+        content.innerHTML = '<div style="text-align:center;padding:50px;"><i class="fas fa-exclamation-circle" style="font-size:3rem;color:#ef4444;"></i><p>Erreur de chargement</p><button onclick="loadMenuData()" class="btn-add" style="margin-top:16px;">Réessayer</button></div>';
     }
 }
 
@@ -110,56 +110,52 @@ function renderMenuTactile() {
 
     var html = '';
 
-    // ==================== HEADER avec LOGO ====================
+    // ==================== HEADER ====================
     html += '<div class="menu-header">';
-    html += '  <button class="menu-close-btn" onclick="closeMenuTactile()" aria-label="Fermer"><i class="fas fa-times"></i></button>';
+    html += '  <button class="menu-close-btn" onclick="closeMenuTactile()" aria-label="Fermer">&times;</button>';
     html += '  <div class="menu-header-content">';
     html += '    <div class="menu-logo-wrapper">';
     html += '      <img src="logo.png" alt="Logo" class="menu-logo" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=\\\'fas fa-store\\\'></i>\'">';
     html += '    </div>';
     html += '    <div class="menu-title-wrapper">';
     html += '      <h1>E-<span>SOLUTION</span></h1>';
-    html += '      <p><i class="fas fa-chair"></i> Table n° ' + escapeHtml(String(menuTableNum || '—')) + '</p>';
+    html += '      <p>🍽️ Table n° ' + escapeHtml(String(menuTableNum || '—')) + '</p>';
     html += '    </div>';
     html += '  </div>';
     html += '</div>';
 
-    // ==================== BARRE DE RECHERCHE ====================
+    // ==================== RECHERCHE ====================
     html += '<div class="menu-search-wrapper">';
     html += '  <div class="menu-search-bar">';
     html += '    <i class="fas fa-search menu-search-icon"></i>';
     html += '    <input type="text" id="menuSearchInput" placeholder="🔍 Rechercher un produit..." value="' + escapeHtml(menuSearchQuery) + '" oninput="menuHandleSearch(this.value)" autocomplete="off">';
     if (menuSearchQuery) {
-        html += '    <button class="menu-search-clear" onclick="menuClearSearch()" aria-label="Effacer"><i class="fas fa-times-circle"></i></button>';
+        html += '    <button class="menu-search-clear" onclick="menuClearSearch()"><i class="fas fa-times-circle"></i></button>';
     }
     html += '  </div>';
     html += '</div>';
 
-    // ==================== ZONE CONTENU ====================
+    // ==================== ZONE PRINCIPALE ====================
     html += '<div class="menu-main-zone">';
 
     if (menuSearchQuery.trim()) {
-        // ============ RÉSULTATS DE RECHERCHE ============
         html += renderSearchResults();
     } else if (menuViewMode === 'categories') {
-        // ============ GRILLE CATÉGORIES ============
         html += renderCategoriesGrid();
     } else {
-        // ============ PRODUITS DE LA CATÉGORIE ============
         html += renderProductsGrid();
     }
 
     html += '</div>';
 
     // ==================== PANIER FIXE ====================
-    html += '<div class="menu-cart-fixed ' + (menuCart.length > 0 ? 'has-items' : '') + '">';
+    html += '<div class="menu-cart-fixed">';
     html += '  <div class="menu-cart-header">';
-    html += '    <strong><i class="fas fa-shopping-basket"></i> Mon panier</strong>';
-    html += '    <span class="menu-cart-badge">' + totalArticles + ' article' + (totalArticles > 1 ? 's' : '') + '</span>';
+    html += '    <h3><i class="fas fa-shopping-cart"></i> Panier <span class="menu-cart-badge">' + totalArticles + '</span></h3>';
     html += '  </div>';
 
     if (menuCart.length === 0) {
-        html += '  <p class="menu-cart-empty"><i class="fas fa-shopping-basket"></i> Cliquez sur un produit pour l\'ajouter</p>';
+        html += '  <div class="menu-cart-empty"><i class="fas fa-shopping-basket"></i><p>Panier vide</p></div>';
     } else {
         html += '  <div class="menu-cart-items">';
         for (var k = 0; k < menuCart.length; k++) {
@@ -167,28 +163,29 @@ function renderMenuTactile() {
             html += '    <div class="menu-cart-item">';
             html += '      <div class="menu-cart-item-info">';
             html += '        <span class="menu-cart-item-name">' + it.quantite + '× ' + escapeHtml(it.nom) + '</span>';
-            html += '        <span class="menu-cart-item-price">' + (it.prixUnitaire * it.quantite).toFixed(2) + ' MAD</span>';
+            html += '        <span class="menu-cart-item-price">' + it.prixUnitaire.toFixed(2) + ' MAD</span>';
             html += '      </div>';
             html += '      <div class="menu-cart-qty">';
-            html += '        <button onclick="menuUpdateQty(' + k + ',-1)" aria-label="Moins">−</button>';
+            html += '        <button onclick="menuUpdateQty(' + k + ',-1)"><i class="fas fa-minus"></i></button>';
             html += '        <span>' + it.quantite + '</span>';
-            html += '        <button onclick="menuUpdateQty(' + k + ',1)" aria-label="Plus">+</button>';
+            html += '        <button onclick="menuUpdateQty(' + k + ',1)"><i class="fas fa-plus"></i></button>';
+            html += '        <button class="menu-cart-remove" onclick="menuRemoveItem(' + k + ')"><i class="fas fa-times"></i></button>';
             html += '      </div>';
+            html += '      <span class="menu-cart-item-total">' + (it.prixUnitaire * it.quantite).toFixed(2) + ' MAD</span>';
             html += '    </div>';
         }
         html += '  </div>';
         html += '  <div class="menu-cart-total"><span>Total</span><span>' + total.toFixed(2) + ' MAD</span></div>';
         html += '  <button class="menu-btn-validate" onclick="menuValiderCommande()"><i class="fas fa-check-circle"></i> Commander</button>';
-        html += '  <button class="menu-btn-clear" onclick="menuClearCart()"><i class="fas fa-trash"></i> Vider le panier</button>';
+        html += '  <button class="menu-btn-clear" onclick="menuClearCart()"><i class="fas fa-trash-alt"></i> Vider</button>';
     }
     html += '</div>';
 
-    // ==================== BOUTON PLEIN ÉCRAN ====================
+    // ==================== PLEIN ÉCRAN ====================
     html += '<button class="menu-fullscreen-btn" onclick="requestFullscreen()" title="Plein écran"><i class="fas fa-expand"></i></button>';
 
     content.innerHTML = html;
 
-    // Focus auto sur la recherche si elle était active
     if (menuSearchQuery) {
         setTimeout(function() {
             var input = document.getElementById('menuSearchInput');
@@ -196,159 +193,224 @@ function renderMenuTactile() {
                 input.focus();
                 input.setSelectionRange(input.value.length, input.value.length);
             }
-        }, 50);
+        }, 30);
     }
 }
 
-// ========== GRILLE CATÉGORIES (comme POS) ==========
+// ========== GRILLE CATÉGORIES (style POS) ==========
 function renderCategoriesGrid() {
-    var html = '<div class="menu-section-title"><i class="fas fa-folder-open"></i> Choisissez une catégorie</div>';
-    html += '<div class="menu-categories-grid">';
+    var html = '<div style="grid-column:1/-1;padding:6px 8px;font-size:0.9rem;font-weight:700;color:var(--text-primary);">📂 Choisissez une catégorie</div>';
 
     if (menuCategories.length === 0) {
-        html += '<div class="menu-empty-state"><i class="fas fa-folder-open"></i><p>Aucune catégorie disponible</p></div>';
-        html += '</div>';
-        return html;
+        return '<div class="menu-empty-state"><i class="fas fa-folder-open"></i><p>Aucune catégorie</p></div>';
     }
 
-    for (var i = 0; i < menuCategories.length; i++) {
-        var cat = menuCategories[i];
-        var count = menuProducts.filter(function(p) {
+    var isMobile = window.innerWidth < 700;
+    var isTablette = window.innerWidth >= 700 && window.innerWidth <= 1024;
+    var isPC = window.innerWidth > 1024;
+
+    var gridCols = isMobile ? 'repeat(3, 1fr)' : (isTablette ? 'repeat(3, 1fr)' : 'repeat(5, 1fr)');
+
+    html += '<div class="menu-categories-grid" style="grid-template-columns:' + gridCols + ';">';
+
+    var sorted = menuCategories.slice().sort((a, b) => {
+        var oA = a.ordre || 9999, oB = b.ordre || 9999;
+        return oA - oB || (a.nom || '').localeCompare(b.nom || '');
+    });
+
+    var imgSize, cardMinHeight, cardMaxHeight, folderSize, nameSize, countSize;
+    if (isPC) { imgSize='140px'; cardMinHeight='160px'; cardMaxHeight='200px'; folderSize='65px'; nameSize='16px'; countSize='12px'; }
+    else if (isTablette) { imgSize='130px'; cardMinHeight='150px'; cardMaxHeight='180px'; folderSize='60px'; nameSize='13px'; countSize='10px'; }
+    else { imgSize='45px'; cardMinHeight='65px'; cardMaxHeight='80px'; folderSize='20px'; nameSize='8px'; countSize='7px'; }
+
+    for (var i = 0; i < sorted.length; i++) {
+        var cat = sorted[i];
+        var count = menuProducts.filter(p => {
             if (p.categories && p.categories.length > 0) return p.categories.includes(cat.nom);
             return p.categorie === cat.nom;
         }).length;
 
         var imgContent = cat.imageBase64
-            ? '<img src="' + escapeHtml(cat.imageBase64) + '" alt="' + escapeHtml(cat.nom) + '" loading="lazy">'
-            : '<i class="fas fa-folder"></i>';
+            ? '<img src="' + escapeHtml(cat.imageBase64) + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+            : '<i class="fas fa-folder" style="font-size:' + folderSize + ';color:var(--accent);"></i>';
 
-        html += '<div class="menu-category-card" onclick="menuSelectCategory(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')">';
-        html += '  <div class="menu-category-img">' + imgContent + '</div>';
-        html += '  <div class="menu-category-name">' + escapeHtml(cat.nom) + '</div>';
-        html += '  <div class="menu-category-count">' + count + ' produit' + (count > 1 ? 's' : '') + '</div>';
-        html += '</div>';
+        html += '<div class="pos-category-card menu-cat-card" data-cat-name="' + escapeHtml(cat.nom) + '" ' +
+                'style="min-height:' + cardMinHeight + ';max-height:' + cardMaxHeight + ';padding:8px 4px;border-radius:10px;border:2px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;background:#FFFFFF;cursor:pointer;transition:all 0.2s cubic-bezier(0.4,0,0.2,1);gap:2px;" ' +
+                'onclick="menuSelectCategory(\'' + escapeHtml(cat.nom).replace(/'/g, "\\'") + '\')" ' +
+                'onmouseover="if(!this.classList.contains(\'active\')){this.style.borderColor=\'var(--accent)\';this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 4px 12px rgba(20,184,166,0.15)\';}" ' +
+                'onmouseout="if(!this.classList.contains(\'active\')){this.style.borderColor=\'transparent\';this.style.transform=\'translateY(0)\';this.style.boxShadow=\'none\';}">' +
+                '<div style="width:' + imgSize + ';height:' + imgSize + ';border-radius:50%;overflow:hidden;flex-shrink:0;background:var(--gray-100);display:flex;align-items:center;justify-content:center;margin-bottom:2px;border:2px solid var(--gray-200);">' + imgContent + '</div>' +
+                '<span style="font-size:' + nameSize + ';font-weight:700;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;color:#000000;margin-top:2px;line-height:1.2;display:block;">' + escapeHtml(cat.nom) + '</span>' +
+                '<span style="font-size:' + countSize + ';color:var(--text-muted);font-weight:500;display:block;margin-top:0px;">' + count + ' produit' + (count > 1 ? 's' : '') + '</span>' +
+                '</div>';
     }
 
     html += '</div>';
     return html;
 }
 
-// ========== GRILLE PRODUITS D'UNE CATÉGORIE ==========
+// ========== GRILLE PRODUITS (style POS) ==========
 function renderProductsGrid() {
     var html = '';
 
-    // Barre de retour
-    html += '<div class="menu-back-bar">';
-    html += '  <button class="menu-back-btn" onclick="menuBackToCategories()">';
-    html += '    <i class="fas fa-arrow-left"></i> Retour aux catégories';
-    html += '  </button>';
-    html += '  <span class="menu-current-cat-badge"><i class="fas fa-folder"></i> ' + escapeHtml(menuSelectedCategoryName || '') + '</span>';
+    html += '<div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;padding:4px 6px;margin-bottom:4px;background:var(--bg-page);border-radius:8px;">';
+    html += '<button onclick="menuBackToCategories()" style="display:flex;align-items:center;gap:6px;background:var(--black);color:var(--white);border:none;border-radius:8px;padding:6px 14px;font-size:0.8rem;font-weight:600;cursor:pointer;"><i class="fas fa-arrow-left"></i> Retour aux catégories</button>';
+    html += '<span style="font-weight:700;font-size:0.9rem;color:#000000;background:#FFFFFF;padding:4px 12px;border-radius:6px;border:1px solid #14B8A6;">📂 ' + escapeHtml(menuSelectedCategoryName || '') + '</span>';
     html += '</div>';
 
-    // Filtre produits
     var filtered = menuProducts;
     if (menuSelectedCategoryName) {
-        filtered = menuProducts.filter(function(p) {
+        filtered = menuProducts.filter(p => {
             if (p.categories && p.categories.length > 0) return p.categories.includes(menuSelectedCategoryName);
             return p.categorie === menuSelectedCategoryName;
         });
     }
-    filtered.sort(function(a, b) { return (a.nom || '').localeCompare(b.nom || ''); });
+    filtered.sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
 
     if (filtered.length === 0) {
-        html += '<div class="menu-empty-state"><i class="fas fa-box-open"></i><p>Aucun produit dans cette catégorie</p></div>';
-        return html;
+        return html + '<div class="menu-empty-state"><i class="fas fa-box-open"></i><p>Aucun produit</p></div>';
     }
 
-    html += '<div class="menu-products-grid">';
+    var isMobile = window.innerWidth < 700;
+    var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(110px, 1fr))';
+    var gridGap = isMobile ? '4px' : '8px';
+
+    html += '<div class="menu-products-grid" style="grid-template-columns:' + gridCols + ';gap:' + gridGap + ';">';
+
     for (var j = 0; j < filtered.length; j++) {
         var p = filtered[j];
-        var price = (p.prixPromo && p.prixPromo > 0) ? p.prixPromo : p.prixVente;
-        var hasPromo = p.prixPromo && p.prixPromo > 0;
+        var pr = (p.prixPromo && p.prixPromo > 0) ? p.prixPromo : p.prixVente;
+        var hp = p.prixPromo && p.prixPromo > 0;
         var outOfStock = p.stock !== undefined && p.stock <= 0;
+        var stt = '';
+        if (p.stock !== undefined) {
+            if (p.stock <= 0) stt = ' (Rupture)';
+            else if (p.stock <= 5) stt = ' (' + p.stock + ' rest.)';
+        }
 
-        html += '<div class="menu-product-card ' + (outOfStock ? 'out-of-stock' : '') + '" ' +
-                (outOfStock ? '' : 'onclick="menuAddToCartOrOpenOptions(\'' + p.id + '\')"') + '>';
-        html += '  <div class="menu-product-img">';
-        if (p.imageBase64) {
-            html += '    <img src="' + escapeHtml(p.imageBase64) + '" alt="' + escapeHtml(p.nom) + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<i class=\\\'fas fa-box\\\'></i>\'">';
-        } else {
-            html += '    <i class="fas fa-box"></i>';
-        }
-        if (hasPromo) html += '    <span class="menu-product-badge promo">PROMO</span>';
-        if (outOfStock) html += '    <span class="menu-product-badge out">Rupture</span>';
-        html += '  </div>';
-        html += '  <div class="menu-product-info">';
-        html += '    <div class="menu-product-name">' + escapeHtml(p.nom) + '</div>';
-        html += '    <div class="menu-product-price">';
-        if (hasPromo) {
-            html += '      <span class="price-promo">' + price.toFixed(2) + ' MAD</span>';
-            html += '      <span class="price-old">' + p.prixVente.toFixed(2) + '</span>';
-        } else {
-            html += '      <span class="price-normal">' + price.toFixed(2) + ' MAD</span>';
-        }
-        html += '    </div>';
-        html += '  </div>';
-        html += '</div>';
+        var cardStyle = isMobile
+            ? 'padding:4px 2px;min-height:110px;max-height:140px;aspect-ratio:1/1;border-radius:6px;border-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;'
+            : 'padding:6px 8px;min-height:150px;max-height:190px;aspect-ratio:1/1;border-radius:8px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;';
+
+        var imgStyle = isMobile
+            ? 'height:55px;width:55px;margin-bottom:4px;border-radius:6px;overflow:hidden;flex-shrink:0;background:var(--gray-200);display:flex;align-items:center;justify-content:center;'
+            : 'height:75px;width:75px;margin-bottom:6px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--gray-200);display:flex;align-items:center;justify-content:center;';
+
+        var nameStyle = isMobile
+            ? 'font-size:9px !important;font-weight:600 !important;line-height:1.3;text-align:center;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:var(--text-primary);margin:1px 0;'
+            : 'font-size:0.75rem !important;font-weight:600 !important;line-height:1.3;text-align:center;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:var(--text-primary);margin:2px 0;';
+
+        var priceStyle = isMobile
+            ? 'font-size:10px !important;font-weight:700 !important;color:var(--text-primary);'
+            : 'font-size:0.8rem !important;font-weight:700 !important;color:var(--text-primary);';
+
+        var imgContent = p.imageBase64
+            ? '<img src="' + escapeHtml(p.imageBase64) + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">'
+            : '<i class="fas fa-box" style="' + (isMobile ? 'font-size:18px;' : 'font-size:26px;') + 'color:var(--text-muted);"></i>';
+
+        html += '<div class="pos-product-card ' + (outOfStock ? 'pos-out-of-stock' : '') + '" ' +
+                'style="' + cardStyle + '" ' +
+                (outOfStock ? '' : 'onclick="menuAddToCartOrOpenOptions(\'' + p.id + '\')"') + '>' +
+                '<div class="pos-product-img" style="' + imgStyle + '">' + imgContent + '</div>' +
+                '<div class="pos-product-info" style="display:flex;flex-direction:column;align-items:center;width:100%;flex:1;justify-content:center;overflow:hidden;min-height:0;">' +
+                '<span class="pos-product-name" style="' + nameStyle + '">' + escapeHtml(p.nom) + stt + '</span>' +
+                '<span class="pos-product-price" style="' + priceStyle + '">' +
+                (hp
+                    ? '<span style="' + (isMobile ? 'font-size:7px;' : 'font-size:0.6rem;') + 'text-decoration:line-through;color:var(--text-muted);">' + p.prixVente.toFixed(2) + '</span> <span style="' + (isMobile ? 'font-size:10px;' : 'font-size:0.8rem;') + 'color:var(--danger);">' + pr.toFixed(2) + ' MAD</span>'
+                    : pr.toFixed(2) + ' MAD') +
+                '</span></div></div>';
     }
+
     html += '</div>';
     return html;
 }
 
-// ========== RÉSULTATS DE RECHERCHE ==========
+// ========== RÉSULTATS RECHERCHE ==========
 function renderSearchResults() {
-    var html = '';
     var q = menuSearchQuery.toLowerCase().trim();
+    var results = menuProducts.filter(p =>
+        (p.nom || '').toLowerCase().indexOf(q) !== -1 ||
+        (p.categorie || '').toLowerCase().indexOf(q) !== -1
+    ).sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
 
-    var results = menuProducts.filter(function(p) {
-        return (p.nom || '').toLowerCase().indexOf(q) !== -1
-            || (p.categorie || '').toLowerCase().indexOf(q) !== -1;
-    });
-    results.sort(function(a, b) { return (a.nom || '').localeCompare(b.nom || ''); });
-
-    html += '<div class="menu-section-title"><i class="fas fa-search"></i> ' + results.length + ' résultat' + (results.length > 1 ? 's' : '') + ' pour "' + escapeHtml(menuSearchQuery) + '"</div>';
+    var html = '<div style="grid-column:1/-1;padding:6px 8px;font-size:0.9rem;font-weight:700;color:var(--text-primary);"><i class="fas fa-search"></i> ' + results.length + ' résultat' + (results.length > 1 ? 's' : '') + ' pour "' + escapeHtml(menuSearchQuery) + '"</div>';
 
     if (results.length === 0) {
-        html += '<div class="menu-empty-state"><i class="fas fa-search"></i><p>Aucun produit trouvé</p></div>';
-        return html;
+        return html + '<div class="menu-empty-state"><i class="fas fa-search"></i><p>Aucun produit trouvé</p></div>';
     }
 
-    html += '<div class="menu-products-grid">';
+    var isMobile = window.innerWidth < 700;
+    var gridCols = isMobile ? 'repeat(5, 1fr)' : 'repeat(auto-fill, minmax(110px, 1fr))';
+    var gridGap = isMobile ? '4px' : '8px';
+
+    html += '<div class="menu-products-grid" style="grid-template-columns:' + gridCols + ';gap:' + gridGap + ';">';
+
     for (var i = 0; i < results.length; i++) {
         var p = results[i];
-        var price = (p.prixPromo && p.prixPromo > 0) ? p.prixPromo : p.prixVente;
-        var hasPromo = p.prixPromo && p.prixPromo > 0;
+        var pr = (p.prixPromo && p.prixPromo > 0) ? p.prixPromo : p.prixVente;
+        var hp = p.prixPromo && p.prixPromo > 0;
         var outOfStock = p.stock !== undefined && p.stock <= 0;
 
-        html += '<div class="menu-product-card ' + (outOfStock ? 'out-of-stock' : '') + '" ' +
-                (outOfStock ? '' : 'onclick="menuAddToCartOrOpenOptions(\'' + p.id + '\')"') + '>';
-        html += '  <div class="menu-product-img">';
-        if (p.imageBase64) {
-            html += '    <img src="' + escapeHtml(p.imageBase64) + '" alt="' + escapeHtml(p.nom) + '" loading="lazy" onerror="this.parentElement.innerHTML=\'<i class=\\\'fas fa-box\\\'></i>\'">';
-        } else {
-            html += '    <i class="fas fa-box"></i>';
-        }
-        if (hasPromo) html += '    <span class="menu-product-badge promo">PROMO</span>';
-        if (outOfStock) html += '    <span class="menu-product-badge out">Rupture</span>';
-        html += '  </div>';
-        html += '  <div class="menu-product-info">';
-        html += '    <div class="menu-product-name">' + escapeHtml(p.nom) + '</div>';
-        html += '    <div class="menu-product-price">';
-        if (hasPromo) {
-            html += '      <span class="price-promo">' + price.toFixed(2) + ' MAD</span>';
-        } else {
-            html += '      <span class="price-normal">' + price.toFixed(2) + ' MAD</span>';
-        }
-        html += '    </div>';
-        html += '  </div>';
-        html += '</div>';
+        var cardStyle = isMobile
+            ? 'padding:4px 2px;min-height:110px;max-height:140px;aspect-ratio:1/1;border-radius:6px;border-width:1px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;'
+            : 'padding:6px 8px;min-height:150px;max-height:190px;aspect-ratio:1/1;border-radius:8px;border-width:2px;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;';
+
+        var imgStyle = isMobile
+            ? 'height:55px;width:55px;margin-bottom:4px;border-radius:6px;overflow:hidden;flex-shrink:0;background:var(--gray-200);display:flex;align-items:center;justify-content:center;'
+            : 'height:75px;width:75px;margin-bottom:6px;border-radius:8px;overflow:hidden;flex-shrink:0;background:var(--gray-200);display:flex;align-items:center;justify-content:center;';
+
+        var nameStyle = isMobile
+            ? 'font-size:9px !important;font-weight:600 !important;line-height:1.3;text-align:center;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:var(--text-primary);margin:1px 0;'
+            : 'font-size:0.75rem !important;font-weight:600 !important;line-height:1.3;text-align:center;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:var(--text-primary);margin:2px 0;';
+
+        var priceStyle = isMobile ? 'font-size:10px !important;font-weight:700 !important;color:var(--text-primary);' : 'font-size:0.8rem !important;font-weight:700 !important;color:var(--text-primary);';
+
+        var imgContent = p.imageBase64
+            ? '<img src="' + escapeHtml(p.imageBase64) + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">'
+            : '<i class="fas fa-box" style="' + (isMobile ? 'font-size:18px;' : 'font-size:26px;') + 'color:var(--text-muted);"></i>';
+
+        html += '<div class="pos-product-card ' + (outOfStock ? 'pos-out-of-stock' : '') + '" ' +
+                'style="' + cardStyle + '" ' +
+                (outOfStock ? '' : 'onclick="menuAddToCartOrOpenOptions(\'' + p.id + '\')"') + '>' +
+                '<div class="pos-product-img" style="' + imgStyle + '">' + imgContent + '</div>' +
+                '<div class="pos-product-info" style="display:flex;flex-direction:column;align-items:center;width:100%;flex:1;justify-content:center;overflow:hidden;min-height:0;">' +
+                '<span class="pos-product-name" style="' + nameStyle + '">' + escapeHtml(p.nom) + '</span>' +
+                '<span class="pos-product-price" style="' + priceStyle + '">' +
+                (hp
+                    ? '<span style="' + (isMobile ? 'font-size:7px;' : 'font-size:0.6rem;') + 'text-decoration:line-through;color:var(--text-muted);">' + p.prixVente.toFixed(2) + '</span> <span style="' + (isMobile ? 'font-size:10px;' : 'font-size:0.8rem;') + 'color:var(--danger);">' + pr.toFixed(2) + ' MAD</span>'
+                    : pr.toFixed(2) + ' MAD') +
+                '</span></div></div>';
     }
+
     html += '</div>';
     return html;
 }
 
 // ========== NAVIGATION ==========
 function menuSelectCategory(catName) {
+    // Marquer la carte active
+    document.querySelectorAll('.menu-cat-card').forEach(function(card) {
+        card.classList.remove('active');
+        card.style.borderColor = 'transparent';
+        card.style.background = '#FFFFFF';
+        card.style.transform = 'translateY(0)';
+        card.style.boxShadow = 'none';
+        var span = card.querySelector('span:first-of-type');
+        if (span) span.style.color = '#000000';
+    });
+
+    document.querySelectorAll('.menu-cat-card').forEach(function(card) {
+        if (card.getAttribute('data-cat-name') === catName) {
+            card.classList.add('active');
+            card.style.borderColor = '#14B8A6';
+            card.style.background = '#FFFFFF';
+            card.style.transform = 'translateY(-2px)';
+            card.style.boxShadow = '0 4px 12px rgba(20,184,166,0.25)';
+            var span = card.querySelector('span:first-of-type');
+            if (span) span.style.color = '#000000';
+        }
+    });
+
     menuSelectedCategoryName = catName;
     menuSelectedCategory = catName;
     menuViewMode = 'products';
@@ -388,11 +450,13 @@ function menuClearSearch() {
 function menuUpdateQty(idx, delta) {
     if (!menuCart[idx]) return;
     var nq = menuCart[idx].quantite + delta;
-    if (nq <= 0) {
-        menuCart.splice(idx, 1);
-    } else {
-        menuCart[idx].quantite = nq;
-    }
+    if (nq <= 0) menuCart.splice(idx, 1);
+    else menuCart[idx].quantite = nq;
+    renderMenuTactile();
+}
+
+function menuRemoveItem(idx) {
+    menuCart.splice(idx, 1);
     renderMenuTactile();
 }
 
@@ -410,6 +474,7 @@ function menuAddToCartOrOpenOptions(pid) {
         alert('⚠️ Rupture de stock.');
         return;
     }
+
     var cat = menuCategories.find(c => c.nom === p.categorie);
     var isRecette = cat && cat.recette === true;
 
@@ -427,21 +492,15 @@ function menuAddToCartOrOpenOptions(pid) {
         } else {
             var price = (p.prixPromo && p.prixPromo > 0) ? p.prixPromo : p.prixVente;
             menuCart.push({
-                id: p.id,
-                nom: p.nom,
-                prixUnitaire: price,
-                quantite: 1,
-                sauces: [],
-                interdits: [],
-                epice: 'Normal',
-                sel: 'Normal'
+                id: p.id, nom: p.nom, prixUnitaire: price, quantite: 1,
+                sauces: [], interdits: [], epice: 'Normal', sel: 'Normal'
             });
         }
         renderMenuTactile();
     }
 }
 
-// ========== OPTIONS (recettes) ==========
+// ========== OPTIONS RECETTES ==========
 async function menuOpenOptions(pid) {
     var p = menuProducts.find(x => x.id === pid);
     if (!p) return;
@@ -455,18 +514,18 @@ async function menuOpenOptions(pid) {
 
     var grouped = {};
     productIngredients.forEach(function(ing) {
-        var stockItem = allStockData.find(function(s) { return s.id === ing.idStock; });
-        var cat = stockItem ? stockItem.categorie : 'Autre';
+        var stockItem = allStockData.find(s => s.id === ing.idStock);
+        var cat = stockItem ? (stockItem.categorie || 'Autre') : 'Autre';
         if (!grouped[cat]) grouped[cat] = [];
         grouped[cat].push(ing.nom);
     });
 
     var order = ['Sauces', 'Légumes', 'Fruits', 'Viande', 'Poulet', 'Poisson'];
     var sortedCats = Object.keys(grouped).sort(function(a, b) {
-        var idxA = order.indexOf(a), idxB = order.indexOf(b);
-        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-        if (idxA !== -1) return -1;
-        if (idxB !== -1) return 1;
+        var iA = order.indexOf(a), iB = order.indexOf(b);
+        if (iA !== -1 && iB !== -1) return iA - iB;
+        if (iA !== -1) return -1;
+        if (iB !== -1) return 1;
         return a.localeCompare(b);
     });
 
@@ -477,13 +536,9 @@ async function menuOpenOptions(pid) {
         h += '<p style="margin-bottom:16px;color:#94A3B8;">Aucun ingrédient à exclure</p>';
     } else {
         sortedCats.forEach(function(cat) {
-            h += '<div style="margin-bottom:14px;">';
-            h += '<label style="font-weight:700;color:#334155;display:block;margin-bottom:6px;font-size:0.85rem;">🥫 ' + escapeHtml(cat) + '</label>';
-            h += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+            h += '<div style="margin-bottom:14px;"><label style="font-weight:700;color:#334155;display:block;margin-bottom:6px;font-size:0.85rem;">🥫 ' + escapeHtml(cat) + '</label><div style="display:flex;flex-wrap:wrap;gap:6px;">';
             grouped[cat].forEach(function(ing) {
-                h += '<label style="display:flex;align-items:center;gap:5px;padding:7px 11px;border:1.5px solid #E2E8F0;border-radius:8px;cursor:pointer;font-size:0.8rem;background:#F8FAFC;">';
-                h += '<input type="checkbox" class="menu-interdit-check" value="' + escapeHtml(ing) + '"> ' + escapeHtml(ing);
-                h += '</label>';
+                h += '<label style="display:flex;align-items:center;gap:5px;padding:7px 11px;border:1.5px solid #E2E8F0;border-radius:8px;cursor:pointer;font-size:0.8rem;background:#F8FAFC;"><input type="checkbox" class="menu-interdit-check" value="' + escapeHtml(ing) + '"> ' + escapeHtml(ing) + '</label>';
             });
             h += '</div></div>';
         });
@@ -503,7 +558,7 @@ async function menuOpenOptions(pid) {
 
     h += '<div style="text-align:right;margin-top:20px;display:flex;gap:10px;justify-content:flex-end;">';
     h += '<button onclick="closeModal()" style="padding:10px 22px;border:1.5px solid #E2E8F0;background:#fff;border-radius:10px;font-weight:600;cursor:pointer;font-size:0.9rem;">Annuler</button>';
-    h += '<button onclick="menuConfirmOptions()" style="padding:10px 22px;border:none;background:linear-gradient(135deg,#2563EB,#1D4ED8);color:#fff;border-radius:10px;font-weight:700;cursor:pointer;font-size:0.9rem;box-shadow:0 4px 14px rgba(37,99,235,0.35);">Ajouter</button>';
+    h += '<button onclick="menuConfirmOptions()" style="padding:10px 22px;border:none;background:#14B8A6;color:#fff;border-radius:10px;font-weight:700;cursor:pointer;font-size:0.9rem;">Ajouter</button>';
     h += '</div>';
 
     openModal('Personnaliser — ' + escapeHtml(p.nom), h);
@@ -518,22 +573,17 @@ function menuConfirmOptions() {
 
     var existing = menuCart.find(x => x.id === p.id);
     if (existing) {
-        if (p.stock !== undefined && existing.quantite >= p.stock) {
-            alert('Stock insuffisant'); closeModal(); return;
-        }
+        if (p.stock !== undefined && existing.quantite >= p.stock) { alert('Stock insuffisant'); closeModal(); return; }
         existing.quantite++;
     } else {
         var price = (p.prixPromo && p.prixPromo > 0) ? p.prixPromo : p.prixVente;
-        menuCart.push({
-            id: p.id, nom: p.nom, prixUnitaire: price, quantite: 1,
-            sauces: [], interdits: interdits, epice: epice, sel: sel
-        });
+        menuCart.push({ id: p.id, nom: p.nom, prixUnitaire: price, quantite: 1, sauces: [], interdits: interdits, epice: epice, sel: sel });
     }
     closeModal();
     renderMenuTactile();
 }
 
-// ========== VALIDATION COMMANDE ==========
+// ========== VALIDATION ==========
 async function menuValiderCommande() {
     if (menuCart.length === 0) { alert('⚠️ Panier vide.'); return; }
     var total = menuCart.reduce((sum, item) => sum + (item.prixUnitaire * item.quantite), 0);
@@ -564,10 +614,9 @@ async function menuValiderCommande() {
 
 // ========== INITIALISATION ==========
 function initMenuTactile(tableNum) {
-    console.log('🍽️ Démarrage menu tactile E-SOLUTION pour la table:', tableNum);
+    console.log('🍽️ Démarrage menu tactile pour table:', tableNum);
     menuTableNum = tableNum;
 
-    // Injecter les styles (une seule fois)
     injectMenuStyles();
 
     const menuPage = document.getElementById('menuTactilePage');
@@ -586,16 +635,14 @@ function initMenuTactile(tableNum) {
     loadMenuData();
 }
 
-// ========== STYLES (injectés une seule fois) ==========
+// ========== STYLES ==========
 function injectMenuStyles() {
-    if (document.getElementById('menuTactileStylesV9')) return;
-
+    if (document.getElementById('menuTactileStylesV10')) return;
     var style = document.createElement('style');
-    style.id = 'menuTactileStylesV9';
+    style.id = 'menuTactileStylesV10';
     style.textContent = `
-    /* ===== PAGE ===== */
     #menuTactilePage {
-        background: #F7F8FA !important;
+        background: #f8fafc !important;
         min-height: 100vh;
         min-height: 100dvh;
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -604,666 +651,329 @@ function injectMenuStyles() {
     #menuTactileContent {
         max-width: 1400px;
         margin: 0 auto;
-        padding-bottom: 320px;
-        position: relative;
+        padding-bottom: 280px;
     }
-
-    /* ===== HEADER ===== */
     .menu-header {
-        background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
-        padding: clamp(16px, 2.5vw, 24px) clamp(16px, 3vw, 28px);
+        background: linear-gradient(135deg, #0A0D12, #1a1a2e);
+        color: #fff;
         border-radius: 0 0 24px 24px;
+        padding: 20px 15px;
         position: sticky;
         top: 0;
         z-index: 50;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        overflow: hidden;
-    }
-    .menu-header::before {
-        content: '';
-        position: absolute;
-        top: -50%; right: -30%;
-        width: 150%; height: 150%;
-        background: radial-gradient(circle, rgba(20, 184, 166, 0.18) 0%, transparent 60%);
-        pointer-events: none;
-        animation: menuFloatGlow 8s ease-in-out infinite;
-    }
-    @keyframes menuFloatGlow {
-        0%, 100% { transform: translate(0, 0); }
-        50% { transform: translate(-10%, 10%); }
+        text-align: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
     .menu-header-content {
         display: flex;
         align-items: center;
-        gap: clamp(12px, 2vw, 18px);
-        position: relative;
-        z-index: 1;
+        gap: 14px;
+        justify-content: center;
         max-width: 500px;
         margin: 0 auto;
     }
     .menu-logo-wrapper {
-        width: clamp(48px, 8vw, 64px);
-        height: clamp(48px, 8vw, 64px);
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.06);
+        background: #14B8A6;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 2px solid rgba(20, 184, 166, 0.4);
+        border: 2px solid rgba(255,255,255,0.2);
         overflow: hidden;
         flex-shrink: 0;
-        box-shadow: 0 8px 24px rgba(20, 184, 166, 0.2);
+        box-shadow: 0 4px 12px rgba(20,184,166,0.3);
     }
-    .menu-logo {
-        width: 100%; height: 100%;
-        object-fit: cover;
-    }
-    .menu-logo-wrapper i {
-        color: #14B8A6;
-        font-size: clamp(20px, 3vw, 28px);
-    }
-    .menu-title-wrapper { min-width: 0; }
+    .menu-logo { width: 100%; height: 100%; object-fit: cover; }
+    .menu-logo-wrapper i { color: #fff; font-size: 24px; }
+    .menu-title-wrapper { text-align: left; min-width: 0; }
     .menu-title-wrapper h1 {
-        margin: 0; color: #fff;
-        font-size: clamp(1.15rem, 2.2vw, 1.6rem);
+        margin: 0;
+        font-size: 1.3rem;
         font-weight: 800;
         letter-spacing: -0.5px;
         line-height: 1.15;
     }
-    .menu-title-wrapper h1 span {
-        color: #14B8A6;
-        text-shadow: 0 2px 12px rgba(20, 184, 166, 0.4);
-    }
-    .menu-title-wrapper p {
-        margin: 4px 0 0;
-        color: rgba(255, 255, 255, 0.75);
-        font-size: clamp(0.75rem, 1.2vw, 0.9rem);
-        font-weight: 500;
-    }
+    .menu-title-wrapper h1 span { color: #14B8A6; }
+    .menu-title-wrapper p { margin: 3px 0 0; font-size: 0.85rem; color: rgba(255,255,255,0.8); }
     .menu-close-btn {
         position: absolute;
-        top: clamp(10px, 2vw, 16px);
-        right: clamp(10px, 2vw, 16px);
+        top: 12px; right: 14px;
         width: 38px; height: 38px;
         border-radius: 50%;
         border: none;
-        background: rgba(0, 0, 0, 0.3);
+        background: rgba(0,0,0,0.35);
         color: #fff;
-        font-size: 1rem;
+        font-size: 1.5rem;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
+        line-height: 1;
         transition: all 0.2s ease;
-        z-index: 2;
     }
-    .menu-close-btn:hover {
-        background: rgba(0, 0, 0, 0.5);
-        transform: rotate(90deg);
-    }
+    .menu-close-btn:hover { background: rgba(0,0,0,0.55); transform: rotate(90deg); }
 
-    /* ===== BARRE DE RECHERCHE ===== */
     .menu-search-wrapper {
-        padding: clamp(12px, 2vw, 18px) clamp(16px, 3vw, 24px);
-        background: #F7F8FA;
+        padding: 12px 14px;
+        background: #f8fafc;
         position: sticky;
-        top: 88px;
+        top: 92px;
         z-index: 40;
     }
     .menu-search-bar {
         display: flex;
         align-items: center;
         background: #FFFFFF;
-        border: 1.5px solid #E2E8F0;
-        border-radius: 14px;
+        border: 2px solid #e2e8f0;
+        border-radius: 40px;
         padding: 4px 14px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        transition: all 0.2s ease;
         max-width: 600px;
         margin: 0 auto;
+        transition: all 0.2s ease;
     }
     .menu-search-bar:focus-within {
-        border-color: #2563EB;
-        box-shadow: 0 0 0 4px rgba(37,99,235,0.12), 0 2px 8px rgba(0,0,0,0.04);
+        border-color: #14B8A6;
+        box-shadow: 0 0 0 4px rgba(20,184,166,0.12);
     }
-    .menu-search-icon {
-        color: #94A3B8;
-        font-size: clamp(14px, 1.5vw, 16px);
-        margin-right: 10px;
-    }
-    .menu-search-bar:focus-within .menu-search-icon {
-        color: #2563EB;
-    }
+    .menu-search-icon { color: #94A3B8; margin-right: 10px; font-size: 15px; }
+    .menu-search-bar:focus-within .menu-search-icon { color: #14B8A6; }
     .menu-search-bar input {
         flex: 1;
         border: none;
         background: transparent;
-        padding: 12px 0;
-        font-size: max(16px, clamp(14px, 1.4vw, 16px));
+        padding: 10px 0;
+        font-size: 16px;
         font-family: inherit;
         font-weight: 500;
         color: #0F172A;
         outline: none;
         min-width: 0;
     }
-    .menu-search-bar input::placeholder {
-        color: #94A3B8;
-        font-weight: 400;
-    }
+    .menu-search-bar input::placeholder { color: #94A3B8; font-weight: 400; }
     .menu-search-clear {
         background: #F1F5F9;
         border: none;
         width: 30px; height: 30px;
         border-radius: 50%;
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         color: #64748B;
         font-size: 14px;
         transition: all 0.15s ease;
         flex-shrink: 0;
     }
-    .menu-search-clear:hover {
-        background: #E2E8F0;
-        color: #0F172A;
-        transform: scale(1.05);
-    }
+    .menu-search-clear:hover { background: #E2E8F0; color: #0F172A; }
 
-    /* ===== ZONE PRINCIPALE ===== */
-    .menu-main-zone {
-        padding: 0 clamp(12px, 3vw, 24px) 24px;
-    }
-    .menu-section-title {
-        font-size: clamp(0.9rem, 1.3vw, 1rem);
-        font-weight: 700;
-        color: #0F172A;
-        margin: 8px 0 16px;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-    .menu-section-title i {
-        color: #2563EB;
-    }
+    .menu-main-zone { padding: 0 10px 24px; }
 
-    /* ===== GRILLE CATÉGORIES ===== */
     .menu-categories-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(clamp(120px, 18vw, 180px), 1fr));
-        gap: clamp(10px, 1.5vw, 16px);
-    }
-    .menu-category-card {
-        background: linear-gradient(135deg, #FFFFFF, #FAFBFC);
-        border-radius: 18px;
-        padding: clamp(12px, 2vw, 20px);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
         gap: 10px;
-    }
-    .menu-category-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 14px 32px rgba(37,99,235,0.18), 0 4px 10px rgba(37,99,235,0.08);
-    }
-    .menu-category-card:active {
-        transform: translateY(-1px) scale(0.98);
-    }
-    .menu-category-img {
-        width: clamp(60px, 12vw, 100px);
-        height: clamp(60px, 12vw, 100px);
-        border-radius: 50%;
-        overflow: hidden;
-        background: #F1F5F9;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    .menu-category-img img {
-        width: 100%; height: 100%;
-        object-fit: cover;
-    }
-    .menu-category-img i {
-        font-size: clamp(24px, 4vw, 40px);
-        color: #2563EB;
-    }
-    .menu-category-name {
-        font-size: clamp(0.75rem, 1.3vw, 0.95rem);
-        font-weight: 700;
-        color: #0F172A;
-        line-height: 1.25;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        min-height: 2.4em;
-    }
-    .menu-category-count {
-        font-size: clamp(0.65rem, 1vw, 0.75rem);
-        color: #64748B;
-        font-weight: 600;
-        background: #F1F5F9;
-        padding: 3px 10px;
-        border-radius: 999px;
+        padding: 10px;
     }
 
-    /* ===== BARRE RETOUR ===== */
-    .menu-back-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 16px;
-        flex-wrap: wrap;
-    }
-    .menu-back-btn {
-        background: #FFFFFF;
-        border: 1.5px solid #E2E8F0;
-        border-radius: 12px;
-        padding: 10px 18px;
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem);
-        font-weight: 600;
-        color: #334155;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.2s ease;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-    }
-    .menu-back-btn:hover {
-        background: #EFF6FF;
-        border-color: #BFDBFE;
-        color: #2563EB;
-        transform: translateX(-2px);
-    }
-    .menu-current-cat-badge {
-        background: linear-gradient(135deg, #EFF6FF, #DBEAFE);
-        color: #1D4ED8;
-        padding: 8px 16px;
-        border-radius: 12px;
-        font-size: clamp(0.8rem, 1.2vw, 0.9rem);
-        font-weight: 700;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        border: 1px solid #BFDBFE;
-    }
-
-    /* ===== GRILLE PRODUITS ===== */
     .menu-products-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(clamp(140px, 16vw, 180px), 1fr));
-        gap: clamp(10px, 1.5vw, 16px);
-    }
-    .menu-product-card {
-        background: linear-gradient(135deg, #FFFFFF, #FAFBFC);
-        border-radius: 16px;
-        overflow: hidden;
-        cursor: pointer;
-        transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        display: flex;
-        flex-direction: column;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-    }
-    .menu-product-card:hover:not(.out-of-stock) {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 28px rgba(37,99,235,0.18), 0 4px 10px rgba(37,99,235,0.10);
-    }
-    .menu-product-card:active:not(.out-of-stock) {
-        transform: translateY(-1px) scale(0.98);
-    }
-    .menu-product-card.out-of-stock {
-        opacity: 0.5;
-        cursor: not-allowed;
-        filter: grayscale(0.7);
-    }
-    .menu-product-img {
-        position: relative;
-        height: clamp(100px, 16vw, 150px);
-        background: linear-gradient(135deg, #F8FAFC, #EFF6FF);
-        overflow: hidden;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .menu-product-img img {
-        width: 100%; height: 100%;
-        object-fit: cover;
-        transition: transform 0.25s ease;
-    }
-    .menu-product-card:hover:not(.out-of-stock) .menu-product-img img {
-        transform: scale(1.05);
-    }
-    .menu-product-img i {
-        font-size: clamp(28px, 4vw, 40px);
-        color: #94A3B8;
-    }
-    .menu-product-badge {
-        position: absolute;
-        top: 8px;
-        padding: 3px 8px;
-        border-radius: 6px;
-        font-size: 0.65rem;
-        font-weight: 800;
-        letter-spacing: 0.5px;
-    }
-    .menu-product-badge.promo {
-        left: 8px;
-        background: linear-gradient(135deg, #EF4444, #DC2626);
-        color: #fff;
-        box-shadow: 0 2px 8px rgba(239,68,68,0.4);
-    }
-    .menu-product-badge.out {
-        right: 8px;
-        background: #FEF2F2;
-        color: #DC2626;
-        border: 1px solid #FECACA;
-    }
-    .menu-product-info {
-        padding: 10px 12px 12px;
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-    .menu-product-name {
-        font-size: clamp(0.8rem, 1.3vw, 0.95rem);
-        font-weight: 700;
-        color: #0F172A;
-        line-height: 1.25;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        min-height: 2.4em;
-    }
-    .menu-product-price {
-        display: flex;
-        align-items: baseline;
-        gap: 6px;
-        flex-wrap: wrap;
-    }
-    .price-normal, .price-promo {
-        font-size: clamp(0.85rem, 1.3vw, 1rem);
-        font-weight: 800;
-    }
-    .price-normal { color: #2563EB; }
-    .price-promo { color: #DC2626; }
-    .price-old {
-        font-size: 0.75rem;
-        color: #94A3B8;
-        text-decoration: line-through;
-        font-weight: 500;
+        gap: 8px;
+        padding: 4px;
     }
 
-    /* ===== ÉTAT VIDE ===== */
     .menu-empty-state {
         text-align: center;
         padding: 60px 20px;
         color: #94A3B8;
         grid-column: 1 / -1;
     }
-    .menu-empty-state i {
-        font-size: 3rem;
-        margin-bottom: 12px;
-        display: block;
-        opacity: 0.5;
-    }
-    .menu-empty-state p {
-        margin: 0;
-        font-size: 0.95rem;
-        font-weight: 500;
-    }
+    .menu-empty-state i { font-size: 3rem; margin-bottom: 12px; display: block; opacity: 0.5; }
+    .menu-empty-state p { margin: 0; font-size: 0.95rem; }
 
-    /* ===== PANIER FIXE ===== */
     .menu-cart-fixed {
         position: fixed;
         bottom: 0; left: 0; right: 0;
         z-index: 60;
         background: #FFFFFF;
         border-radius: 20px 20px 0 0;
-        padding: 14px clamp(14px, 3vw, 24px) max(14px, env(safe-area-inset-bottom));
-        box-shadow: 0 -4px 24px rgba(15, 23, 42, 0.12);
-        max-height: 60vh;
+        padding: 12px 14px max(12px, env(safe-area-inset-bottom));
+        box-shadow: 0 -2px 15px rgba(0,0,0,0.15);
+        max-height: 55vh;
         overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        transition: transform 0.3s ease;
+        gap: 8px;
     }
     .menu-cart-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
-    .menu-cart-header strong {
+    .menu-cart-header h3 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
         display: flex;
         align-items: center;
         gap: 8px;
-        font-size: clamp(0.95rem, 1.4vw, 1.05rem);
         color: #0F172A;
-        font-weight: 700;
     }
-    .menu-cart-header strong i { color: #2563EB; }
+    .menu-cart-header h3 i { color: #14B8A6; }
     .menu-cart-badge {
-        background: #2563EB;
+        background: #14B8A6;
         color: #fff;
-        padding: 4px 12px;
-        border-radius: 20px;
+        border-radius: 50%;
+        padding: 1px 8px;
         font-size: 0.75rem;
         font-weight: 700;
     }
     .menu-cart-empty {
-        margin: 8px 0;
         text-align: center;
+        padding: 10px;
         color: #94A3B8;
         font-size: 0.85rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 6px;
     }
-    .menu-cart-empty i {
-        font-size: 1.8rem;
-        color: #E2E8F0;
-    }
+    .menu-cart-empty i { font-size: 1.5rem; display: block; margin-bottom: 4px; color: #E2E8F0; }
     .menu-cart-items {
-        max-height: 30vh;
+        max-height: 25vh;
         overflow-y: auto;
         display: flex;
         flex-direction: column;
-        gap: 6px;
-        padding-right: 4px;
-    }
-    .menu-cart-items::-webkit-scrollbar { width: 4px; }
-    .menu-cart-items::-webkit-scrollbar-thumb {
-        background: #E2E8F0;
-        border-radius: 2px;
+        gap: 4px;
     }
     .menu-cart-item {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        padding: 8px 10px;
-        background: #F8FAFC;
-        border-radius: 10px;
-        gap: 10px;
+        gap: 6px;
+        padding: 6px 4px;
+        border-bottom: 1px solid #F1F5F9;
     }
     .menu-cart-item-info {
-        flex: 1; min-width: 0;
+        flex: 1;
+        min-width: 0;
         display: flex;
         flex-direction: column;
-        gap: 2px;
     }
     .menu-cart-item-name {
         font-size: 0.85rem;
         font-weight: 600;
         color: #0F172A;
-        white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
     }
-    .menu-cart-item-price {
-        font-size: 0.75rem;
-        color: #2563EB;
-        font-weight: 700;
-    }
+    .menu-cart-item-price { font-size: 0.7rem; color: #64748B; }
     .menu-cart-qty {
         display: flex;
         align-items: center;
-        gap: 4px;
-        background: #fff;
-        border-radius: 8px;
-        border: 1px solid #E2E8F0;
-        padding: 2px;
+        gap: 3px;
         flex-shrink: 0;
     }
     .menu-cart-qty button {
-        width: 28px; height: 28px;
-        border-radius: 6px;
-        border: none;
-        background: #F1F5F9;
+        width: 26px; height: 26px;
+        border-radius: 50%;
+        border: 2px solid #e2e8f0;
+        background: #fff;
         color: #0F172A;
-        font-size: 1rem;
-        font-weight: 800;
+        font-size: 0.7rem;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: all 0.15s;
     }
-    .menu-cart-qty button:hover {
-        background: #2563EB;
-        color: #fff;
+    .menu-cart-qty button:hover { background: #14B8A6; color: #fff; border-color: #14B8A6; }
+    .menu-cart-qty span { font-size: 0.85rem; font-weight: 700; min-width: 20px; text-align: center; }
+    .menu-cart-remove {
+        background: none !important;
+        border: none !important;
+        color: #ef4444 !important;
     }
-    .menu-cart-qty span {
-        min-width: 22px;
-        text-align: center;
-        font-size: 0.85rem;
+    .menu-cart-remove:hover { color: #dc2626 !important; }
+    .menu-cart-item-total {
+        font-size: 0.8rem;
         font-weight: 700;
         color: #0F172A;
+        min-width: 65px;
+        text-align: right;
+        flex-shrink: 0;
     }
     .menu-cart-total {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px 0 4px;
-        border-top: 1px dashed #E2E8F0;
-        font-size: 0.9rem;
-        font-weight: 600;
-        color: #64748B;
+        padding: 8px 0;
+        border-top: 2px solid #e2e8f0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0F172A;
     }
-    .menu-cart-total span:last-child {
-        font-size: clamp(1.1rem, 1.8vw, 1.3rem);
-        font-weight: 800;
-        color: #2563EB;
-        letter-spacing: -0.3px;
-    }
+    .menu-cart-total span:last-child { color: #14B8A6; font-size: 1.3rem; }
     .menu-btn-validate {
         width: 100%;
-        padding: 12px 20px;
+        padding: 12px;
         border: none;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #2563EB, #1D4ED8);
+        border-radius: 10px;
+        background: #14B8A6;
         color: #fff;
-        font-size: clamp(0.9rem, 1.4vw, 1rem);
+        font-size: 1.05rem;
         font-weight: 700;
-        font-family: inherit;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         gap: 8px;
-        box-shadow: 0 4px 14px rgba(37,99,235,0.35);
-        transition: all 0.2s ease;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(20,184,166,0.3);
     }
-    .menu-btn-validate:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(37,99,235,0.45);
-    }
+    .menu-btn-validate:hover { background: #0D9488; transform: translateY(-2px); }
+    .menu-btn-validate:disabled { opacity: 0.5; cursor: not-allowed; }
     .menu-btn-clear {
         width: 100%;
-        padding: 8px 16px;
-        border: 1.5px solid #E2E8F0;
-        border-radius: 10px;
+        padding: 8px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
         background: #fff;
-        color: #64748B;
+        color: #ef4444;
         font-size: 0.8rem;
         font-weight: 600;
-        font-family: inherit;
         cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 6px;
         transition: all 0.15s;
     }
-    .menu-btn-clear:hover {
-        border-color: #FCA5A5;
-        color: #DC2626;
-        background: #FEF2F2;
-    }
+    .menu-btn-clear:hover { background: #FEF2F2; border-color: #FCA5A5; }
 
-    /* ===== BOUTON PLEIN ÉCRAN ===== */
     .menu-fullscreen-btn {
         position: fixed;
-        bottom: calc(100px + env(safe-area-inset-bottom));
-        right: 16px;
-        width: 44px; height: 44px;
+        bottom: calc(55vh + 10px);
+        right: 15px;
+        width: 45px; height: 45px;
         border-radius: 50%;
         border: none;
-        background: linear-gradient(135deg, #2563EB, #1D4ED8);
+        background: #14B8A6;
         color: #fff;
-        font-size: 1.1rem;
+        font-size: 18px;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 6px 20px rgba(37,99,235,0.4);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
         z-index: 55;
-        transition: all 0.2s ease;
+        transition: all 0.2s;
     }
-    .menu-fullscreen-btn:hover {
-        transform: scale(1.1) rotate(90deg);
-    }
+    .menu-fullscreen-btn:hover { transform: scale(1.1) rotate(90deg); }
 
-    /* ===== RESPONSIVE ===== */
+    .menu-cat-card.active { border-color: #14B8A6 !important; }
+
     @media (max-width: 380px) {
         .menu-title-wrapper h1 { font-size: 1rem; }
         .menu-title-wrapper p { font-size: 0.7rem; }
         .menu-logo-wrapper { width: 42px; height: 42px; }
-        .menu-categories-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-        .menu-products-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
     }
-
     @media (max-height: 500px) and (orientation: landscape) {
-        .menu-header { padding: 10px 16px; border-radius: 0 0 16px 16px; }
+        .menu-header { padding: 10px 16px; }
         .menu-logo-wrapper { width: 40px; height: 40px; }
-        .menu-cart-fixed { max-height: 55vh; }
-        .menu-cart-items { max-height: 15vh; }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .menu-header::before,
-        .menu-category-card, .menu-product-card, .menu-cart-qty button,
-        .menu-btn-validate, .menu-fullscreen-btn, .menu-close-btn,
-        .menu-product-img img, .menu-back-btn, .menu-search-clear {
-            animation: none !important;
-            transition: none !important;
-        }
+        .menu-cart-fixed { max-height: 50vh; }
     }
     `;
     document.head.appendChild(style);
 }
 
-console.log('🚀 Menu tactile E-SOLUTION prêt (v9 - style POS avec catégories + recherche dynamique)');
+console.log('🚀 Menu tactile E-SOLUTION v10 (style POS exact)');
