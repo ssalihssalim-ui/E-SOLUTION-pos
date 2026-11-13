@@ -1,6 +1,19 @@
 // ==================== CAISSIER.JS - E-SOLUTION ====================
 
 (function() {
+    // 🛡️ GARDE-FOU MENU TACTILE : Ne jamais tourner sur ?table=X
+    if (window._menuTactileTable) {
+        console.log('🍽️ caissier.js désactivé (menu tactile actif)');
+        return;
+    }
+
+    // 🛡️ GARDE-FOU AUTH : Ne pas tourner sur la page login
+    var _authPage = document.getElementById('authPage');
+    if (_authPage && !_authPage.classList.contains('hidden')) {
+        console.log('🔐 caissier.js désactivé (page auth active)');
+        return;
+    }
+
     let attempts = 0;
     const maxAttempts = 50;
     const interval = 300;
@@ -11,6 +24,11 @@
             if (++attempts >= maxAttempts) {
                 console.error('Impossible de détecter l\'utilisateur connecté');
                 if (intervalId) clearInterval(intervalId);
+                // 🔒 FIX : Ne PAS appeler showAuthPage() si on est sur le menu tactile
+                if (window._menuTactileTable) {
+                    console.warn('🚫 showAuthPage() bloquée (menu tactile actif)');
+                    return false;
+                }
                 if (typeof showAuthPage === 'function') showAuthPage();
             }
             return false;
@@ -24,7 +42,8 @@
                 showDashboard();
             } else if (role === 'client' && typeof showClientPage === 'function') {
                 showClientPage();
-            } else if (typeof showAuthPage === 'function') {
+            } else if (!window._menuTactileTable && typeof showAuthPage === 'function') {
+                // 🔒 FIX : Ne PAS appeler showAuthPage() sur menu tactile
                 showAuthPage();
             }
             return false;
