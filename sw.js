@@ -1,9 +1,10 @@
 // ==================== SERVICE WORKER - E-SOLUTION ====================
 // Version avec gestion PWA, cache, et reconnaissance vocale
+// 🔧 v2 : cache incrémenté + skipWaiting sur message uniquement + HTML/JS network-first
 
-const CACHE_NAME = 'e-solution-v1';
-const STATIC_CACHE = 'e-solution-static-v1';
-const DYNAMIC_CACHE = 'e-solution-dynamic-v1';
+const CACHE_NAME = 'e-solution-v2';
+const STATIC_CACHE = 'e-solution-static-v2';
+const DYNAMIC_CACHE = 'e-solution-dynamic-v2';
 
 const STATIC_FILES = [
   '/',
@@ -12,9 +13,9 @@ const STATIC_FILES = [
   '/script.js',
   '/auth.js',
   '/admin.js',
-  '/admin-crud.js',  // ✅ Ajouté
-  '/admin-ventes.js',  // ✅ Ajouté
-  '/admin-credits.js',  // ✅ Ajouté
+  '/admin-crud.js',
+  '/admin-ventes.js',
+  '/admin-credits.js',
   '/pos.js',
   '/client.js',
   '/menutactile.js',
@@ -39,7 +40,9 @@ self.addEventListener('install', event => {
       ).then(() => console.log('✅ Cache statique prêt'));
     })
   );
-  self.skipWaiting();
+  // 🔧 FIX : PAS de self.skipWaiting() automatique ici
+  // (causait un reload forcé après chaque mise à jour)
+  // Le skipWaiting se fait UNIQUEMENT sur message SKIP_WAITING
 });
 
 // ==================== ACTIVATION ====================
@@ -100,21 +103,24 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Fichiers statiques : cache-first
-  if (STATIC_FILES.some(file => request.url.endsWith(file) || request.url.includes(file))) {
+  // 🔧 FIX : Fichiers HTML / JS : NETWORK-FIRST (évite les vieilles versions buggées)
+  if (request.destination === 'document' || 
+      request.destination === 'script' || 
+      request.destination === 'style' ||
+      request.url.endsWith('.html') || 
+      request.url.endsWith('.js') || 
+      request.url.endsWith('.css')) {
     event.respondWith(
-      caches.open(STATIC_CACHE).then(cache => {
-        return cache.match(request).then(cached => {
-          const fetchPromise = fetch(request).then(response => {
-            if (response.status === 200) {
-              cache.put(request, response.clone());
-            }
-            return response;
-          }).catch(err => {
-            console.warn('⚠️ Erreur réseau, utilisation du cache', err);
-            return cached;
-          });
-          return cached || fetchPromise;
+      fetch(request).then(response => {
+        if (response.status === 200) {
+          const responseClone = response.clone();
+          caches.open(STATIC_CACHE).then(cache => cache.put(request, responseClone));
+        }
+        return response;
+      }).catch(() => {
+        return caches.match(request).then(cached => {
+          if (cached) return cached;
+          return new Response('Hors ligne', { status: 503 });
         });
       })
     );
@@ -219,4 +225,4 @@ self.addEventListener('message', event => {
   }
 });
 
-console.log('🚀 E-SOLUTION - Service Worker OK');
+console.log('🚀 E-SOLUTION - Service Worker OK (v2)');
